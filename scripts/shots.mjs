@@ -21,6 +21,7 @@ for (const dev of ['desktop', 'mobile']) {
     // a few answers so the dashboard has data
     await p.goto(base + '/quiz?t=mcq,output&n=4')
     for (let k = 0; k < 4; k++) {
+      await p.getByRole('button', { name: 'Check answer' }).waitFor()
       const r = p.getByRole('radio')
       if (await r.count()) await r.nth(k % 2).check()
       else await p.getByRole('textbox', { name: 'Exact output' }).fill(k % 2 ? '3' : 'hello')
@@ -33,7 +34,7 @@ for (const dev of ['desktop', 'mobile']) {
     await p.getByRole('textbox', { name: 'Your Python code' }).fill('n = int(input())\ntotal = 0\nwhile n > 0:\n    total += n % 10\n    n //= 10\nprint(total)')
     await p.waitForTimeout(500)
     await shot('quiz')
-        await p.getByRole('button', { name: 'Check answer' }).click()
+    await p.getByRole('button', { name: 'Check answer' }).click()
     await p.getByRole('region', { name: 'Feedback' }).waitFor({ timeout: 60000 })
     await p.getByRole('region', { name: 'Feedback' }).evaluate((el) => el.scrollIntoView({ block: 'center' }))
     await p.waitForTimeout(700)

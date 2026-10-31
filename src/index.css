@@ -98,10 +98,13 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-:focus-visible {
-  outline: 3px solid var(--teal);
-  outline-offset: 2px;
-  border-radius: 6px;
+@layer base {
+  /* in a layer so utilities such as outline-none can opt out (editor textarea, focused headings) */
+  :focus-visible {
+    outline: 3px solid var(--teal);
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
 }
 
 /* Highlighter swipe behind a word. */

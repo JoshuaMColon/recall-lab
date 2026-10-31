@@ -148,7 +148,7 @@ export function Quiz() {
         <span className="font-mono text-sm">{done.filter((d) => d.grade.correct).length} ✓</span>
       </div>
       <Card as="article">
-        <div ref={heading} tabIndex={-1} className="outline-none focus-visible:!outline-none">
+        <div ref={heading} tabIndex={-1} className="outline-none">
           <QuestionHeader q={q} index={i} total={set.length} />
         </div>
         {response && <QuestionView key={q.id} q={q} response={response} onChange={setResponse} locked={!!grade} grade={grade} />}
