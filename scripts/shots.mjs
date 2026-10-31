@@ -1,7 +1,8 @@
-// usage: node shots.mjs <base> <outdir> [demo]
+// usage: SHOT_PREFIX=cosmic- node shots.mjs <base> <outdir> [demo]
 import { chromium, devices } from 'playwright'
 import fs from 'node:fs'
 const [base, out, demo] = process.argv.slice(2)
+const pre = process.env.SHOT_PREFIX ?? ''
 fs.mkdirSync(out, { recursive: true })
 const b = await chromium.launch()
 for (const dev of ['desktop', 'mobile']) {
@@ -10,7 +11,7 @@ for (const dev of ['desktop', 'mobile']) {
     await ctx.addInitScript((t) => localStorage.setItem('recall-lab:theme', t), theme)
     const p = await ctx.newPage()
     p.on('console', (m) => m.type() === 'error' && console.log('console error', dev, theme, m.text().slice(0, 200)))
-    const shot = (n) => p.screenshot({ path: `${out}/${n}-${dev}-${theme}.png`, fullPage: n !== 'quiz' })
+    const shot = (n) => p.screenshot({ path: `${out}/${pre}${n}-${dev}-${theme}.png`, fullPage: n !== 'quiz' })
     await p.goto(base + '/')
     await p.waitForTimeout(600)
     await shot('landing')
@@ -38,7 +39,7 @@ for (const dev of ['desktop', 'mobile']) {
     await p.getByRole('region', { name: 'Feedback' }).waitFor({ timeout: 60000 })
     await p.getByRole('region', { name: 'Feedback' }).evaluate((el) => el.scrollIntoView({ block: 'center' }))
     await p.waitForTimeout(700)
-    await p.screenshot({ path: `${out}/feedback-${dev}-${theme}.png` })
+    await p.screenshot({ path: `${out}/${pre}feedback-${dev}-${theme}.png` })
     await p.goto(base + '/dashboard')
     await p.getByRole('heading', { name: /Mastery map/ }).waitFor()
     await p.waitForTimeout(600)

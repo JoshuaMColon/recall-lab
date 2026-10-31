@@ -178,7 +178,7 @@ export function Quiz() {
                 {i + 1 < set.length ? 'Next question' : 'Finish'} <ArrowRight aria-hidden="true" size={18} />
               </Btn>
             </div>
-            {aiMsg && <p role="status" className="rounded-xl border-2 border-dashed border-ink p-2 text-sm">{aiMsg}</p>}
+            {aiMsg && <p role="status" className="rounded-xl border-2 border-dashed border-edge p-2 text-sm">{aiMsg}</p>}
           </div>
         )}
       </Card>

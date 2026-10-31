@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, type CSSProperties } from 'react'
 import { CheckCircle2, Lightbulb, Loader2, MessageCircleQuestion, XCircle } from 'lucide-react'
 import type { Grade, Question, Response } from '../lib/types'
 import { correctAnswer, describeResponse } from '../lib/check'
@@ -72,6 +72,17 @@ export function HintButton({ q }: { q: Question }) {
   )
 }
 
+/** A small burst of gold and violet stars around the "Correct" badge (hidden under reduced motion). */
+function StarBurst() {
+  return (
+    <span className="burst" aria-hidden="true">
+      {Array.from({ length: 12 }, (_, i) => (
+        <i key={i} style={{ '--a': `${i * 30 + 8}deg`, '--d': `${48 + (i % 3) * 14}px`, animationDelay: `${(i % 4) * 25}ms` } as CSSProperties} />
+      ))}
+    </span>
+  )
+}
+
 export function Feedback({ q, grade, response, ai = true }: { q: Question; grade: Grade; response: Response; ai?: boolean }) {
   const note = useAiNote()
   const ok = grade.correct
@@ -80,7 +91,8 @@ export function Feedback({ q, grade, response, ai = true }: { q: Question; grade
   return (
     <section aria-label="Feedback" className={`space-y-3 rounded-2xl border-2 p-4 ${ok ? 'border-good bg-good-bg' : 'border-bad bg-bad-bg'}`}>
       <div className="flex items-center gap-3" role="status">
-        <span className={`stamp-in inline-flex items-center gap-2 rounded-lg border-[3px] px-3 py-1 font-display text-xl font-bold uppercase ${ok ? 'border-good text-good' : 'border-bad text-bad'}`}>
+        <span className={`stamp-in relative inline-flex items-center gap-2 rounded-full border-2 bg-card px-3.5 py-1 font-display text-base font-bold uppercase tracking-wide sm:text-lg ${ok ? 'border-good text-good' : 'border-bad text-bad'}`}>
+          {ok && <StarBurst />}
           {ok ? <CheckCircle2 aria-hidden="true" /> : <XCircle aria-hidden="true" />}
           {ok ? 'Correct' : partial ? `Partly right · ${Math.round(grade.score * 100)}%` : 'Not quite'}
         </span>
@@ -108,7 +120,7 @@ export function Feedback({ q, grade, response, ai = true }: { q: Question; grade
               The bug is on <strong>line {q.answer}</strong>
               {!ok && response.type === 'bug' && response.line > 0 ? ` (you picked line ${response.line})` : ''}. Fix:
             </p>
-            <pre className="overflow-x-auto rounded-lg bg-sunk p-2 font-mono">{q.fix}</pre>
+            <pre tabIndex={0} aria-label="Corrected line" className="overflow-x-auto rounded-lg bg-sunk p-2 font-mono">{q.fix}</pre>
             <p className="text-muted">
               Buggy version prints <code className="rounded bg-sunk px-1">{q.actual}</code>; fixed version prints <code className="rounded bg-sunk px-1">{q.expected}</code>.
             </p>

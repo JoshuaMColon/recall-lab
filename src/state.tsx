@@ -98,7 +98,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     } catch {
       /* private mode */
     }
-    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', t === 'dark' ? '#10201b' : '#f7f4ec')
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', t === 'dark' ? '#070917' : '#f3f1fa')
     setThemeState(t)
   }, [])
 

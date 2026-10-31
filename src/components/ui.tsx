@@ -4,9 +4,9 @@ import { navigate } from '../router'
 type Variant = 'primary' | 'hl' | 'ghost' | 'danger' | 'plain'
 
 const VARIANT: Record<Variant, string> = {
-  primary: 'bg-ink text-paper border-2 border-ink',
-  hl: 'bg-hl text-on-hl border-2 border-ink',
-  ghost: 'bg-card text-ink border-2 border-ink',
+  primary: 'bg-teal text-on-teal border-2 border-teal',
+  hl: 'bg-hl text-on-hl border-2 border-hl',
+  ghost: 'bg-card text-ink border-2 border-edge hover:border-teal',
   danger: 'bg-card text-bad border-2 border-bad',
   plain: 'bg-transparent text-ink border-2 border-transparent !shadow-none hover:bg-sunk',
 }
@@ -48,7 +48,7 @@ export function Tip({ tip, children, side = 'top', block = false }: { tip: strin
       <span
         id={id}
         role="tooltip"
-        className={`tooltip pointer-events-none absolute left-1/2 z-50 w-max max-w-60 rounded-md border-2 border-ink bg-ink px-2 py-1 text-center text-xs font-medium leading-snug text-paper ${
+        className={`tooltip pointer-events-none absolute left-1/2 z-50 w-max max-w-60 rounded-md border border-ink bg-ink px-2 py-1 text-center text-xs font-medium leading-snug text-paper ${
           side === 'top' ? 'bottom-full mb-2' : 'top-full mt-2'
         } ${open ? '' : 'hidden'}`}
         style={{ transform: 'translateX(-50%)' }}
@@ -118,7 +118,7 @@ export function LinkBtn({ to, tip, variant = 'ghost', size = 'md', className = '
 
 export function Card({ children, className = '', as: As = 'section', ...rest }: { children: ReactNode; className?: string; as?: 'section' | 'div' | 'article'; 'aria-labelledby'?: string }) {
   return (
-    <As className={`rounded-2xl border-2 border-ink bg-card p-5 shadow-ink ${className}`} {...rest}>
+    <As className={`card-surface rounded-2xl border border-line p-5 shadow-ink ${className}`} {...rest}>
       {children}
     </As>
   )
@@ -126,10 +126,10 @@ export function Card({ children, className = '', as: As = 'section', ...rest }: 
 
 export function Bar({ value, label, tone = 'teal' }: { value: number; label: string; tone?: 'teal' | 'hl' | 'coral' }) {
   const pct = Math.round(Math.max(0, Math.min(1, value)) * 100)
-  const fill = tone === 'hl' ? 'bg-hl' : tone === 'coral' ? 'bg-coral' : 'bg-teal'
+  const fill = tone === 'hl' ? 'bg-hl text-hl' : tone === 'coral' ? 'bg-coral text-coral' : 'bg-teal text-teal'
   return (
-    <div role="progressbar" aria-label={label} aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100} className="h-3 w-full overflow-hidden rounded-full border-2 border-ink bg-sunk">
-      <div className={`h-full ${fill} transition-[width] duration-500`} style={{ width: `${pct}%` }} />
+    <div role="progressbar" aria-label={label} aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100} className="h-2.5 w-full rounded-full border border-line bg-sunk p-px">
+      <div data-empty={pct === 0} className={`orbit-fill h-full rounded-full ${fill} transition-[width] duration-500`} style={{ width: `${pct}%` }} />
     </div>
   )
 }
@@ -137,10 +137,10 @@ export function Bar({ value, label, tone = 'teal' }: { value: number; label: str
 export function CodeBlock({ code, highlight, label = 'Python code' }: { code: string; highlight?: number; label?: string }) {
   const lines = code.split('\n')
   return (
-    <pre aria-label={label} tabIndex={0} className="overflow-x-auto rounded-xl border-2 border-ink bg-code-bg py-3 text-[0.9rem] leading-relaxed text-code-ink">
+    <pre aria-label={label} tabIndex={0} className="overflow-x-auto rounded-xl border border-line bg-code-bg py-3 text-[0.9rem] leading-relaxed text-code-ink">
       <code>
         {lines.map((l, i) => (
-          <span key={i} className={`flex ${highlight === i + 1 ? 'bg-coral/30' : ''}`}>
+          <span key={i} className={`flex ${highlight === i + 1 ? 'bg-hl/20' : ''}`}>
             <span aria-hidden="true" className="w-10 shrink-0 select-none pr-3 text-right opacity-55">
               {i + 1}
             </span>
@@ -196,7 +196,7 @@ export function CodeEditor({ value, onChange, label, disabled }: { value: string
 
   return (
     <div>
-      <div className="flex max-h-[26rem] overflow-hidden rounded-xl border-2 border-ink bg-code-bg text-code-ink focus-within:outline focus-within:outline-3 focus-within:outline-offset-2 focus-within:outline-teal">
+      <div className="flex max-h-[26rem] overflow-hidden rounded-xl border border-edge bg-code-bg text-code-ink focus-within:outline focus-within:outline-3 focus-within:outline-offset-2 focus-within:outline-teal">
         <div ref={gutter} aria-hidden="true" className="w-10 shrink-0 select-none overflow-hidden py-3 pr-2 text-right font-mono text-[0.9rem] leading-relaxed opacity-55">
           {Array.from({ length: lines }, (_, i) => (
             <div key={i}>{i + 1}</div>
@@ -232,7 +232,7 @@ export function CodeEditor({ value, onChange, label, disabled }: { value: string
 export function Pill({ children, tone = 'plain' }: { children: ReactNode; tone?: 'plain' | 'hl' | 'teal' | 'good' | 'bad' }) {
   const t = {
     plain: 'bg-sunk text-ink border-line',
-    hl: 'bg-hl text-on-hl border-ink',
+    hl: 'bg-hl text-on-hl border-hl',
     teal: 'bg-card text-teal border-teal',
     good: 'bg-good-bg text-good border-good',
     bad: 'bg-bad-bg text-bad border-bad',

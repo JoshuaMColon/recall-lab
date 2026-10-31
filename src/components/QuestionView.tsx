@@ -21,7 +21,7 @@ function Files({ files }: { files?: Record<string, string> }) {
       {Object.entries(files).map(([name, body]) => (
         <div key={name}>
           <p className="mb-1 font-mono text-xs font-semibold text-muted">📄 {name}</p>
-          <pre className="overflow-x-auto rounded-lg border-2 border-dashed border-line bg-sunk p-2 text-sm">{body}</pre>
+          <pre tabIndex={0} aria-label={`File ${name}`} className="overflow-x-auto rounded-lg border-2 border-dashed border-line bg-sunk p-2 text-sm">{body}</pre>
         </div>
       ))}
     </div>
@@ -33,7 +33,7 @@ function Stdin({ stdin }: { stdin?: string }) {
   return (
     <div>
       <p className="mb-1 text-xs font-semibold text-muted">The user types (one line per input()):</p>
-      <pre className="overflow-x-auto rounded-lg border-2 border-dashed border-line bg-sunk p-2 font-mono text-sm">{stdin.replace(/\n$/, '')}</pre>
+      <pre tabIndex={0} aria-label="Typed input" className="overflow-x-auto rounded-lg border-2 border-dashed border-line bg-sunk p-2 font-mono text-sm">{stdin.replace(/\n$/, '')}</pre>
     </div>
   )
 }
@@ -71,7 +71,7 @@ export function QuestionView({ q, response, onChange, locked, grade }: Props) {
   const reveal = locked && grade
   return (
     <div className="space-y-4">
-      <h2 className="font-display text-xl font-semibold leading-snug sm:text-2xl"><Inline text={q.prompt} /></h2>
+      <h2 className="text-xl font-bold leading-snug sm:text-[1.4rem]"><Inline text={q.prompt} /></h2>
 
       {q.type === 'mcq' && (
         <>
@@ -81,7 +81,7 @@ export function QuestionView({ q, response, onChange, locked, grade }: Props) {
             <div className="grid gap-2">
               {q.choices.map((c, i) => {
                 const chosen = response.type === 'mcq' && response.choice === i
-                const tone = reveal ? (i === q.answer ? 'border-good bg-good-bg' : chosen ? 'border-bad bg-bad-bg' : 'border-line') : chosen ? 'border-ink bg-hl text-on-hl' : 'border-line hover:border-ink'
+                const tone = reveal ? (i === q.answer ? 'border-good bg-good-bg' : chosen ? 'border-bad bg-bad-bg' : 'border-line') : chosen ? 'border-hl bg-hl text-on-hl' : 'border-line hover:border-teal'
                 return (
                   <label key={i} className={`press flex cursor-pointer items-start gap-3 rounded-xl border-2 bg-card px-3 py-2.5 !shadow-none ${tone} ${locked ? 'cursor-default' : ''}`}>
                     <input type="radio" name={name} className="mt-1 h-4 w-4 accent-[var(--teal)]" checked={chosen} disabled={locked} onChange={() => onChange({ type: 'mcq', choice: i })} />
@@ -103,7 +103,7 @@ export function QuestionView({ q, response, onChange, locked, grade }: Props) {
           <label className="block">
             <span className="mb-1 block text-sm font-semibold">Exact output</span>
             <textarea
-              className="code w-full rounded-xl border-2 border-ink bg-card p-3 text-[0.92rem]"
+              className="code w-full rounded-xl border-2 border-edge bg-card p-3 text-[0.92rem]"
               rows={Math.min(6, Math.max(2, q.answer.split('\n').length))}
               spellCheck={false}
               autoCapitalize="off"
@@ -123,7 +123,7 @@ export function QuestionView({ q, response, onChange, locked, grade }: Props) {
           <Stdin stdin={q.stdin} />
           <fieldset>
             <legend className="mb-2 text-sm font-semibold">Pick the line that contains the bug</legend>
-            <div className="overflow-x-auto rounded-xl border-2 border-ink bg-code-bg py-2 text-code-ink">
+            <div className="overflow-x-auto rounded-xl border-2 border-edge bg-code-bg py-2 text-code-ink">
               {q.code.split('\n').map((line, i) => {
                 const n = i + 1
                 const chosen = response.type === 'bug' && response.line === n
@@ -198,7 +198,7 @@ export function TestTable({ grade }: { grade: Grade }) {
           Tests: {grade.tests.filter((t) => t.passed).length}/{grade.tests.length} passed
         </caption>
         <thead>
-          <tr className="border-b-2 border-ink text-xs uppercase tracking-wide text-muted">
+          <tr className="border-b border-edge text-xs uppercase tracking-wide text-muted">
             <th scope="col" className="py-1 pr-3">Result</th>
             <th scope="col" className="py-1 pr-3">Input</th>
             <th scope="col" className="py-1 pr-3">Expected</th>
