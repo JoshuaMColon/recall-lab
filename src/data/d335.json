@@ -1,0 +1,4636 @@
+{
+ "version": 1,
+ "course": {
+  "code": "D335",
+  "title": "Introduction to Programming in Python",
+  "summary": "Writing small Python scripts: data, control flow, functions, collections, errors, modules and files.",
+  "note": "Objective wording is Recall Lab's own paraphrase of the publicly described course competencies; it is not official WGU or zyBooks material.",
+  "competencies": [
+   {
+    "id": "A",
+    "title": "Scripts with control flow",
+    "summary": "Write Python programs that store data, make decisions, repeat work, organise logic into functions and handle errors."
+   },
+   {
+    "id": "B",
+    "title": "Reuse and file I/O",
+    "summary": "Pull in functionality from modules and the standard library, and read and write files."
+   }
+  ]
+ },
+ "objectives": [
+  {
+   "id": "D335.01",
+   "code": "01",
+   "competency": "A",
+   "title": "Variables, expressions & operators",
+   "summary": "Assign and update variables; evaluate arithmetic with + - * / // % ** and precedence; use augmented assignment.",
+   "weight": 8,
+   "position": 1
+  },
+  {
+   "id": "D335.02",
+   "code": "02",
+   "competency": "A",
+   "title": "Input, output & type conversion",
+   "summary": "Read text with input(), convert with int(), float() and str(), and format output with print options and f-strings.",
+   "weight": 10,
+   "position": 2
+  },
+  {
+   "id": "D335.03",
+   "code": "03",
+   "competency": "A",
+   "title": "Branching & Boolean logic",
+   "summary": "Write if / elif / else chains; combine conditions with and, or, not; reason about comparisons and truthiness.",
+   "weight": 10,
+   "position": 3
+  },
+  {
+   "id": "D335.04",
+   "code": "04",
+   "competency": "A",
+   "title": "Loops",
+   "summary": "Repeat work with for over range() and sequences, and with while; use break, continue, accumulators and nested loops.",
+   "weight": 12,
+   "position": 4
+  },
+  {
+   "id": "D335.05",
+   "code": "05",
+   "competency": "A",
+   "title": "Functions",
+   "summary": "Define functions with parameters, defaults and return values; tell return from print; understand local vs global scope.",
+   "weight": 12,
+   "position": 5
+  },
+  {
+   "id": "D335.06",
+   "code": "06",
+   "competency": "A",
+   "title": "Strings",
+   "summary": "Index and slice strings, use common string methods, and remember that strings are immutable.",
+   "weight": 10,
+   "position": 6
+  },
+  {
+   "id": "D335.07",
+   "code": "07",
+   "competency": "A",
+   "title": "Lists & tuples",
+   "summary": "Create, index, slice and change lists; use list methods and comprehensions; know when to use an immutable tuple.",
+   "weight": 10,
+   "position": 7
+  },
+  {
+   "id": "D335.08",
+   "code": "08",
+   "competency": "A",
+   "title": "Dictionaries & sets",
+   "summary": "Store and look up key-value pairs, iterate with items(), use get() and membership tests, and de-duplicate with sets.",
+   "weight": 8,
+   "position": 8
+  },
+  {
+   "id": "D335.09",
+   "code": "09",
+   "competency": "A",
+   "title": "Exceptions & debugging",
+   "summary": "Read tracebacks, recognise common runtime errors, and handle them with try / except / else / finally and raise.",
+   "weight": 6,
+   "position": 9
+  },
+  {
+   "id": "D335.10",
+   "code": "10",
+   "competency": "B",
+   "title": "Modules & libraries",
+   "summary": "Import modules in different ways and use standard-library modules such as math, random, datetime and string; know what __name__ == '__main__' does.",
+   "weight": 8,
+   "position": 10
+  },
+  {
+   "id": "D335.11",
+   "code": "11",
+   "competency": "B",
+   "title": "Files",
+   "summary": "Open files in the right mode, read and write text, close files automatically with with, and process CSV-style rows.",
+   "weight": 6,
+   "position": 11
+  }
+ ],
+ "questions": [
+  {
+   "id": "d335-01-mcq-01",
+   "objective": "D335.01",
+   "type": "mcq",
+   "difficulty": 1,
+   "prompt": "Which operator gives the remainder after integer division?",
+   "choices": [
+    "/",
+    "//",
+    "**",
+    "%"
+   ],
+   "answer": 3,
+   "explanation": "`%` (modulo) returns the remainder: 17 % 5 is 2. `//` is floor division (the whole-number quotient), `/` is true division and always gives a float, and `**` is exponentiation."
+  },
+  {
+   "id": "d335-01-mcq-02",
+   "objective": "D335.01",
+   "type": "mcq",
+   "difficulty": 1,
+   "prompt": "What is the value of `7 / 2` in Python 3?",
+   "choices": [
+    "3",
+    "3.0",
+    "4",
+    "3.5"
+   ],
+   "answer": 3,
+   "explanation": "In Python 3 the `/` operator always performs true division and returns a float, so 7 / 2 is 3.5. Use `//` if you want the floor quotient 3."
+  },
+  {
+   "id": "d335-01-mcq-03",
+   "objective": "D335.01",
+   "type": "mcq",
+   "difficulty": 1,
+   "prompt": "Which of these is a valid variable name?",
+   "choices": [
+    "class",
+    "total-cost",
+    "total_cost",
+    "2nd_place"
+   ],
+   "answer": 2,
+   "explanation": "Names may contain letters, digits and underscores but cannot start with a digit. A hyphen is read as minus, and `class` is a reserved keyword."
+  },
+  {
+   "id": "d335-01-mcq-04",
+   "objective": "D335.01",
+   "type": "mcq",
+   "difficulty": 2,
+   "prompt": "What is the value of `2 + 3 * 4 ** 2`?",
+   "choices": [
+    "400",
+    "196",
+    "50",
+    "80"
+   ],
+   "answer": 2,
+   "explanation": "Exponentiation binds tightest (4 ** 2 = 16), then multiplication (3 * 16 = 48), then addition (2 + 48 = 50)."
+  },
+  {
+   "id": "d335-01-mcq-05",
+   "objective": "D335.01",
+   "type": "mcq",
+   "difficulty": 2,
+   "prompt": "What does `-7 // 2` evaluate to?",
+   "choices": [
+    "3",
+    "-3",
+    "-3.5",
+    "-4"
+   ],
+   "answer": 3,
+   "explanation": "Floor division rounds toward negative infinity, not toward zero. -3.5 floors to -4."
+  },
+  {
+   "id": "d335-01-mcq-06",
+   "objective": "D335.01",
+   "type": "mcq",
+   "difficulty": 2,
+   "prompt": "After `x = 10` then `x -= 3` then `x *= 2`, what is x?",
+   "choices": [
+    "4",
+    "20",
+    "17",
+    "14"
+   ],
+   "answer": 3,
+   "explanation": "Augmented assignment updates in place: 10 - 3 = 7, then 7 * 2 = 14."
+  },
+  {
+   "id": "d335-01-mcq-07",
+   "objective": "D335.01",
+   "type": "mcq",
+   "difficulty": 2,
+   "prompt": "What is `2 ** 3 ** 2`?",
+   "choices": [
+    "64",
+    "36",
+    "12",
+    "512"
+   ],
+   "answer": 3,
+   "explanation": "`**` is right-associative, so it is evaluated as 2 ** (3 ** 2) = 2 ** 9 = 512."
+  },
+  {
+   "id": "d335-01-mcq-08",
+   "objective": "D335.01",
+   "type": "mcq",
+   "difficulty": 1,
+   "prompt": "What type is the result of `4 * 2.0`?",
+   "choices": [
+    "It raises a TypeError",
+    "float",
+    "int",
+    "str"
+   ],
+   "answer": 1,
+   "explanation": "Mixing an int and a float in arithmetic promotes the result to float: 4 * 2.0 is 8.0."
+  },
+  {
+   "id": "d335-01-mcq-09",
+   "objective": "D335.01",
+   "type": "mcq",
+   "difficulty": 2,
+   "prompt": "Which statement swaps the values of `a` and `b` in one line?",
+   "choices": [
+    "a == b",
+    "a, b = b, a",
+    "a = b; b = a",
+    "swap(a, b)"
+   ],
+   "answer": 1,
+   "explanation": "Tuple packing/unpacking evaluates the right side first, then assigns, so `a, b = b, a` swaps. `a = b; b = a` loses the original value of a."
+  },
+  {
+   "id": "d335-01-mcq-10",
+   "objective": "D335.01",
+   "type": "mcq",
+   "difficulty": 3,
+   "prompt": "What is `round(2.5)` in Python 3?",
+   "choices": [
+    "2.5",
+    "3.0",
+    "2",
+    "3"
+   ],
+   "answer": 2,
+   "explanation": "Python 3 uses banker's rounding (round half to even), so 2.5 rounds to 2 while 3.5 rounds to 4."
+  },
+  {
+   "id": "d335-01-mcq-11",
+   "objective": "D335.01",
+   "type": "mcq",
+   "difficulty": 1,
+   "prompt": "What does `abs(-12)` return?",
+   "choices": [
+    "12",
+    "0",
+    "-12",
+    "1"
+   ],
+   "answer": 0,
+   "explanation": "`abs()` returns the absolute (non-negative) value of a number."
+  },
+  {
+   "id": "d335-01-out-01",
+   "objective": "D335.01",
+   "type": "output",
+   "difficulty": 1,
+   "prompt": "What does this program print?",
+   "code": "a = 17\nb = 5\nprint(a // b, a % b)",
+   "answer": "3 2",
+   "explanation": "`17 // 5` is the whole-number quotient and `17 % 5` is what is left over. print() separates its arguments with a space, so the output is 3 2."
+  },
+  {
+   "id": "d335-01-out-02",
+   "objective": "D335.01",
+   "type": "output",
+   "difficulty": 1,
+   "prompt": "What does this program print?",
+   "code": "a = 29\nb = 4\nprint(a // b, a % b)",
+   "answer": "7 1",
+   "explanation": "`29 // 4` is the whole-number quotient and `29 % 4` is what is left over. print() separates its arguments with a space, so the output is 7 1."
+  },
+  {
+   "id": "d335-01-out-03",
+   "objective": "D335.01",
+   "type": "output",
+   "difficulty": 1,
+   "prompt": "What does this program print?",
+   "code": "a = 100\nb = 7\nprint(a // b, a % b)",
+   "answer": "14 2",
+   "explanation": "`100 // 7` is the whole-number quotient and `100 % 7` is what is left over. print() separates its arguments with a space, so the output is 14 2."
+  },
+  {
+   "id": "d335-01-out-04",
+   "objective": "D335.01",
+   "type": "output",
+   "difficulty": 1,
+   "prompt": "What does this program print?",
+   "code": "a = 8\nb = 3\nprint(a // b, a % b)",
+   "answer": "2 2",
+   "explanation": "`8 // 3` is the whole-number quotient and `8 % 3` is what is left over. print() separates its arguments with a space, so the output is 2 2."
+  },
+  {
+   "id": "d335-01-out-05",
+   "objective": "D335.01",
+   "type": "output",
+   "difficulty": 1,
+   "prompt": "What does this program print?",
+   "code": "x = 5\nx += 3\nx *= 2\nx -= 1\nprint(x)",
+   "answer": "15",
+   "explanation": "Work step by step: 5 + 3 = 8, times 2 = 16, minus 1 = 15."
+  },
+  {
+   "id": "d335-01-out-06",
+   "objective": "D335.01",
+   "type": "output",
+   "difficulty": 1,
+   "prompt": "What does this program print?",
+   "code": "x = 12\nx += 4\nx *= 3\nx -= 1\nprint(x)",
+   "answer": "47",
+   "explanation": "Work step by step: 12 + 4 = 16, times 3 = 48, minus 1 = 47."
+  },
+  {
+   "id": "d335-01-out-07",
+   "objective": "D335.01",
+   "type": "output",
+   "difficulty": 1,
+   "prompt": "What does this program print?",
+   "code": "x = 1\nx += 9\nx *= 10\nx -= 1\nprint(x)",
+   "answer": "99",
+   "explanation": "Work step by step: 1 + 9 = 10, times 10 = 100, minus 1 = 99."
+  },
+  {
+   "id": "d335-01-out-08",
+   "objective": "D335.01",
+   "type": "output",
+   "difficulty": 2,
+   "prompt": "What does this program print?",
+   "code": "print(10 - 4 - 3)",
+   "answer": "3",
+   "explanation": "Apply precedence: parentheses, then `**`, then `* / // %` left to right, then `+ -` left to right. `10 - 4 - 3` evaluates to 3. (Remember `/` always produces a float.)"
+  },
+  {
+   "id": "d335-01-out-09",
+   "objective": "D335.01",
+   "type": "output",
+   "difficulty": 2,
+   "prompt": "What does this program print?",
+   "code": "print((10 - 4) * 2 ** 2)",
+   "answer": "24",
+   "explanation": "Apply precedence: parentheses, then `**`, then `* / // %` left to right, then `+ -` left to right. `(10 - 4) * 2 ** 2` evaluates to 24. (Remember `/` always produces a float.)"
+  },
+  {
+   "id": "d335-01-out-10",
+   "objective": "D335.01",
+   "type": "output",
+   "difficulty": 2,
+   "prompt": "What does this program print?",
+   "code": "print(18 / 3 * 2)",
+   "answer": "12.0",
+   "explanation": "Apply precedence: parentheses, then `**`, then `* / // %` left to right, then `+ -` left to right. `18 / 3 * 2` evaluates to 12.0. (Remember `/` always produces a float.)"
+  },
+  {
+   "id": "d335-01-out-11",
+   "objective": "D335.01",
+   "type": "output",
+   "difficulty": 2,
+   "prompt": "What does this program print?",
+   "code": "print(7 + 8 // 3 % 2)",
+   "answer": "7",
+   "explanation": "Apply precedence: parentheses, then `**`, then `* / // %` left to right, then `+ -` left to right. `7 + 8 // 3 % 2` evaluates to 7. (Remember `/` always produces a float.)"
+  },
+  {
+   "id": "d335-01-out-12",
+   "objective": "D335.01",
+   "type": "output",
+   "difficulty": 2,
+   "prompt": "What does this program print?",
+   "code": "a = 3\nb = a\na = a + 4\nprint(a, b)",
+   "answer": "7 3",
+   "explanation": "`b = a` copies the current value 3 into b. Changing `a` afterwards does not affect b, so the output is 7 3."
+  },
+  {
+   "id": "d335-01-out-13",
+   "objective": "D335.01",
+   "type": "output",
+   "difficulty": 2,
+   "prompt": "What does this program print?",
+   "code": "price = 19.99\nqty = 3\ntotal = price * qty\nprint(round(total, 2))",
+   "answer": "59.97",
+   "explanation": "19.99 * 3 is 59.97 (with tiny floating-point noise that round(..., 2) removes). Output: 59.97."
+  },
+  {
+   "id": "d335-01-out-14",
+   "objective": "D335.01",
+   "type": "output",
+   "difficulty": 3,
+   "prompt": "What does this program print?",
+   "code": "n = 7\nn = n ** 2 % 10\nprint(n)",
+   "answer": "9",
+   "explanation": "`**` runs first: 7 ** 2 = 49, then 49 % 10 = 9. Output: 9."
+  },
+  {
+   "id": "d335-01-bug-01",
+   "objective": "D335.01",
+   "type": "bug",
+   "difficulty": 1,
+   "prompt": "This program should print the average of three scores (85.0). Click the buggy line.",
+   "code": "s1 = 80\ns2 = 85\ns3 = 90\navg = s1 + s2 + s3 / 3\nprint(avg)",
+   "answer": 4,
+   "fix": "avg = (s1 + s2 + s3) / 3",
+   "expected": "85.0",
+   "actual": "195.0",
+   "explanation": "Division binds tighter than addition, so only s3 was divided by 3. Parentheses force the sum to be computed first."
+  },
+  {
+   "id": "d335-01-bug-02",
+   "objective": "D335.01",
+   "type": "bug",
+   "difficulty": 2,
+   "prompt": "This should convert 100 minutes to hours and minutes and print `1 40`. Click the buggy line.",
+   "code": "total = 100\nhours = total / 60\nminutes = total % 60\nprint(hours, minutes)",
+   "answer": 2,
+   "fix": "hours = total // 60",
+   "expected": "1 40",
+   "actual": "1.6666666666666667 40",
+   "explanation": "`/` gives 1.6666…, not a whole number of hours. Floor division `//` gives the whole hours (1)."
+  },
+  {
+   "id": "d335-01-bug-03",
+   "objective": "D335.01",
+   "type": "bug",
+   "difficulty": 2,
+   "prompt": "This should double the counter and print 10. Click the buggy line.",
+   "code": "counter = 5\ncounter =* 2\nprint(counter)",
+   "answer": 2,
+   "fix": "counter *= 2",
+   "expected": "10",
+   "actual": "SyntaxError",
+   "explanation": "The augmented operator is `*=`. Written as `=*` Python reads `counter = *2`, which is a syntax error."
+  },
+  {
+   "id": "d335-01-code-01",
+   "objective": "D335.01",
+   "type": "code",
+   "difficulty": 1,
+   "prompt": "Read an integer number of seconds and print it as minutes and seconds separated by a space. Example: input `125` prints `2 5`.",
+   "starter": "# Write your program here\n",
+   "tests": [
+    {
+     "stdin": "125",
+     "expected": "2 5",
+     "hidden": false
+    },
+    {
+     "stdin": "59",
+     "expected": "0 59",
+     "hidden": false
+    },
+    {
+     "stdin": "3600",
+     "expected": "60 0",
+     "hidden": true
+    },
+    {
+     "stdin": "61",
+     "expected": "1 1",
+     "hidden": true
+    }
+   ],
+   "solution": "s = int(input())\nprint(s // 60, s % 60)",
+   "explanation": "Floor division by 60 gives whole minutes and `% 60` gives the leftover seconds."
+  },
+  {
+   "id": "d335-01-code-02",
+   "objective": "D335.01",
+   "type": "code",
+   "difficulty": 2,
+   "prompt": "Read the radius of a circle (a float) and print its area rounded to 2 decimal places. Use 3.14159 for pi. Example: `2` prints `12.57`.",
+   "starter": "# Write your program here\n",
+   "tests": [
+    {
+     "stdin": "2",
+     "expected": "12.57",
+     "hidden": false
+    },
+    {
+     "stdin": "1",
+     "expected": "3.14",
+     "hidden": false
+    },
+    {
+     "stdin": "10.5",
+     "expected": "346.36",
+     "hidden": true
+    },
+    {
+     "stdin": "0.3",
+     "expected": "0.28",
+     "hidden": true
+    }
+   ],
+   "solution": "r = float(input())\nprint(round(3.14159 * r ** 2, 2))",
+   "explanation": "Area is pi times r squared: `3.14159 * r ** 2`. `round(value, 2)` keeps two decimal places."
+  },
+  {
+   "id": "d335-01-code-03",
+   "objective": "D335.01",
+   "type": "code",
+   "difficulty": 2,
+   "prompt": "Read two integers on separate lines, a and b. Print their sum, difference (a - b) and product on one line separated by spaces. Example: `7` and `3` print `10 4 21`.",
+   "starter": "# Write your program here\n",
+   "tests": [
+    {
+     "stdin": "7\n3",
+     "expected": "10 4 21",
+     "hidden": false
+    },
+    {
+     "stdin": "2\n9",
+     "expected": "11 -7 18",
+     "hidden": false
+    },
+    {
+     "stdin": "-4\n-6",
+     "expected": "-10 2 24",
+     "hidden": true
+    },
+    {
+     "stdin": "0\n5",
+     "expected": "5 -5 0",
+     "hidden": true
+    }
+   ],
+   "solution": "a = int(input())\nb = int(input())\nprint(a + b, a - b, a * b)",
+   "explanation": "Read each line with input(), convert with int(), and pass the three expressions to a single print()."
+  },
+  {
+   "id": "d335-02-mcq-01",
+   "objective": "D335.02",
+   "type": "mcq",
+   "difficulty": 1,
+   "prompt": "What type does `input()` always return?",
+   "choices": [
+    "It depends on what the user types",
+    "float",
+    "int",
+    "str"
+   ],
+   "answer": 3,
+   "explanation": "input() returns the typed text as a string, even if it looks like a number. Convert it with int() or float() before doing arithmetic."
+  },
+  {
+   "id": "d335-02-mcq-02",
+   "objective": "D335.02",
+   "type": "mcq",
+   "difficulty": 1,
+   "prompt": "If the user types `4`, what does `print(input() * 3)` show?",
+   "choices": [
+    "444",
+    "12",
+    "An error",
+    "4 4 4"
+   ],
+   "answer": 0,
+   "explanation": "The input is the string '4'. Multiplying a string by an int repeats it, giving '444'."
+  },
+  {
+   "id": "d335-02-mcq-03",
+   "objective": "D335.02",
+   "type": "mcq",
+   "difficulty": 1,
+   "prompt": "Which call raises a ValueError?",
+   "choices": [
+    "str(3.7)",
+    "int(3.7)",
+    "int('3.7')",
+    "float('3.7')"
+   ],
+   "answer": 2,
+   "explanation": "int() can convert a float value (truncating it) but it cannot parse a string that contains a decimal point. Use int(float('3.7')) for that."
+  },
+  {
+   "id": "d335-02-mcq-04",
+   "objective": "D335.02",
+   "type": "mcq",
+   "difficulty": 2,
+   "prompt": "What does `print('a', 'b', 'c', sep='-')` print?",
+   "choices": [
+    "abc",
+    "a-b-c-",
+    "a-b-c",
+    "a b c"
+   ],
+   "answer": 2,
+   "explanation": "`sep` replaces the default space placed between arguments."
+  },
+  {
+   "id": "d335-02-mcq-05",
+   "objective": "D335.02",
+   "type": "mcq",
+   "difficulty": 2,
+   "prompt": "What does `print('Hi', end='!')` followed by `print('There')` display?",
+   "choices": [
+    "Hi!There",
+    "Hi\n!There",
+    "Hi There!",
+    "Hi!\nThere"
+   ],
+   "answer": 0,
+   "explanation": "`end` replaces the newline normally printed after the arguments, so the next print continues on the same line."
+  },
+  {
+   "id": "d335-02-mcq-06",
+   "objective": "D335.02",
+   "type": "mcq",
+   "difficulty": 2,
+   "prompt": "Which f-string prints `3.14` when `pi = 3.14159`?",
+   "choices": [
+    "f'{pi:.2f}'",
+    "f'{round(pi)}'",
+    "f'{pi.2f}'",
+    "f'{pi:2}'"
+   ],
+   "answer": 0,
+   "explanation": "The format spec `.2f` means fixed-point with 2 digits after the decimal point."
+  },
+  {
+   "id": "d335-02-mcq-07",
+   "objective": "D335.02",
+   "type": "mcq",
+   "difficulty": 1,
+   "prompt": "What does `int(9.99)` return?",
+   "choices": [
+    "10",
+    "9",
+    "A ValueError",
+    "9.99"
+   ],
+   "answer": 1,
+   "explanation": "int() truncates toward zero when given a float; it does not round."
+  },
+  {
+   "id": "d335-02-mcq-08",
+   "objective": "D335.02",
+   "type": "mcq",
+   "difficulty": 2,
+   "prompt": "What does `str(5) + str(5)` evaluate to?",
+   "choices": [
+    "'10'",
+    "'5 5'",
+    "10",
+    "'55'"
+   ],
+   "answer": 3,
+   "explanation": "Both sides are strings, so + concatenates them."
+  },
+  {
+   "id": "d335-02-mcq-09",
+   "objective": "D335.02",
+   "type": "mcq",
+   "difficulty": 3,
+   "prompt": "What does `f'{7:03d}'` produce?",
+   "choices": [
+    "'7  '",
+    "'7.000'",
+    "'007'",
+    "'  7'"
+   ],
+   "answer": 2,
+   "explanation": "The spec `03d` pads the integer with zeros to a width of 3."
+  },
+  {
+   "id": "d335-02-mcq-10",
+   "objective": "D335.02",
+   "type": "mcq",
+   "difficulty": 2,
+   "prompt": "Which line correctly reads a whole number from the user into `n`?",
+   "choices": [
+    "n = int(input())",
+    "n = int.input()",
+    "n = input(int())",
+    "int(n) = input()"
+   ],
+   "answer": 0,
+   "explanation": "Call input() first to get the text, then wrap it in int() to convert it."
+  },
+  {
+   "id": "d335-02-mcq-11",
+   "objective": "D335.02",
+   "type": "mcq",
+   "difficulty": 3,
+   "prompt": "What does `f'{\"go\":>5}|'` produce?",
+   "choices": [
+    "' go  |'",
+    "'   go|'",
+    "'go   |'",
+    "'go|'"
+   ],
+   "answer": 1,
+   "explanation": "`>5` right-aligns the value in a field 5 characters wide, padding on the left with spaces."
+  },
+  {
+   "id": "d335-02-out-01",
+   "objective": "D335.02",
+   "type": "output",
+   "difficulty": 1,
+   "prompt": "What does this program print for the input shown?",
+   "code": "name = input()\nage = int(input())\nprint(f\"{name} will be {age + 1} next year\")",
+   "answer": "Ana will be 21 next year",
+   "explanation": "input() reads each line as text; int() converts the age so that +1 is arithmetic. The f-string inserts the values: Ana will be 21 next year.",
+   "stdin": "Ana\n20"
+  },
+  {
+   "id": "d335-02-out-02",
+   "objective": "D335.02",
+   "type": "output",
+   "difficulty": 1,
+   "prompt": "What does this program print for the input shown?",
+   "code": "name = input()\nage = int(input())\nprint(f\"{name} will be {age + 1} next year\")",
+   "answer": "Raj will be 35 next year",
+   "explanation": "input() reads each line as text; int() converts the age so that +1 is arithmetic. The f-string inserts the values: Raj will be 35 next year.",
+   "stdin": "Raj\n34"
+  },
+  {
+   "id": "d335-02-out-03",
+   "objective": "D335.02",
+   "type": "output",
+   "difficulty": 1,
+   "prompt": "What does this program print for the input shown?",
+   "code": "name = input()\nage = int(input())\nprint(f\"{name} will be {age + 1} next year\")",
+   "answer": "Lee will be 10 next year",
+   "explanation": "input() reads each line as text; int() converts the age so that +1 is arithmetic. The f-string inserts the values: Lee will be 10 next year.",
+   "stdin": "Lee\n9"
+  },
+  {
+   "id": "d335-02-out-04",
+   "objective": "D335.02",
+   "type": "output",
+   "difficulty": 2,
+   "prompt": "What does this program print for the input shown?",
+   "code": "x = float(input())\nprint(x * 2, int(x * 2))",
+   "answer": "5.0 5",
+   "explanation": "float() parses the text, multiplication keeps it a float, and int() truncates the decimal part. Output: 5.0 5.",
+   "stdin": "2.5"
+  },
+  {
+   "id": "d335-02-out-05",
+   "objective": "D335.02",
+   "type": "output",
+   "difficulty": 2,
+   "prompt": "What does this program print for the input shown?",
+   "code": "x = float(input())\nprint(x * 2, int(x * 2))",
+   "answer": "20.0 20",
+   "explanation": "float() parses the text, multiplication keeps it a float, and int() truncates the decimal part. Output: 20.0 20.",
+   "stdin": "10"
+  },
+  {
+   "id": "d335-02-out-06",
+   "objective": "D335.02",
+   "type": "output",
+   "difficulty": 2,
+   "prompt": "What does this program print for the input shown?",
+   "code": "x = float(input())\nprint(x * 2, int(x * 2))",
+   "answer": "0.25 0",
+   "explanation": "float() parses the text, multiplication keeps it a float, and int() truncates the decimal part. Output: 0.25 0.",
+   "stdin": "0.125"
+  },
+  {
+   "id": "d335-02-out-07",
+   "objective": "D335.02",
+   "type": "output",
+   "difficulty": 1,
+   "prompt": "What does this program print?",
+   "code": "print('A', 'B', sep='')\nprint('C', end=' ')\nprint('D')",
+   "answer": "AB\nC D",
+   "explanation": "`sep=''` removes the space between A and B; `end=' '` keeps D on the same line as C. Output: AB / C D."
+  },
+  {
+   "id": "d335-02-out-08",
+   "objective": "D335.02",
+   "type": "output",
+   "difficulty": 2,
+   "prompt": "What does this program print?",
+   "code": "total = 7\ncount = 2\nprint(f'avg={total / count:.1f}')",
+   "answer": "avg=3.5",
+   "explanation": "7 / 2 is 3.5 and `.1f` shows one decimal place: avg=3.5."
+  },
+  {
+   "id": "d335-02-out-09",
+   "objective": "D335.02",
+   "type": "output",
+   "difficulty": 2,
+   "prompt": "What does this program print?",
+   "code": "x = '12'\ny = 3\nprint(x * y)\nprint(int(x) * y)",
+   "answer": "121212\n36",
+   "explanation": "A string times an int repeats the string; after int() conversion it is ordinary multiplication. Output: 121212 / 36."
+  },
+  {
+   "id": "d335-02-out-10",
+   "objective": "D335.02",
+   "type": "output",
+   "difficulty": 3,
+   "prompt": "What does this program print?",
+   "code": "amount = 1234.5\nprint(f'${amount:,.2f}')",
+   "answer": "$1,234.50",
+   "explanation": "The `,` option adds thousands separators and `.2f` gives two decimals: $1,234.50."
+  },
+  {
+   "id": "d335-02-out-11",
+   "objective": "D335.02",
+   "type": "output",
+   "difficulty": 2,
+   "prompt": "What does this program print?",
+   "code": "n = int('  42 ')\nprint(n + 1)",
+   "answer": "43",
+   "explanation": "int() ignores surrounding whitespace, so '  42 ' becomes 42 and the result is 43."
+  },
+  {
+   "id": "d335-02-bug-01",
+   "objective": "D335.02",
+   "type": "bug",
+   "difficulty": 1,
+   "prompt": "This should read two numbers and print their sum. For input 3 and 4 it should print 7. Click the buggy line.",
+   "code": "a = input()\nb = int(input())\nprint(a + b)",
+   "answer": 1,
+   "fix": "a = int(input())",
+   "expected": "7",
+   "actual": "TypeError",
+   "explanation": "Line 1 leaves `a` as a string, so `a + b` tries to add a str and an int and raises a TypeError. Convert both inputs.",
+   "stdin": "3\n4"
+  },
+  {
+   "id": "d335-02-bug-02",
+   "objective": "D335.02",
+   "type": "bug",
+   "difficulty": 2,
+   "prompt": "This should print `Total: 12`. Click the buggy line.",
+   "code": "count = 12\nmessage = \"Total: \" + count\nprint(message)",
+   "answer": 2,
+   "fix": "message = \"Total: \" + str(count)",
+   "expected": "Total: 12",
+   "actual": "TypeError",
+   "explanation": "You cannot concatenate a str and an int. Convert with str() or use an f-string."
+  },
+  {
+   "id": "d335-02-bug-03",
+   "objective": "D335.02",
+   "type": "bug",
+   "difficulty": 2,
+   "prompt": "This should print the price with two decimals: `Price: 5.50`. Click the buggy line.",
+   "code": "price = 5.5\nprint(f\"Price: {price:.2}\")",
+   "answer": 2,
+   "fix": "print(f\"Price: {price:.2f}\")",
+   "expected": "Price: 5.50",
+   "actual": "Price: 5.5",
+   "explanation": "`.2` alone means 2 significant digits (giving 5.5). `.2f` means 2 digits after the decimal point."
+  },
+  {
+   "id": "d335-02-code-01",
+   "objective": "D335.02",
+   "type": "code",
+   "difficulty": 1,
+   "prompt": "Read a name and print `Hello, <name>!`. Example: `Sam` prints `Hello, Sam!`.",
+   "starter": "# Write your program here\n",
+   "tests": [
+    {
+     "stdin": "Sam",
+     "expected": "Hello, Sam!",
+     "hidden": false
+    },
+    {
+     "stdin": "Grace Hopper",
+     "expected": "Hello, Grace Hopper!",
+     "hidden": false
+    },
+    {
+     "stdin": "x",
+     "expected": "Hello, x!",
+     "hidden": true
+    }
+   ],
+   "solution": "name = input()\nprint(f\"Hello, {name}!\")",
+   "explanation": "An f-string (or concatenation) builds the greeting from the input text."
+  },
+  {
+   "id": "d335-02-code-02",
+   "objective": "D335.02",
+   "type": "code",
+   "difficulty": 2,
+   "prompt": "Read a temperature in Fahrenheit (may be a decimal) and print it in Celsius with exactly 1 decimal place. Formula: (F - 32) * 5 / 9. Example: `212` prints `100.0`.",
+   "starter": "# Write your program here\n",
+   "tests": [
+    {
+     "stdin": "212",
+     "expected": "100.0",
+     "hidden": false
+    },
+    {
+     "stdin": "32",
+     "expected": "0.0",
+     "hidden": false
+    },
+    {
+     "stdin": "98.6",
+     "expected": "37.0",
+     "hidden": true
+    },
+    {
+     "stdin": "-40",
+     "expected": "-40.0",
+     "hidden": true
+    },
+    {
+     "stdin": "0",
+     "expected": "-17.8",
+     "hidden": true
+    }
+   ],
+   "solution": "f = float(input())\nc = (f - 32) * 5 / 9\nprint(f\"{c:.1f}\")",
+   "explanation": "Convert with float(), apply the formula with parentheses, and format with `:.1f`."
+  },
+  {
+   "id": "d335-02-code-03",
+   "objective": "D335.02",
+   "type": "code",
+   "difficulty": 2,
+   "prompt": "Read an item name, a quantity (int) and a unit price (float), one per line. Print `<qty> x <name> = $<total>` with the total to 2 decimals. Example: `pen`, `3`, `1.25` prints `3 x pen = $3.75`.",
+   "starter": "# Write your program here\n",
+   "tests": [
+    {
+     "stdin": "pen\n3\n1.25",
+     "expected": "3 x pen = $3.75",
+     "hidden": false
+    },
+    {
+     "stdin": "notebook\n2\n4.5",
+     "expected": "2 x notebook = $9.00",
+     "hidden": false
+    },
+    {
+     "stdin": "eraser\n10\n0.3",
+     "expected": "10 x eraser = $3.00",
+     "hidden": true
+    }
+   ],
+   "solution": "name = input()\nqty = int(input())\nprice = float(input())\nprint(f\"{qty} x {name} = ${qty * price:.2f}\")",
+   "explanation": "Convert each input to the right type, multiply, then format the money with `.2f`."
+  },
+  {
+   "id": "d335-03-mcq-01",
+   "objective": "D335.03",
+   "type": "mcq",
+   "difficulty": 1,
+   "prompt": "What is the value of `not (3 > 2)`?",
+   "choices": [
+    "3",
+    "False",
+    "None",
+    "True"
+   ],
+   "answer": 1,
+   "explanation": "3 > 2 is True and `not` flips it to False."
+  },
+  {
+   "id": "d335-03-mcq-02",
+   "objective": "D335.03",
+   "type": "mcq",
+   "difficulty": 1,
+   "prompt": "Which keyword starts an alternative condition checked only if the earlier `if` was false?",
+   "choices": [
+    "else if",
+    "elseif",
+    "elif",
+    "or if"
+   ],
+   "answer": 2,
+   "explanation": "Python spells it `elif`. `else if` would need a nested if inside an else block."
+  },
+  {
+   "id": "d335-03-mcq-03",
+   "objective": "D335.03",
+   "type": "mcq",
+   "difficulty": 2,
+   "prompt": "What is `True or False and False`?",
+   "choices": [
+    "None",
+    "True",
+    "False",
+    "A SyntaxError"
+   ],
+   "answer": 1,
+   "explanation": "`and` binds tighter than `or`, so this is True or (False and False) = True or False = True."
+  },
+  {
+   "id": "d335-03-mcq-04",
+   "objective": "D335.03",
+   "type": "mcq",
+   "difficulty": 2,
+   "prompt": "Which values are falsy in Python?",
+   "choices": [
+    "0, 'False', [0]",
+    "' ', 0.0, [None]",
+    "Only False",
+    "0, '', [], None"
+   ],
+   "answer": 3,
+   "explanation": "Zero numbers, empty containers/strings and None are falsy. A string with a space or a list containing one element is truthy."
+  },
+  {
+   "id": "d335-03-mcq-05",
+   "objective": "D335.03",
+   "type": "mcq",
+   "difficulty": 2,
+   "prompt": "What does `1 < x < 10` mean in Python?",
+   "choices": [
+    "x is between 1 and 10 inclusive",
+    "x is greater than 1 and less than 10",
+    "A syntax error",
+    "(1 < x) is compared to 10"
+   ],
+   "answer": 1,
+   "explanation": "Python chains comparisons: `1 < x < 10` is the same as `1 < x and x < 10`."
+  },
+  {
+   "id": "d335-03-mcq-06",
+   "objective": "D335.03",
+   "type": "mcq",
+   "difficulty": 1,
+   "prompt": "Which operator tests equality?",
+   "choices": [
+    "is equal",
+    "===",
+    "==",
+    "="
+   ],
+   "answer": 2,
+   "explanation": "`==` compares values; a single `=` is assignment. Python has no `===`."
+  },
+  {
+   "id": "d335-03-mcq-07",
+   "objective": "D335.03",
+   "type": "mcq",
+   "difficulty": 2,
+   "prompt": "With `x = 15`, which branch runs?\n\nif x > 10: A\nelif x > 5: B\nelse: C",
+   "choices": [
+    "A and B",
+    "B only",
+    "C only",
+    "A only"
+   ],
+   "answer": 3,
+   "explanation": "An if/elif/else chain runs only the first branch whose condition is true and skips the rest."
+  },
+  {
+   "id": "d335-03-mcq-08",
+   "objective": "D335.03",
+   "type": "mcq",
+   "difficulty": 3,
+   "prompt": "What is printed by `print(5 and 0, 0 or 'x')`?",
+   "choices": [
+    "False x",
+    "True True",
+    "5 0",
+    "0 x"
+   ],
+   "answer": 3,
+   "explanation": "`and` returns the first falsy operand (or the last one); `or` returns the first truthy operand. So 5 and 0 is 0, and 0 or 'x' is 'x'."
+  },
+  {
+   "id": "d335-03-mcq-09",
+   "objective": "D335.03",
+   "type": "mcq",
+   "difficulty": 2,
+   "prompt": "Which condition is True when `n` is an even number?",
+   "choices": [
+    "n % 2 == 1",
+    "n % 2 == 0",
+    "n / 2 == 0",
+    "n // 2 == 1"
+   ],
+   "answer": 1,
+   "explanation": "An even number leaves remainder 0 when divided by 2."
+  },
+  {
+   "id": "d335-03-mcq-10",
+   "objective": "D335.03",
+   "type": "mcq",
+   "difficulty": 2,
+   "prompt": "What does `'apple' < 'banana'` evaluate to?",
+   "choices": [
+    "None",
+    "False",
+    "TypeError",
+    "True"
+   ],
+   "answer": 3,
+   "explanation": "Strings compare lexicographically by character code; 'a' comes before 'b'."
+  },
+  {
+   "id": "d335-03-mcq-11",
+   "objective": "D335.03",
+   "type": "mcq",
+   "difficulty": 3,
+   "prompt": "What is `bool('False')`?",
+   "choices": [
+    "True",
+    "None",
+    "ValueError",
+    "False"
+   ],
+   "answer": 0,
+   "explanation": "Any non-empty string is truthy, including the text 'False'."
+  },
+  {
+   "id": "d335-03-out-01",
+   "objective": "D335.03",
+   "type": "output",
+   "difficulty": 1,
+   "prompt": "What does this program print?",
+   "code": "score = 95\nif score >= 90:\n    grade = \"A\"\nelif score >= 80:\n    grade = \"B\"\nelif score >= 70:\n    grade = \"C\"\nelse:\n    grade = \"F\"\nprint(grade)",
+   "answer": "A",
+   "explanation": "The chain checks conditions top to bottom and stops at the first true one. For 95 the result is A."
+  },
+  {
+   "id": "d335-03-out-02",
+   "objective": "D335.03",
+   "type": "output",
+   "difficulty": 1,
+   "prompt": "What does this program print?",
+   "code": "score = 82\nif score >= 90:\n    grade = \"A\"\nelif score >= 80:\n    grade = \"B\"\nelif score >= 70:\n    grade = \"C\"\nelse:\n    grade = \"F\"\nprint(grade)",
+   "answer": "B",
+   "explanation": "The chain checks conditions top to bottom and stops at the first true one. For 82 the result is B."
+  },
+  {
+   "id": "d335-03-out-03",
+   "objective": "D335.03",
+   "type": "output",
+   "difficulty": 1,
+   "prompt": "What does this program print?",
+   "code": "score = 71\nif score >= 90:\n    grade = \"A\"\nelif score >= 80:\n    grade = \"B\"\nelif score >= 70:\n    grade = \"C\"\nelse:\n    grade = \"F\"\nprint(grade)",
+   "answer": "C",
+   "explanation": "The chain checks conditions top to bottom and stops at the first true one. For 71 the result is C."
+  },
+  {
+   "id": "d335-03-out-04",
+   "objective": "D335.03",
+   "type": "output",
+   "difficulty": 1,
+   "prompt": "What does this program print?",
+   "code": "score = 40\nif score >= 90:\n    grade = \"A\"\nelif score >= 80:\n    grade = \"B\"\nelif score >= 70:\n    grade = \"C\"\nelse:\n    grade = \"F\"\nprint(grade)",
+   "answer": "F",
+   "explanation": "The chain checks conditions top to bottom and stops at the first true one. For 40 the result is F."
+  },
+  {
+   "id": "d335-03-out-05",
+   "objective": "D335.03",
+   "type": "output",
+   "difficulty": 2,
+   "prompt": "What does this program print?",
+   "code": "temp = 15\nif temp > 20:\n    print(\"warm\")\nif temp > 30:\n    print(\"hot\")\nelse:\n    print(\"ok\")",
+   "answer": "ok",
+   "explanation": "These are two separate if statements, so both are evaluated; the else belongs only to the second. Output: ok."
+  },
+  {
+   "id": "d335-03-out-06",
+   "objective": "D335.03",
+   "type": "output",
+   "difficulty": 2,
+   "prompt": "What does this program print?",
+   "code": "temp = 25\nif temp > 20:\n    print(\"warm\")\nif temp > 30:\n    print(\"hot\")\nelse:\n    print(\"ok\")",
+   "answer": "warm\nok",
+   "explanation": "These are two separate if statements, so both are evaluated; the else belongs only to the second. Output: warm / ok."
+  },
+  {
+   "id": "d335-03-out-07",
+   "objective": "D335.03",
+   "type": "output",
+   "difficulty": 2,
+   "prompt": "What does this program print?",
+   "code": "temp = 35\nif temp > 20:\n    print(\"warm\")\nif temp > 30:\n    print(\"hot\")\nelse:\n    print(\"ok\")",
+   "answer": "warm\nhot",
+   "explanation": "These are two separate if statements, so both are evaluated; the else belongs only to the second. Output: warm / hot."
+  },
+  {
+   "id": "d335-03-out-08",
+   "objective": "D335.03",
+   "type": "output",
+   "difficulty": 2,
+   "prompt": "What does this program print?",
+   "code": "a = 4\nb = 9\nif a > 5 or b > 5 and a == 4:\n    print(\"yes\")\nelse:\n    print(\"no\")",
+   "answer": "yes",
+   "explanation": "`and` is evaluated before `or`: a > 5 is False, but (b > 5 and a == 4) is True, so the whole condition is True: yes."
+  },
+  {
+   "id": "d335-03-out-09",
+   "objective": "D335.03",
+   "type": "output",
+   "difficulty": 2,
+   "prompt": "What does this program print?",
+   "code": "items = []\nif items:\n    print(\"has items\")\nelse:\n    print(\"empty\")",
+   "answer": "empty",
+   "explanation": "An empty list is falsy, so the else branch runs: empty."
+  },
+  {
+   "id": "d335-03-out-10",
+   "objective": "D335.03",
+   "type": "output",
+   "difficulty": 3,
+   "prompt": "What does this program print?",
+   "code": "x = 7\nprint(x > 5 and x < 10, not x == 7, x != 8)",
+   "answer": "True False True",
+   "explanation": "Each expression is evaluated independently: True, False (because x == 7 is True), True. Output: True False True."
+  },
+  {
+   "id": "d335-03-out-11",
+   "objective": "D335.03",
+   "type": "output",
+   "difficulty": 2,
+   "prompt": "What does this program print?",
+   "code": "year = 2024\nleap = year % 4 == 0 and (year % 100 != 0 or year % 400 == 0)\nprint(leap)",
+   "answer": "True",
+   "explanation": "2024 is divisible by 4 and not by 100, so it is a leap year: True."
+  },
+  {
+   "id": "d335-03-bug-01",
+   "objective": "D335.03",
+   "type": "bug",
+   "difficulty": 1,
+   "prompt": "This should print `adult` for ages 18 and up. With age 18 it prints `minor`. Click the buggy line.",
+   "code": "age = 18\nif age > 18:\n    print(\"adult\")\nelse:\n    print(\"minor\")",
+   "answer": 2,
+   "fix": "if age >= 18:",
+   "expected": "adult",
+   "actual": "minor",
+   "explanation": "`>` excludes 18 itself. Use `>=` to include the boundary."
+  },
+  {
+   "id": "d335-03-bug-02",
+   "objective": "D335.03",
+   "type": "bug",
+   "difficulty": 2,
+   "prompt": "For a score of 95 this should print only `A`, but it prints two grades. Click the buggy line.",
+   "code": "score = 95\nif score >= 90:\n    print(\"A\")\nif score >= 80:\n    print(\"B\")\nelse:\n    print(\"C\")",
+   "answer": 4,
+   "fix": "elif score >= 80:",
+   "expected": "A",
+   "actual": "A\nB",
+   "explanation": "Line 4 starts a brand-new if statement, so it is checked even after the A branch ran. Making it `elif` joins it to the same chain, so only the first matching branch runs."
+  },
+  {
+   "id": "d335-03-bug-03",
+   "objective": "D335.03",
+   "type": "bug",
+   "difficulty": 2,
+   "prompt": "This should print `weekend` when day is \"Sat\". It prints weekend for every day. Click the buggy line.",
+   "code": "day = \"Mon\"\nif day == \"Sat\" or \"Sun\":\n    print(\"weekend\")\nelse:\n    print(\"weekday\")",
+   "answer": 2,
+   "fix": "if day == \"Sat\" or day == \"Sun\":",
+   "expected": "weekday",
+   "actual": "weekend",
+   "explanation": "`\"Sun\"` on its own is a non-empty string, which is always truthy. Each comparison needs its own `day ==`, or use `day in (\"Sat\", \"Sun\")`."
+  },
+  {
+   "id": "d335-03-code-01",
+   "objective": "D335.03",
+   "type": "code",
+   "difficulty": 1,
+   "prompt": "Read an integer and print `even` or `odd`.",
+   "starter": "# Write your program here\n",
+   "tests": [
+    {
+     "stdin": "4",
+     "expected": "even",
+     "hidden": false
+    },
+    {
+     "stdin": "7",
+     "expected": "odd",
+     "hidden": false
+    },
+    {
+     "stdin": "0",
+     "expected": "even",
+     "hidden": true
+    },
+    {
+     "stdin": "-3",
+     "expected": "odd",
+     "hidden": true
+    }
+   ],
+   "solution": "n = int(input())\nprint(\"even\" if n % 2 == 0 else \"odd\")",
+   "explanation": "Use `n % 2 == 0` to test for even numbers."
+  },
+  {
+   "id": "d335-03-code-02",
+   "objective": "D335.03",
+   "type": "code",
+   "difficulty": 2,
+   "prompt": "Read a whole-number score (0-100) and print the letter grade: 90+ A, 80+ B, 70+ C, 60+ D, otherwise F.",
+   "starter": "# Write your program here\n",
+   "tests": [
+    {
+     "stdin": "95",
+     "expected": "A",
+     "hidden": false
+    },
+    {
+     "stdin": "80",
+     "expected": "B",
+     "hidden": false
+    },
+    {
+     "stdin": "79",
+     "expected": "C",
+     "hidden": true
+    },
+    {
+     "stdin": "60",
+     "expected": "D",
+     "hidden": true
+    },
+    {
+     "stdin": "12",
+     "expected": "F",
+     "hidden": true
+    },
+    {
+     "stdin": "100",
+     "expected": "A",
+     "hidden": true
+    }
+   ],
+   "solution": "s = int(input())\nif s >= 90:\n    print(\"A\")\nelif s >= 80:\n    print(\"B\")\nelif s >= 70:\n    print(\"C\")\nelif s >= 60:\n    print(\"D\")\nelse:\n    print(\"F\")",
+   "explanation": "Check thresholds from highest to lowest with if/elif so the first match wins."
+  },
+  {
+   "id": "d335-03-code-03",
+   "objective": "D335.03",
+   "type": "code",
+   "difficulty": 2,
+   "prompt": "Read three integers (one per line) and print the largest without using max().",
+   "starter": "# Write your program here\n",
+   "tests": [
+    {
+     "stdin": "1\n2\n3",
+     "expected": "3",
+     "hidden": false
+    },
+    {
+     "stdin": "9\n4\n7",
+     "expected": "9",
+     "hidden": false
+    },
+    {
+     "stdin": "-5\n-2\n-9",
+     "expected": "-2",
+     "hidden": true
+    },
+    {
+     "stdin": "6\n6\n1",
+     "expected": "6",
+     "hidden": true
+    }
+   ],
+   "solution": "a = int(input())\nb = int(input())\nc = int(input())\nbig = a\nif b > big:\n    big = b\nif c > big:\n    big = c\nprint(big)",
+   "explanation": "Keep the best value so far and replace it whenever you see a bigger one."
+  },
+  {
+   "id": "d335-03-code-04",
+   "objective": "D335.03",
+   "type": "code",
+   "difficulty": 3,
+   "prompt": "Read a year and print `leap` if it is a leap year, otherwise `common`. Leap years are divisible by 4, except century years, which must be divisible by 400.",
+   "starter": "# Write your program here\n",
+   "tests": [
+    {
+     "stdin": "2024",
+     "expected": "leap",
+     "hidden": false
+    },
+    {
+     "stdin": "2023",
+     "expected": "common",
+     "hidden": false
+    },
+    {
+     "stdin": "1900",
+     "expected": "common",
+     "hidden": true
+    },
+    {
+     "stdin": "2000",
+     "expected": "leap",
+     "hidden": true
+    },
+    {
+     "stdin": "2100",
+     "expected": "common",
+     "hidden": true
+    }
+   ],
+   "solution": "y = int(input())\nif y % 400 == 0 or (y % 4 == 0 and y % 100 != 0):\n    print(\"leap\")\nelse:\n    print(\"common\")",
+   "explanation": "Combine the rules with and/or and parentheses: divisible by 400, or by 4 but not by 100."
+  },
+  {
+   "id": "d335-04-mcq-01",
+   "objective": "D335.04",
+   "type": "mcq",
+   "difficulty": 1,
+   "prompt": "What values does `range(2, 8, 2)` produce?",
+   "choices": [
+    "2, 4, 6, 8",
+    "4, 6, 8",
+    "2, 4, 6",
+    "2, 8"
+   ],
+   "answer": 2,
+   "explanation": "range(start, stop, step) stops before `stop`, so 8 is excluded."
+  },
+  {
+   "id": "d335-04-mcq-02",
+   "objective": "D335.04",
+   "type": "mcq",
+   "difficulty": 1,
+   "prompt": "How many times does `for i in range(5):` run its body?",
+   "choices": [
+    "4",
+    "5",
+    "It depends on i",
+    "6"
+   ],
+   "answer": 1,
+   "explanation": "range(5) yields 0, 1, 2, 3, 4: five values."
+  },
+  {
+   "id": "d335-04-mcq-03",
+   "objective": "D335.04",
+   "type": "mcq",
+   "difficulty": 1,
+   "prompt": "Which statement immediately exits the nearest enclosing loop?",
+   "choices": [
+    "break",
+    "pass",
+    "continue",
+    "return"
+   ],
+   "answer": 0,
+   "explanation": "`break` leaves the loop. `continue` skips to the next iteration, `pass` does nothing, and `return` leaves the whole function."
+  },
+  {
+   "id": "d335-04-mcq-04",
+   "objective": "D335.04",
+   "type": "mcq",
+   "difficulty": 2,
+   "prompt": "What does `continue` do inside a loop?",
+   "choices": [
+    "Ends the loop",
+    "Does nothing",
+    "Restarts the loop from the first item",
+    "Skips the rest of the current iteration and moves to the next one"
+   ],
+   "answer": 3,
+   "explanation": "continue jumps back to the loop header to fetch the next item (or re-test the while condition)."
+  },
+  {
+   "id": "d335-04-mcq-05",
+   "objective": "D335.04",
+   "type": "mcq",
+   "difficulty": 2,
+   "prompt": "What is printed by `for i in range(3, 0, -1): print(i, end=' ')`?",
+   "choices": [
+    "1 2 3",
+    "0 1 2 3",
+    "3 2 1 0",
+    "3 2 1"
+   ],
+   "answer": 3,
+   "explanation": "With a negative step range counts down and still stops before 0."
+  },
+  {
+   "id": "d335-04-mcq-06",
+   "objective": "D335.04",
+   "type": "mcq",
+   "difficulty": 2,
+   "prompt": "Which loop is the best fit when you don't know in advance how many repetitions you need (e.g. keep asking until valid input)?",
+   "choices": [
+    "while",
+    "if",
+    "a list comprehension",
+    "for over range()"
+   ],
+   "answer": 0,
+   "explanation": "A while loop repeats as long as a condition holds, which suits 'repeat until something happens'."
+  },
+  {
+   "id": "d335-04-mcq-07",
+   "objective": "D335.04",
+   "type": "mcq",
+   "difficulty": 2,
+   "prompt": "What happens with `i = 0` then `while i < 3: print(i)` (nothing else in the body)?",
+   "choices": [
+    "It loops forever printing 0",
+    "SyntaxError",
+    "It prints nothing",
+    "It prints 0 1 2"
+   ],
+   "answer": 0,
+   "explanation": "i never changes, so `i < 3` stays True forever. Update the loop variable inside the body."
+  },
+  {
+   "id": "d335-04-mcq-08",
+   "objective": "D335.04",
+   "type": "mcq",
+   "difficulty": 3,
+   "prompt": "When does the `else` block of a `for` loop run?",
+   "choices": [
+    "Only if the loop body never runs",
+    "After every iteration",
+    "When the loop finishes without hitting break",
+    "Only after a break"
+   ],
+   "answer": 2,
+   "explanation": "A loop's else runs when the loop ends normally; a break skips it. It is handy for 'search and report not found'."
+  },
+  {
+   "id": "d335-04-mcq-09",
+   "objective": "D335.04",
+   "type": "mcq",
+   "difficulty": 2,
+   "prompt": "How many lines does this print?\n\nfor r in range(3):\n    for c in range(4):\n        print(r, c)",
+   "choices": [
+    "3",
+    "12",
+    "4",
+    "7"
+   ],
+   "answer": 1,
+   "explanation": "The inner loop runs 4 times for each of the 3 outer iterations: 3 x 4 = 12."
+  },
+  {
+   "id": "d335-04-mcq-10",
+   "objective": "D335.04",
+   "type": "mcq",
+   "difficulty": 1,
+   "prompt": "What does `len(range(10, 20))` return?",
+   "choices": [
+    "9",
+    "10",
+    "11",
+    "20"
+   ],
+   "answer": 1,
+   "explanation": "range(10, 20) covers 10..19, which is 10 numbers."
+  },
+  {
+   "id": "d335-04-out-01",
+   "objective": "D335.04",
+   "type": "output",
+   "difficulty": 1,
+   "prompt": "What does this program print?",
+   "code": "total = 0\nfor i in range(1, 4 + 1):\n    total += i\nprint(total)",
+   "answer": "10",
+   "explanation": "The loop adds 1 through 4. The accumulator ends at 10."
+  },
+  {
+   "id": "d335-04-out-02",
+   "objective": "D335.04",
+   "type": "output",
+   "difficulty": 1,
+   "prompt": "What does this program print?",
+   "code": "total = 0\nfor i in range(1, 6 + 1):\n    total += i\nprint(total)",
+   "answer": "21",
+   "explanation": "The loop adds 1 through 6. The accumulator ends at 21."
+  },
+  {
+   "id": "d335-04-out-03",
+   "objective": "D335.04",
+   "type": "output",
+   "difficulty": 1,
+   "prompt": "What does this program print?",
+   "code": "total = 0\nfor i in range(1, 10 + 1):\n    total += i\nprint(total)",
+   "answer": "55",
+   "explanation": "The loop adds 1 through 10. The accumulator ends at 55."
+  },
+  {
+   "id": "d335-04-out-04",
+   "objective": "D335.04",
+   "type": "output",
+   "difficulty": 2,
+   "prompt": "What does this program print?",
+   "code": "n = 5\nsteps = 0\nwhile n != 1:\n    if n % 2 == 0:\n        n = n // 2\n    else:\n        n = 3 * n + 1\n    steps += 1\nprint(steps)",
+   "answer": "5",
+   "explanation": "Trace the while loop until n reaches 1, counting each pass. It takes 5 steps."
+  },
+  {
+   "id": "d335-04-out-05",
+   "objective": "D335.04",
+   "type": "output",
+   "difficulty": 2,
+   "prompt": "What does this program print?",
+   "code": "n = 12\nsteps = 0\nwhile n != 1:\n    if n % 2 == 0:\n        n = n // 2\n    else:\n        n = 3 * n + 1\n    steps += 1\nprint(steps)",
+   "answer": "9",
+   "explanation": "Trace the while loop until n reaches 1, counting each pass. It takes 9 steps."
+  },
+  {
+   "id": "d335-04-out-06",
+   "objective": "D335.04",
+   "type": "output",
+   "difficulty": 2,
+   "prompt": "What does this program print?",
+   "code": "for i in range(6):\n    if i == 4:\n        break\n    if i % 2 == 0:\n        continue\n    print(i)",
+   "answer": "1\n3",
+   "explanation": "Even values are skipped by continue, and the loop stops at 4 with break. Only odd numbers before 4 print: 1 / 3."
+  },
+  {
+   "id": "d335-04-out-07",
+   "objective": "D335.04",
+   "type": "output",
+   "difficulty": 2,
+   "prompt": "What does this program print?",
+   "code": "word = \"loop\"\ncount = 0\nfor ch in word:\n    if ch == \"o\":\n        count += 1\nprint(count)",
+   "answer": "2",
+   "explanation": "A for loop over a string visits each character; two of them are 'o': 2."
+  },
+  {
+   "id": "d335-04-out-08",
+   "objective": "D335.04",
+   "type": "output",
+   "difficulty": 2,
+   "prompt": "What does this program print?",
+   "code": "for i in range(1, 4):\n    print(\"*\" * i)",
+   "answer": "*\n**\n***",
+   "explanation": "Each iteration prints i stars, building a small triangle: * / ** / ***."
+  },
+  {
+   "id": "d335-04-out-09",
+   "objective": "D335.04",
+   "type": "output",
+   "difficulty": 3,
+   "prompt": "What does this program print?",
+   "code": "for n in [3, 8, 5]:\n    if n > 6:\n        print(\"found\", n)\n        break\nelse:\n    print(\"none\")\nprint(\"done\")",
+   "answer": "found 8\ndone",
+   "explanation": "The loop breaks when it finds 8, so the else block is skipped. Output: found 8 / done."
+  },
+  {
+   "id": "d335-04-out-10",
+   "objective": "D335.04",
+   "type": "output",
+   "difficulty": 3,
+   "prompt": "What does this program print?",
+   "code": "result = \"\"\nfor i in range(3):\n    for j in range(i):\n        result += str(j)\nprint(result)",
+   "answer": "001",
+   "explanation": "i=0 adds nothing, i=1 adds '0', i=2 adds '01'. The final string is 001."
+  },
+  {
+   "id": "d335-04-out-11",
+   "objective": "D335.04",
+   "type": "output",
+   "difficulty": 2,
+   "prompt": "What does this program print?",
+   "code": "x = 100\nwhile x > 10:\n    x = x // 3\nprint(x)",
+   "answer": "3",
+   "explanation": "100 -> 33 -> 11 -> 3; the loop stops once x is not greater than 10: 3."
+  },
+  {
+   "id": "d335-04-out-12",
+   "objective": "D335.04",
+   "type": "output",
+   "difficulty": 1,
+   "prompt": "What does this program print?",
+   "code": "for i in range(0, 10, 3):\n    print(i, end=\" \")\nprint()",
+   "answer": "0 3 6 9",
+   "explanation": "Counting from 0 in steps of 3 below 10: 0 3 6 9."
+  },
+  {
+   "id": "d335-04-bug-01",
+   "objective": "D335.04",
+   "type": "bug",
+   "difficulty": 1,
+   "prompt": "This should print the numbers 1 to 5. Click the buggy line.",
+   "code": "for i in range(1, 5):\n    print(i)",
+   "answer": 1,
+   "fix": "for i in range(1, 6):",
+   "expected": "1\n2\n3\n4\n5",
+   "actual": "1\n2\n3\n4",
+   "explanation": "range stops before its end value, so range(1, 5) only reaches 4. Use range(1, 6)."
+  },
+  {
+   "id": "d335-04-bug-02",
+   "objective": "D335.04",
+   "type": "bug",
+   "difficulty": 2,
+   "prompt": "This should sum the list and print 15. Click the buggy line.",
+   "code": "nums = [1, 2, 3, 4, 5]\ntotal = 0\nfor n in nums:\n    total = n\nprint(total)",
+   "answer": 4,
+   "fix": "    total += n",
+   "expected": "15",
+   "actual": "5",
+   "explanation": "`total = n` overwrites the accumulator each time, leaving the last item. Add to it with `+=`."
+  },
+  {
+   "id": "d335-04-bug-03",
+   "objective": "D335.04",
+   "type": "bug",
+   "difficulty": 2,
+   "prompt": "This countdown should print 3, 2, 1 and then `liftoff`. Click the buggy line.",
+   "code": "n = 3\nwhile n > 0:\n    print(n)\n    n += 1\n    if n > 10:\n        break\nprint(\"liftoff\")",
+   "answer": 4,
+   "fix": "    n -= 1",
+   "expected": "3\n2\n1\nliftoff",
+   "actual": "3\n4\n5\n6\n7\n8\n9\n10\nliftoff",
+   "explanation": "The counter moves the wrong way, so the loop never counts down (the break only stops it from running forever)."
+  },
+  {
+   "id": "d335-04-bug-04",
+   "objective": "D335.04",
+   "type": "bug",
+   "difficulty": 3,
+   "prompt": "This should print the index of the first negative number (2). Click the buggy line.",
+   "code": "data = [4, 7, -1, 3, -8]\npos = -1\nfor i in range(len(data)):\n    if data[i] < 0:\n        pos = i\nprint(pos)",
+   "answer": 5,
+   "fix": "        pos = i; break",
+   "expected": "2",
+   "actual": "4",
+   "explanation": "Without a break the loop keeps going and later negatives overwrite pos, giving the last index (4) instead of the first."
+  },
+  {
+   "id": "d335-04-code-01",
+   "objective": "D335.04",
+   "type": "code",
+   "difficulty": 1,
+   "prompt": "Read a positive integer n and print the numbers from 1 to n, one per line.",
+   "starter": "# Write your program here\n",
+   "tests": [
+    {
+     "stdin": "3",
+     "expected": "1\n2\n3",
+     "hidden": false
+    },
+    {
+     "stdin": "1",
+     "expected": "1",
+     "hidden": false
+    },
+    {
+     "stdin": "5",
+     "expected": "1\n2\n3\n4\n5",
+     "hidden": true
+    }
+   ],
+   "solution": "n = int(input())\nfor i in range(1, n + 1):\n    print(i)",
+   "explanation": "Use range(1, n + 1) because the stop value is excluded."
+  },
+  {
+   "id": "d335-04-code-02",
+   "objective": "D335.04",
+   "type": "code",
+   "difficulty": 2,
+   "prompt": "Read a positive integer n and print n factorial (1 x 2 x ... x n).",
+   "starter": "# Write your program here\n",
+   "tests": [
+    {
+     "stdin": "5",
+     "expected": "120",
+     "hidden": false
+    },
+    {
+     "stdin": "1",
+     "expected": "1",
+     "hidden": false
+    },
+    {
+     "stdin": "10",
+     "expected": "3628800",
+     "hidden": true
+    },
+    {
+     "stdin": "3",
+     "expected": "6",
+     "hidden": true
+    }
+   ],
+   "solution": "n = int(input())\nf = 1\nfor i in range(2, n + 1):\n    f *= i\nprint(f)",
+   "explanation": "Start an accumulator at 1 and multiply it by each number from 2 to n."
+  },
+  {
+   "id": "d335-04-code-03",
+   "objective": "D335.04",
+   "type": "code",
+   "difficulty": 2,
+   "prompt": "Read integers one per line until the user enters 0. Then print how many numbers were entered (not counting the 0) and their sum, separated by a space.",
+   "starter": "# Write your program here\n",
+   "tests": [
+    {
+     "stdin": "4\n5\n0",
+     "expected": "2 9",
+     "hidden": false
+    },
+    {
+     "stdin": "0",
+     "expected": "0 0",
+     "hidden": false
+    },
+    {
+     "stdin": "10\n-2\n7\n1\n0",
+     "expected": "4 16",
+     "hidden": true
+    }
+   ],
+   "solution": "count = 0\ntotal = 0\nwhile True:\n    n = int(input())\n    if n == 0:\n        break\n    count += 1\n    total += n\nprint(count, total)",
+   "explanation": "A `while True` loop with a break on the sentinel value (0) handles an unknown number of inputs."
+  },
+  {
+   "id": "d335-04-code-04",
+   "objective": "D335.04",
+   "type": "code",
+   "difficulty": 3,
+   "prompt": "Read a positive integer n and print a right triangle of numbers: line i contains the numbers 1..i separated by spaces. Example n=3:\n1\n1 2\n1 2 3",
+   "starter": "# Write your program here\n",
+   "tests": [
+    {
+     "stdin": "3",
+     "expected": "1\n1 2\n1 2 3",
+     "hidden": false
+    },
+    {
+     "stdin": "1",
+     "expected": "1",
+     "hidden": false
+    },
+    {
+     "stdin": "5",
+     "expected": "1\n1 2\n1 2 3\n1 2 3 4\n1 2 3 4 5",
+     "hidden": true
+    }
+   ],
+   "solution": "n = int(input())\nfor i in range(1, n + 1):\n    print(\" \".join(str(j) for j in range(1, i + 1)))",
+   "explanation": "An outer loop picks the row and an inner sequence builds the numbers for that row."
+  },
+  {
+   "id": "d335-04-code-05",
+   "objective": "D335.04",
+   "type": "code",
+   "difficulty": 3,
+   "prompt": "Read a positive integer and print the sum of its digits. Example: `4096` prints `19`.",
+   "starter": "# Write your program here\n",
+   "tests": [
+    {
+     "stdin": "4096",
+     "expected": "19",
+     "hidden": false
+    },
+    {
+     "stdin": "7",
+     "expected": "7",
+     "hidden": false
+    },
+    {
+     "stdin": "1111",
+     "expected": "4",
+     "hidden": true
+    },
+    {
+     "stdin": "98765",
+     "expected": "35",
+     "hidden": true
+    }
+   ],
+   "solution": "n = int(input())\ns = 0\nwhile n > 0:\n    s += n % 10\n    n //= 10\nprint(s)",
+   "explanation": "`n % 10` gives the last digit and `n //= 10` removes it; repeat until n is 0. (Looping over str(n) also works.)"
+  },
+  {
+   "id": "d335-05-mcq-01",
+   "objective": "D335.05",
+   "type": "mcq",
+   "difficulty": 1,
+   "prompt": "Which keyword defines a function?",
+   "choices": [
+    "def",
+    "define",
+    "fun",
+    "function"
+   ],
+   "answer": 0,
+   "explanation": "Functions are defined with `def name(parameters):` followed by an indented body."
+  },
+  {
+   "id": "d335-05-mcq-02",
+   "objective": "D335.05",
+   "type": "mcq",
+   "difficulty": 1,
+   "prompt": "What does a function return if it has no return statement?",
+   "choices": [
+    "An empty string",
+    "None",
+    "It raises an error",
+    "0"
+   ],
+   "answer": 1,
+   "explanation": "Falling off the end of a function returns None."
+  },
+  {
+   "id": "d335-05-mcq-03",
+   "objective": "D335.05",
+   "type": "mcq",
+   "difficulty": 2,
+   "prompt": "What is the difference between `print()` and `return` inside a function?",
+   "choices": [
+    "They are the same",
+    "print shows text on screen; return hands a value back to the caller",
+    "return shows text; print stores it",
+    "print ends the function"
+   ],
+   "answer": 1,
+   "explanation": "Printing does not give the caller a value to use. A function that only prints still returns None."
+  },
+  {
+   "id": "d335-05-mcq-04",
+   "objective": "D335.05",
+   "type": "mcq",
+   "difficulty": 2,
+   "prompt": "Given `def area(w, h=2): return w * h`, what is `area(5)`?",
+   "choices": [
+    "10",
+    "7",
+    "5",
+    "TypeError"
+   ],
+   "answer": 0,
+   "explanation": "h uses its default value 2 when it isn't passed, so 5 * 2 = 10."
+  },
+  {
+   "id": "d335-05-mcq-05",
+   "objective": "D335.05",
+   "type": "mcq",
+   "difficulty": 2,
+   "prompt": "Which call uses a keyword argument?",
+   "choices": [
+    "greet(name='Kai')",
+    "greet['name']",
+    "greet('Kai')",
+    "greet = 'Kai'"
+   ],
+   "answer": 0,
+   "explanation": "A keyword argument passes a value by parameter name: `name='Kai'`."
+  },
+  {
+   "id": "d335-05-mcq-06",
+   "objective": "D335.05",
+   "type": "mcq",
+   "difficulty": 2,
+   "prompt": "A variable assigned inside a function (without `global`) is...",
+   "choices": [
+    "a constant",
+    "local to that function",
+    "automatically returned",
+    "visible everywhere"
+   ],
+   "answer": 1,
+   "explanation": "Assignment inside a function creates a local variable that disappears when the function returns."
+  },
+  {
+   "id": "d335-05-mcq-07",
+   "objective": "D335.05",
+   "type": "mcq",
+   "difficulty": 3,
+   "prompt": "What does this print?\n\ndef f(x):\n    x = x + 1\nn = 5\nf(n)\nprint(n)",
+   "choices": [
+    "5",
+    "NameError",
+    "None",
+    "6"
+   ],
+   "answer": 0,
+   "explanation": "Rebinding the parameter x inside f does not change the caller's variable n."
+  },
+  {
+   "id": "d335-05-mcq-08",
+   "objective": "D335.05",
+   "type": "mcq",
+   "difficulty": 3,
+   "prompt": "What does this print?\n\ndef add(item, box=[]):\n    box.append(item)\n    return box\nadd(1)\nprint(add(2))",
+   "choices": [
+    "[1, 2]",
+    "[]",
+    "[1]",
+    "[2]"
+   ],
+   "answer": 0,
+   "explanation": "A default list is created once when the function is defined and is shared between calls. Use `box=None` and create a new list inside instead."
+  },
+  {
+   "id": "d335-05-mcq-09",
+   "objective": "D335.05",
+   "type": "mcq",
+   "difficulty": 2,
+   "prompt": "How can a function return two values?",
+   "choices": [
+    "return [a] [b]",
+    "return a; return b",
+    "It can't",
+    "return a, b  (a tuple)"
+   ],
+   "answer": 3,
+   "explanation": "`return a, b` packs both values into a tuple, which the caller can unpack: `x, y = f()`."
+  },
+  {
+   "id": "d335-05-mcq-10",
+   "objective": "D335.05",
+   "type": "mcq",
+   "difficulty": 1,
+   "prompt": "What are the names listed in a function definition's parentheses called?",
+   "choices": [
+    "parameters",
+    "arguments",
+    "returns",
+    "modules"
+   ],
+   "answer": 0,
+   "explanation": "Parameters are the names in the definition; arguments are the actual values passed in a call."
+  },
+  {
+   "id": "d335-05-out-01",
+   "objective": "D335.05",
+   "type": "output",
+   "difficulty": 1,
+   "prompt": "What does this program print?",
+   "code": "def combine(x, y):\n    return x * 2 + y\n\nprint(combine(3, 4))",
+   "answer": "10",
+   "explanation": "x gets 3 and y gets 4, so the function returns 3 * 2 + 4 = 10."
+  },
+  {
+   "id": "d335-05-out-02",
+   "objective": "D335.05",
+   "type": "output",
+   "difficulty": 1,
+   "prompt": "What does this program print?",
+   "code": "def combine(x, y):\n    return x * 2 + y\n\nprint(combine(10, 2))",
+   "answer": "22",
+   "explanation": "x gets 10 and y gets 2, so the function returns 10 * 2 + 2 = 22."
+  },
+  {
+   "id": "d335-05-out-03",
+   "objective": "D335.05",
+   "type": "output",
+   "difficulty": 1,
+   "prompt": "What does this program print?",
+   "code": "def combine(x, y):\n    return x * 2 + y\n\nprint(combine(7, 7))",
+   "answer": "21",
+   "explanation": "x gets 7 and y gets 7, so the function returns 7 * 2 + 7 = 21."
+  },
+  {
+   "id": "d335-05-out-04",
+   "objective": "D335.05",
+   "type": "output",
+   "difficulty": 2,
+   "prompt": "What does this program print?",
+   "code": "def show(n):\n    print(n * 2)\n\nresult = show(4)\nprint(result)",
+   "answer": "8\nNone",
+   "explanation": "show() prints 8 but returns nothing, so result is None. Output: 8 / None."
+  },
+  {
+   "id": "d335-05-out-05",
+   "objective": "D335.05",
+   "type": "output",
+   "difficulty": 2,
+   "prompt": "What does this program print?",
+   "code": "def power(base, exp=2):\n    return base ** exp\n\nprint(power(3), power(2, 5), power(exp=3, base=2))",
+   "answer": "9 32 8",
+   "explanation": "The default exp is 2; keyword arguments may come in any order. Output: 9 32 8."
+  },
+  {
+   "id": "d335-05-out-06",
+   "objective": "D335.05",
+   "type": "output",
+   "difficulty": 2,
+   "prompt": "What does this program print?",
+   "code": "count = 10\n\ndef bump():\n    count = 99\n    return count\n\nprint(bump(), count)",
+   "answer": "99 10",
+   "explanation": "Assigning count inside bump creates a local variable; the global count stays 10. Output: 99 10."
+  },
+  {
+   "id": "d335-05-out-07",
+   "objective": "D335.05",
+   "type": "output",
+   "difficulty": 2,
+   "prompt": "What does this program print?",
+   "code": "def min_max(values):\n    return min(values), max(values)\n\nlo, hi = min_max([4, 9, 1, 7])\nprint(hi - lo)",
+   "answer": "8",
+   "explanation": "The function returns a tuple (1, 9) that is unpacked into lo and hi; 9 - 1 = 8."
+  },
+  {
+   "id": "d335-05-out-08",
+   "objective": "D335.05",
+   "type": "output",
+   "difficulty": 3,
+   "prompt": "What does this program print?",
+   "code": "def first_even(nums):\n    for n in nums:\n        if n % 2 == 0:\n            return n\n    return -1\n\nprint(first_even([3, 5, 6, 8]), first_even([1, 3]))",
+   "answer": "6 -1",
+   "explanation": "return exits the function immediately at the first even number; if none is found the loop ends and -1 is returned. Output: 6 -1."
+  },
+  {
+   "id": "d335-05-out-09",
+   "objective": "D335.05",
+   "type": "output",
+   "difficulty": 3,
+   "prompt": "What does this program print?",
+   "code": "total = 0\n\ndef add(n):\n    global total\n    total += n\n\nadd(5)\nadd(7)\nprint(total)",
+   "answer": "12",
+   "explanation": "`global total` makes the assignment update the module-level variable: 12."
+  },
+  {
+   "id": "d335-05-out-10",
+   "objective": "D335.05",
+   "type": "output",
+   "difficulty": 2,
+   "prompt": "What does this program print?",
+   "code": "def describe(name, *, loud=False):\n    text = \"hi \" + name\n    return text.upper() if loud else text\n\nprint(describe(\"ada\"), describe(\"bo\", loud=True))",
+   "answer": "hi ada HI BO",
+   "explanation": "loud defaults to False; passing loud=True uppercases the text. Output: hi ada HI BO."
+  },
+  {
+   "id": "d335-05-bug-01",
+   "objective": "D335.05",
+   "type": "bug",
+   "difficulty": 1,
+   "prompt": "`square(4)` should give 16 and the program should print 16. Click the buggy line.",
+   "code": "def square(n):\n    print(n * n)\n\nresult = square(4) + 0\nprint(result)",
+   "answer": 2,
+   "fix": "    return n * n",
+   "expected": "16",
+   "actual": "TypeError",
+   "explanation": "The function prints instead of returning, so it returns None and `None + 0` raises a TypeError."
+  },
+  {
+   "id": "d335-05-bug-02",
+   "objective": "D335.05",
+   "type": "bug",
+   "difficulty": 2,
+   "prompt": "This should print 6.0, the average of the list. Click the buggy line.",
+   "code": "def average(nums):\n    total = sum(nums)\n    return total / len(nums)\n    print(\"done\")\n\nprint(averge([4, 6, 8]))",
+   "answer": 6,
+   "fix": "print(average([4, 6, 8]))",
+   "expected": "6.0",
+   "actual": "NameError",
+   "explanation": "The call misspells the function name, raising NameError. (The print after return is unreachable but harmless.)"
+  },
+  {
+   "id": "d335-05-bug-03",
+   "objective": "D335.05",
+   "type": "bug",
+   "difficulty": 3,
+   "prompt": "This should print `[1]` then `[2]`, each call starting with a fresh list. Click the buggy line.",
+   "code": "def collect(x, bucket=[]):\n    bucket.append(x)\n    return bucket\n\nprint(collect(1))\nprint(collect(2))",
+   "answer": 1,
+   "fix": "def collect(x, bucket=None):\n    bucket = [] if bucket is None else bucket",
+   "expected": "[1]\n[2]",
+   "actual": "[1]\n[1, 2]",
+   "explanation": "The default list is created once and shared across calls, so the second call prints [1, 2]. Default to None and create the list inside the function."
+  },
+  {
+   "id": "d335-05-bug-04",
+   "objective": "D335.05",
+   "type": "bug",
+   "difficulty": 2,
+   "prompt": "This should print 25. Click the buggy line.",
+   "code": "def area(width, height):\n    return width * height\n\nw = 5\nprint(area(w))",
+   "answer": 5,
+   "fix": "print(area(w, w))",
+   "expected": "25",
+   "actual": "TypeError",
+   "explanation": "area() requires two arguments; calling it with one raises a TypeError."
+  },
+  {
+   "id": "d335-05-code-01",
+   "objective": "D335.05",
+   "type": "code",
+   "difficulty": 1,
+   "prompt": "Write a function `double(n)` that returns n times 2. Then read an integer and print `double` of it.",
+   "starter": "def double(n):\n    # return n times 2\n    pass\n\nprint(double(int(input())))",
+   "tests": [
+    {
+     "stdin": "4",
+     "expected": "8",
+     "hidden": false
+    },
+    {
+     "stdin": "-3",
+     "expected": "-6",
+     "hidden": false
+    },
+    {
+     "stdin": "0",
+     "expected": "0",
+     "hidden": true
+    }
+   ],
+   "solution": "def double(n):\n    return n * 2\n\nprint(double(int(input())))",
+   "explanation": "Return the value rather than printing inside the function, then print the returned result."
+  },
+  {
+   "id": "d335-05-code-02",
+   "objective": "D335.05",
+   "type": "code",
+   "difficulty": 2,
+   "prompt": "Write `is_prime(n)` returning True when n is a prime number (n > 1 with no divisors other than 1 and itself). Read an integer and print the result.",
+   "starter": "def is_prime(n):\n    pass\n\nprint(is_prime(int(input())))",
+   "tests": [
+    {
+     "stdin": "7",
+     "expected": "True",
+     "hidden": false
+    },
+    {
+     "stdin": "1",
+     "expected": "False",
+     "hidden": false
+    },
+    {
+     "stdin": "15",
+     "expected": "False",
+     "hidden": true
+    },
+    {
+     "stdin": "2",
+     "expected": "True",
+     "hidden": true
+    },
+    {
+     "stdin": "97",
+     "expected": "True",
+     "hidden": true
+    }
+   ],
+   "solution": "def is_prime(n):\n    if n < 2:\n        return False\n    for d in range(2, int(n ** 0.5) + 1):\n        if n % d == 0:\n            return False\n    return True\n\nprint(is_prime(int(input())))",
+   "explanation": "Return False as soon as a divisor is found; checking up to the square root is enough."
+  },
+  {
+   "id": "d335-05-code-03",
+   "objective": "D335.05",
+   "type": "code",
+   "difficulty": 2,
+   "prompt": "Write `bmi(weight_kg, height_m)` that returns weight / height squared rounded to 1 decimal. Read the weight then the height (floats) and print the result.",
+   "starter": "# Write your program here\n",
+   "tests": [
+    {
+     "stdin": "70\n1.75",
+     "expected": "22.9",
+     "hidden": false
+    },
+    {
+     "stdin": "50\n1.6",
+     "expected": "19.5",
+     "hidden": false
+    },
+    {
+     "stdin": "90\n1.9",
+     "expected": "24.9",
+     "hidden": true
+    }
+   ],
+   "solution": "def bmi(weight_kg, height_m):\n    return round(weight_kg / height_m ** 2, 1)\n\nw = float(input())\nh = float(input())\nprint(bmi(w, h))",
+   "explanation": "Exponentiation binds tighter than division, so `weight / height ** 2` is correct."
+  },
+  {
+   "id": "d335-05-code-04",
+   "objective": "D335.05",
+   "type": "code",
+   "difficulty": 3,
+   "prompt": "Write `count_vowels(text)` returning the number of vowels (a, e, i, o, u, either case). Read a line and print the count.",
+   "starter": "# Write your program here\n",
+   "tests": [
+    {
+     "stdin": "Hello World",
+     "expected": "3",
+     "hidden": false
+    },
+    {
+     "stdin": "rhythm",
+     "expected": "0",
+     "hidden": false
+    },
+    {
+     "stdin": "AEIOU aeiou",
+     "expected": "10",
+     "hidden": true
+    },
+    {
+     "stdin": "Python",
+     "expected": "1",
+     "hidden": true
+    }
+   ],
+   "solution": "def count_vowels(text):\n    return sum(1 for ch in text.lower() if ch in \"aeiou\")\n\nprint(count_vowels(input()))",
+   "explanation": "Lower-case the text and count the characters that appear in 'aeiou'."
+  },
+  {
+   "id": "d335-06-mcq-01",
+   "objective": "D335.06",
+   "type": "mcq",
+   "difficulty": 1,
+   "prompt": "With `s = 'python'`, what is `s[0]`?",
+   "choices": [
+    "'p'",
+    "'n'",
+    "'y'",
+    "'python'"
+   ],
+   "answer": 0,
+   "explanation": "String indexes start at 0."
+  },
+  {
+   "id": "d335-06-mcq-02",
+   "objective": "D335.06",
+   "type": "mcq",
+   "difficulty": 1,
+   "prompt": "With `s = 'python'`, what is `s[-1]`?",
+   "choices": [
+    "'o'",
+    "IndexError",
+    "'p'",
+    "'n'"
+   ],
+   "answer": 3,
+   "explanation": "Negative indexes count from the end; -1 is the last character."
+  },
+  {
+   "id": "d335-06-mcq-03",
+   "objective": "D335.06",
+   "type": "mcq",
+   "difficulty": 2,
+   "prompt": "With `s = 'python'`, what is `s[1:4]`?",
+   "choices": [
+    "'ytho'",
+    "'pyth'",
+    "'yth'",
+    "'yt'"
+   ],
+   "answer": 2,
+   "explanation": "A slice includes the start index and stops before the end index: indexes 1, 2, 3."
+  },
+  {
+   "id": "d335-06-mcq-04",
+   "objective": "D335.06",
+   "type": "mcq",
+   "difficulty": 2,
+   "prompt": "What does `'banana'.count('an')` return?",
+   "choices": [
+    "4",
+    "3",
+    "2",
+    "1"
+   ],
+   "answer": 2,
+   "explanation": "count() counts non-overlapping occurrences: b-an-an-a."
+  },
+  {
+   "id": "d335-06-mcq-05",
+   "objective": "D335.06",
+   "type": "mcq",
+   "difficulty": 2,
+   "prompt": "What happens with `s = 'cat'` then `s[0] = 'b'`?",
+   "choices": [
+    "TypeError: strings are immutable",
+    "s becomes 'bcat'",
+    "s becomes 'bat'",
+    "Nothing"
+   ],
+   "answer": 0,
+   "explanation": "Strings cannot be changed in place. Build a new string instead: `s = 'b' + s[1:]`."
+  },
+  {
+   "id": "d335-06-mcq-06",
+   "objective": "D335.06",
+   "type": "mcq",
+   "difficulty": 2,
+   "prompt": "What does `'a,b,,c'.split(',')` return?",
+   "choices": [
+    "['a', 'b', 'c']",
+    "['a', 'b', '', 'c']",
+    "['a,b,,c']",
+    "('a', 'b', 'c')"
+   ],
+   "answer": 1,
+   "explanation": "Splitting on a separator keeps empty strings between consecutive separators."
+  },
+  {
+   "id": "d335-06-mcq-07",
+   "objective": "D335.06",
+   "type": "mcq",
+   "difficulty": 2,
+   "prompt": "What does `'-'.join(['x', 'y', 'z'])` return?",
+   "choices": [
+    "'-x-y-z-'",
+    "'xyz-'",
+    "['x-y-z']",
+    "'x-y-z'"
+   ],
+   "answer": 3,
+   "explanation": "join() places the separator string between the items."
+  },
+  {
+   "id": "d335-06-mcq-08",
+   "objective": "D335.06",
+   "type": "mcq",
+   "difficulty": 2,
+   "prompt": "What does `'hello'.find('z')` return?",
+   "choices": [
+    "0",
+    "ValueError",
+    "-1",
+    "None"
+   ],
+   "answer": 2,
+   "explanation": "find() returns -1 when the substring isn't present. (index() would raise ValueError.)"
+  },
+  {
+   "id": "d335-06-mcq-09",
+   "objective": "D335.06",
+   "type": "mcq",
+   "difficulty": 1,
+   "prompt": "Which method removes whitespace from both ends of a string?",
+   "choices": [
+    "trim()",
+    "split()",
+    "strip()",
+    "remove()"
+   ],
+   "answer": 2,
+   "explanation": "strip() removes leading and trailing whitespace; lstrip()/rstrip() do one side."
+  },
+  {
+   "id": "d335-06-mcq-10",
+   "objective": "D335.06",
+   "type": "mcq",
+   "difficulty": 3,
+   "prompt": "What is `'stressed'[::-1]`?",
+   "choices": [
+    "'desserts'",
+    "'s'",
+    "'stressed'",
+    "'detsserts'"
+   ],
+   "answer": 0,
+   "explanation": "A step of -1 walks the string backwards, reversing it."
+  },
+  {
+   "id": "d335-06-mcq-11",
+   "objective": "D335.06",
+   "type": "mcq",
+   "difficulty": 2,
+   "prompt": "What does `'Data Science'.lower().replace(' ', '_')` return?",
+   "choices": [
+    "'data_science'",
+    "'Data_Science'",
+    "'data science'",
+    "'DATA_SCIENCE'"
+   ],
+   "answer": 0,
+   "explanation": "Methods chain left to right: lower() first, then replace the space."
+  },
+  {
+   "id": "d335-06-mcq-12",
+   "objective": "D335.06",
+   "type": "mcq",
+   "difficulty": 1,
+   "prompt": "What does `len('hi there')` return?",
+   "choices": [
+    "8",
+    "7",
+    "2",
+    "9"
+   ],
+   "answer": 0,
+   "explanation": "The space counts as a character: h, i, space, t, h, e, r, e."
+  },
+  {
+   "id": "d335-06-out-01",
+   "objective": "D335.06",
+   "type": "output",
+   "difficulty": 1,
+   "prompt": "What does this program print?",
+   "code": "w = \"notebook\"\nprint(w[0], w[-1], len(w))",
+   "answer": "n k 8",
+   "explanation": "Index 0 is the first character, -1 the last, and len() counts all 8 characters: n k 8."
+  },
+  {
+   "id": "d335-06-out-02",
+   "objective": "D335.06",
+   "type": "output",
+   "difficulty": 1,
+   "prompt": "What does this program print?",
+   "code": "w = \"Mississippi\"\nprint(w[0], w[-1], len(w))",
+   "answer": "M i 11",
+   "explanation": "Index 0 is the first character, -1 the last, and len() counts all 11 characters: M i 11."
+  },
+  {
+   "id": "d335-06-out-03",
+   "objective": "D335.06",
+   "type": "output",
+   "difficulty": 1,
+   "prompt": "What does this program print?",
+   "code": "w = \"algorithm\"\nprint(w[0], w[-1], len(w))",
+   "answer": "a m 9",
+   "explanation": "Index 0 is the first character, -1 the last, and len() counts all 9 characters: a m 9."
+  },
+  {
+   "id": "d335-06-out-04",
+   "objective": "D335.06",
+   "type": "output",
+   "difficulty": 2,
+   "prompt": "What does this program print?",
+   "code": "s = \"computer\"\nprint(s[2:5])\nprint(s[:2] + s[5:])",
+   "answer": "mpu\ncoter",
+   "explanation": "s[2:5] takes indexes 2 up to 4; the second line joins everything before 2 with everything from 5 on. Output: mpu / coter."
+  },
+  {
+   "id": "d335-06-out-05",
+   "objective": "D335.06",
+   "type": "output",
+   "difficulty": 2,
+   "prompt": "What does this program print?",
+   "code": "s = \"keyboard\"\nprint(s[0:3])\nprint(s[:0] + s[3:])",
+   "answer": "key\nboard",
+   "explanation": "s[0:3] takes indexes 0 up to 2; the second line joins everything before 0 with everything from 3 on. Output: key / board."
+  },
+  {
+   "id": "d335-06-out-06",
+   "objective": "D335.06",
+   "type": "output",
+   "difficulty": 2,
+   "prompt": "What does this program print?",
+   "code": "s = \"database\"\nprint(s[4:8])\nprint(s[:4] + s[8:])",
+   "answer": "base\ndata",
+   "explanation": "s[4:8] takes indexes 4 up to 7; the second line joins everything before 4 with everything from 8 on. Output: base / data."
+  },
+  {
+   "id": "d335-06-out-07",
+   "objective": "D335.06",
+   "type": "output",
+   "difficulty": 2,
+   "prompt": "What does this program print?",
+   "code": "line = \"  Ada Lovelace  \"\nclean = line.strip()\nfirst, last = clean.split()\nprint(last.upper(), first[0] + \".\")",
+   "answer": "LOVELACE A.",
+   "explanation": "strip() removes the outer spaces, split() breaks on whitespace, then we index and uppercase: LOVELACE A.."
+  },
+  {
+   "id": "d335-06-out-08",
+   "objective": "D335.06",
+   "type": "output",
+   "difficulty": 2,
+   "prompt": "What does this program print?",
+   "code": "s = \"level\"\nprint(s == s[::-1])",
+   "answer": "True",
+   "explanation": "Reversing 'level' gives the same text, so it is a palindrome: True."
+  },
+  {
+   "id": "d335-06-out-09",
+   "objective": "D335.06",
+   "type": "output",
+   "difficulty": 2,
+   "prompt": "What does this program print?",
+   "code": "msg = \"one two three\"\nwords = msg.split()\nprint(len(words), \"-\".join(w[0] for w in words))",
+   "answer": "3 o-t-t",
+   "explanation": "split() gives three words; joining their first letters with '-' gives 3 o-t-t."
+  },
+  {
+   "id": "d335-06-out-10",
+   "objective": "D335.06",
+   "type": "output",
+   "difficulty": 3,
+   "prompt": "What does this program print?",
+   "code": "s = \"hello\"\nt = s.replace(\"l\", \"L\", 1)\nprint(s, t)",
+   "answer": "hello heLlo",
+   "explanation": "replace's third argument limits the number of replacements; s itself is unchanged because strings are immutable. Output: hello heLlo."
+  },
+  {
+   "id": "d335-06-out-11",
+   "objective": "D335.06",
+   "type": "output",
+   "difficulty": 2,
+   "prompt": "What does this program print?",
+   "code": "code = \"AB-1234\"\nprint(code[:2].isalpha(), code[3:].isdigit(), code.startswith(\"AB\"))",
+   "answer": "True True True",
+   "explanation": "All three checks succeed: True True True."
+  },
+  {
+   "id": "d335-06-out-12",
+   "objective": "D335.06",
+   "type": "output",
+   "difficulty": 3,
+   "prompt": "What does this program print?",
+   "code": "s = \"abcdef\"\nprint(s[::2], s[1::2], s[-3:])",
+   "answer": "ace bdf def",
+   "explanation": "A step of 2 takes every other character from the start; starting at 1 gives the others; -3: takes the last three. Output: ace bdf def."
+  },
+  {
+   "id": "d335-06-bug-01",
+   "objective": "D335.06",
+   "type": "bug",
+   "difficulty": 1,
+   "prompt": "This should print the last character, `n`. Click the buggy line.",
+   "code": "word = \"python\"\nlast = word[len(word)]\nprint(last)",
+   "answer": 2,
+   "fix": "last = word[len(word) - 1]",
+   "expected": "n",
+   "actual": "IndexError",
+   "explanation": "Valid indexes run from 0 to len - 1, so word[6] raises IndexError. Use len(word) - 1 or simply -1."
+  },
+  {
+   "id": "d335-06-bug-02",
+   "objective": "D335.06",
+   "type": "bug",
+   "difficulty": 2,
+   "prompt": "This should print `HELLO`. Click the buggy line.",
+   "code": "s = \"hello\"\ns.upper()\nprint(s)",
+   "answer": 2,
+   "fix": "s = s.upper()",
+   "expected": "HELLO",
+   "actual": "hello",
+   "explanation": "String methods return new strings; they don't change the original. Assign the result back."
+  },
+  {
+   "id": "d335-06-bug-03",
+   "objective": "D335.06",
+   "type": "bug",
+   "difficulty": 2,
+   "prompt": "This should print `3` (the number of words). Click the buggy line.",
+   "code": "sentence = \"the quick fox\"\nwords = sentence.split(\",\")\nprint(len(words))",
+   "answer": 2,
+   "fix": "words = sentence.split()",
+   "expected": "3",
+   "actual": "1",
+   "explanation": "The sentence has no commas, so split(',') returns a single item. split() with no argument splits on whitespace."
+  },
+  {
+   "id": "d335-06-bug-04",
+   "objective": "D335.06",
+   "type": "bug",
+   "difficulty": 3,
+   "prompt": "This should capitalize the first letter: `Python`. Click the buggy line.",
+   "code": "s = \"python\"\ns[0] = s[0].upper()\nprint(s)",
+   "answer": 2,
+   "fix": "s = s[0].upper() + s[1:]",
+   "expected": "Python",
+   "actual": "TypeError",
+   "explanation": "Strings are immutable, so item assignment raises TypeError. Build a new string (or use s.capitalize())."
+  },
+  {
+   "id": "d335-06-code-01",
+   "objective": "D335.06",
+   "type": "code",
+   "difficulty": 1,
+   "prompt": "Read a word and print it reversed.",
+   "starter": "# Write your program here\n",
+   "tests": [
+    {
+     "stdin": "hello",
+     "expected": "olleh",
+     "hidden": false
+    },
+    {
+     "stdin": "a",
+     "expected": "a",
+     "hidden": false
+    },
+    {
+     "stdin": "racecar",
+     "expected": "racecar",
+     "hidden": true
+    },
+    {
+     "stdin": "Python3",
+     "expected": "3nohtyP",
+     "hidden": true
+    }
+   ],
+   "solution": "print(input()[::-1])",
+   "explanation": "Slicing with a step of -1 reverses a string."
+  },
+  {
+   "id": "d335-06-code-02",
+   "objective": "D335.06",
+   "type": "code",
+   "difficulty": 2,
+   "prompt": "Read a sentence and print the number of words in it.",
+   "starter": "# Write your program here\n",
+   "tests": [
+    {
+     "stdin": "the quick brown fox",
+     "expected": "4",
+     "hidden": false
+    },
+    {
+     "stdin": "hello",
+     "expected": "1",
+     "hidden": false
+    },
+    {
+     "stdin": "  spaced   out  words ",
+     "expected": "3",
+     "hidden": true
+    }
+   ],
+   "solution": "print(len(input().split()))",
+   "explanation": "split() with no arguments splits on any run of whitespace and ignores leading/trailing spaces."
+  },
+  {
+   "id": "d335-06-code-03",
+   "objective": "D335.06",
+   "type": "code",
+   "difficulty": 2,
+   "prompt": "Read a line of text and print `True` if it is a palindrome ignoring case and spaces, otherwise `False`. Example: `Never odd or even` prints `True`.",
+   "starter": "# Write your program here\n",
+   "tests": [
+    {
+     "stdin": "Never odd or even",
+     "expected": "True",
+     "hidden": false
+    },
+    {
+     "stdin": "hello",
+     "expected": "False",
+     "hidden": false
+    },
+    {
+     "stdin": "Taco cat",
+     "expected": "True",
+     "hidden": true
+    },
+    {
+     "stdin": "ab",
+     "expected": "False",
+     "hidden": true
+    }
+   ],
+   "solution": "s = input().lower().replace(\" \", \"\")\nprint(s == s[::-1])",
+   "explanation": "Normalize the text (lower-case, remove spaces) and compare it to its reverse."
+  },
+  {
+   "id": "d335-06-code-04",
+   "objective": "D335.06",
+   "type": "code",
+   "difficulty": 3,
+   "prompt": "Read a full name like `grace brewster hopper` and print the initials in upper case followed by periods, e.g. `G.B.H.`.",
+   "starter": "# Write your program here\n",
+   "tests": [
+    {
+     "stdin": "grace brewster hopper",
+     "expected": "G.B.H.",
+     "hidden": false
+    },
+    {
+     "stdin": "alan turing",
+     "expected": "A.T.",
+     "hidden": false
+    },
+    {
+     "stdin": "ada",
+     "expected": "A.",
+     "hidden": true
+    }
+   ],
+   "solution": "print(\"\".join(w[0].upper() + \".\" for w in input().split()))",
+   "explanation": "Split into words, take each first character, upper-case it and join the pieces."
+  },
+  {
+   "id": "d335-07-mcq-01",
+   "objective": "D335.07",
+   "type": "mcq",
+   "difficulty": 1,
+   "prompt": "What does `nums.append(4)` do to `nums = [1, 2, 3]`?",
+   "choices": [
+    "nums becomes [1, 2, 3, 4]",
+    "nums becomes [1, 2, 3, [4]]",
+    "It returns a new list and nums is unchanged",
+    "nums becomes [4, 1, 2, 3]"
+   ],
+   "answer": 0,
+   "explanation": "append() adds one item to the end of the list in place (and returns None)."
+  },
+  {
+   "id": "d335-07-mcq-02",
+   "objective": "D335.07",
+   "type": "mcq",
+   "difficulty": 2,
+   "prompt": "What is the difference between `sort()` and `sorted()`?",
+   "choices": [
+    "sort() returns a new list",
+    "They are identical",
+    "sorted() works only on numbers",
+    "list.sort() sorts in place and returns None; sorted() returns a new sorted list"
+   ],
+   "answer": 3,
+   "explanation": "A common bug is `x = x.sort()`, which sets x to None."
+  },
+  {
+   "id": "d335-07-mcq-03",
+   "objective": "D335.07",
+   "type": "mcq",
+   "difficulty": 2,
+   "prompt": "After `a = [1, 2]` and `b = a` and `b.append(3)`, what is `a`?",
+   "choices": [
+    "[1, 2, [3]]",
+    "[1, 2]",
+    "[3]",
+    "[1, 2, 3]"
+   ],
+   "answer": 3,
+   "explanation": "`b = a` makes both names refer to the same list object. Use `a.copy()` or `a[:]` for an independent copy."
+  },
+  {
+   "id": "d335-07-mcq-04",
+   "objective": "D335.07",
+   "type": "mcq",
+   "difficulty": 2,
+   "prompt": "What does `[1, 2, 3].pop()` return?",
+   "choices": [
+    "1",
+    "[1, 2]",
+    "None",
+    "3"
+   ],
+   "answer": 3,
+   "explanation": "pop() with no index removes and returns the last item."
+  },
+  {
+   "id": "d335-07-mcq-05",
+   "objective": "D335.07",
+   "type": "mcq",
+   "difficulty": 2,
+   "prompt": "Which statement about tuples is true?",
+   "choices": [
+    "Tuples are immutable sequences",
+    "Tuples can grow with append()",
+    "Tuples use square brackets",
+    "Tuples must contain one type"
+   ],
+   "answer": 0,
+   "explanation": "Tuples, written with parentheses, can't be changed after creation; that makes them safe for fixed records and dictionary keys."
+  },
+  {
+   "id": "d335-07-mcq-06",
+   "objective": "D335.07",
+   "type": "mcq",
+   "difficulty": 2,
+   "prompt": "What does `[x * 2 for x in range(4)]` produce?",
+   "choices": [
+    "[2, 4, 6, 8]",
+    "[0, 2, 4, 6]",
+    "[0, 2, 4, 6, 8]",
+    "[0, 1, 2, 3, 0, 1, 2, 3]"
+   ],
+   "answer": 1,
+   "explanation": "A list comprehension applies the expression to each value of range(4) = 0..3."
+  },
+  {
+   "id": "d335-07-mcq-07",
+   "objective": "D335.07",
+   "type": "mcq",
+   "difficulty": 3,
+   "prompt": "What does `[n for n in range(10) if n % 3 == 0]` produce?",
+   "choices": [
+    "[3, 6, 9]",
+    "[1, 4, 7]",
+    "[0, 3, 6]",
+    "[0, 3, 6, 9]"
+   ],
+   "answer": 3,
+   "explanation": "The if clause keeps only multiples of 3; 0 counts."
+  },
+  {
+   "id": "d335-07-mcq-08",
+   "objective": "D335.07",
+   "type": "mcq",
+   "difficulty": 1,
+   "prompt": "What does `len([[1, 2], [3]])` return?",
+   "choices": [
+    "2",
+    "3",
+    "4",
+    "1"
+   ],
+   "answer": 0,
+   "explanation": "The outer list has two elements, each of which happens to be a list."
+  },
+  {
+   "id": "d335-07-mcq-09",
+   "objective": "D335.07",
+   "type": "mcq",
+   "difficulty": 2,
+   "prompt": "What does `nums.remove(5)` do?",
+   "choices": [
+    "Removes the first item equal to 5",
+    "Removes the item at index 5",
+    "Returns 5",
+    "Removes every 5"
+   ],
+   "answer": 0,
+   "explanation": "remove() deletes by value (first match) and raises ValueError if absent; pop(i) or del removes by index."
+  },
+  {
+   "id": "d335-07-mcq-10",
+   "objective": "D335.07",
+   "type": "mcq",
+   "difficulty": 2,
+   "prompt": "How do you create a tuple containing just the number 7?",
+   "choices": [
+    "[7]",
+    "(7,)",
+    "(7)",
+    "tuple 7"
+   ],
+   "answer": 1,
+   "explanation": "The trailing comma makes a one-item tuple; (7) is just the number 7 in parentheses."
+  },
+  {
+   "id": "d335-07-mcq-11",
+   "objective": "D335.07",
+   "type": "mcq",
+   "difficulty": 3,
+   "prompt": "What is `[1, 2] * 2 + [3]`?",
+   "choices": [
+    "[1, 2, 3, 1, 2, 3]",
+    "TypeError",
+    "[2, 4, 3]",
+    "[1, 2, 1, 2, 3]"
+   ],
+   "answer": 3,
+   "explanation": "`*` repeats a list and `+` concatenates lists."
+  },
+  {
+   "id": "d335-07-out-01",
+   "objective": "D335.07",
+   "type": "output",
+   "difficulty": 1,
+   "prompt": "What does this program print?",
+   "code": "nums = [4, 8, 15, 16, 23, 42]\nprint(nums[1], nums[-2], len(nums))",
+   "answer": "8 23 6",
+   "explanation": "Index 1 is the second item, -2 is the second-to-last, and len() counts the items: 8 23 6."
+  },
+  {
+   "id": "d335-07-out-02",
+   "objective": "D335.07",
+   "type": "output",
+   "difficulty": 1,
+   "prompt": "What does this program print?",
+   "code": "nums = [9, 2, 7, 1]\nprint(nums[1], nums[-2], len(nums))",
+   "answer": "2 7 4",
+   "explanation": "Index 1 is the second item, -2 is the second-to-last, and len() counts the items: 2 7 4."
+  },
+  {
+   "id": "d335-07-out-03",
+   "objective": "D335.07",
+   "type": "output",
+   "difficulty": 1,
+   "prompt": "What does this program print?",
+   "code": "nums = [5, 5, 3]\nprint(nums[1], nums[-2], len(nums))",
+   "answer": "5 5 3",
+   "explanation": "Index 1 is the second item, -2 is the second-to-last, and len() counts the items: 5 5 3."
+  },
+  {
+   "id": "d335-07-out-04",
+   "objective": "D335.07",
+   "type": "output",
+   "difficulty": 2,
+   "prompt": "What does this program print?",
+   "code": "a = [3, 1, 2]\nb = sorted(a)\na.sort(reverse=True)\nprint(a, b)",
+   "answer": "[3, 2, 1] [1, 2, 3]",
+   "explanation": "sorted() made a new ascending list b; then a was sorted in place in descending order. Output: [3, 2, 1] [1, 2, 3]."
+  },
+  {
+   "id": "d335-07-out-05",
+   "objective": "D335.07",
+   "type": "output",
+   "difficulty": 2,
+   "prompt": "What does this program print?",
+   "code": "stack = [1, 2, 3]\nstack.append(4)\ntop = stack.pop()\nstack.insert(0, top)\nprint(stack)",
+   "answer": "[4, 1, 2, 3]",
+   "explanation": "Append 4, pop it back off, then insert it at index 0: [4, 1, 2, 3]."
+  },
+  {
+   "id": "d335-07-out-06",
+   "objective": "D335.07",
+   "type": "output",
+   "difficulty": 2,
+   "prompt": "What does this program print?",
+   "code": "m = [[1, 2, 3], [4, 5, 6]]\nprint(m[1][0], m[0][-1], len(m[0]))",
+   "answer": "4 3 3",
+   "explanation": "m[1] is the second row and [0] its first item; m[0][-1] is the end of the first row. Output: 4 3 3."
+  },
+  {
+   "id": "d335-07-out-07",
+   "objective": "D335.07",
+   "type": "output",
+   "difficulty": 2,
+   "prompt": "What does this program print?",
+   "code": "point = (3, 4)\nx, y = point\nprint(x * y, point[0] + point[1])",
+   "answer": "12 7",
+   "explanation": "Tuple unpacking assigns 3 to x and 4 to y. Output: 12 7."
+  },
+  {
+   "id": "d335-07-out-08",
+   "objective": "D335.07",
+   "type": "output",
+   "difficulty": 3,
+   "prompt": "What does this program print?",
+   "code": "a = [1, 2, 3]\nb = a\nc = a[:]\na.append(4)\nprint(len(b), len(c))",
+   "answer": "4 3",
+   "explanation": "b is another name for the same list, so it sees the append; c is a copy made before it. Output: 4 3."
+  },
+  {
+   "id": "d335-07-out-09",
+   "objective": "D335.07",
+   "type": "output",
+   "difficulty": 2,
+   "prompt": "What does this program print?",
+   "code": "words = [\"kiwi\", \"fig\", \"banana\"]\nprint([len(w) for w in words], max(words, key=len))",
+   "answer": "[4, 3, 6] banana",
+   "explanation": "The comprehension maps each word to its length; max with key=len returns the longest word. Output: [4, 3, 6] banana."
+  },
+  {
+   "id": "d335-07-out-10",
+   "objective": "D335.07",
+   "type": "output",
+   "difficulty": 3,
+   "prompt": "What does this program print?",
+   "code": "nums = [5, 3, 8, 1]\nnums[1:3] = [0]\nprint(nums)",
+   "answer": "[5, 0, 1]",
+   "explanation": "Assigning to a slice replaces those positions (indexes 1 and 2) with the new items: [5, 0, 1]."
+  },
+  {
+   "id": "d335-07-out-11",
+   "objective": "D335.07",
+   "type": "output",
+   "difficulty": 2,
+   "prompt": "What does this program print?",
+   "code": "scores = [70, 85, 90]\nscores[0] += 10\nprint(sum(scores) / len(scores))",
+   "answer": "85.0",
+   "explanation": "Lists are mutable, so scores[0] becomes 80; the average of 80, 85 and 90 is 85.0."
+  },
+  {
+   "id": "d335-07-bug-01",
+   "objective": "D335.07",
+   "type": "bug",
+   "difficulty": 1,
+   "prompt": "This should print the numbers in ascending order: `[1, 2, 3]`. Click the buggy line.",
+   "code": "nums = [3, 1, 2]\nnums = nums.sort()\nprint(nums)",
+   "answer": 2,
+   "fix": "nums.sort()",
+   "expected": "[1, 2, 3]",
+   "actual": "None",
+   "explanation": "sort() sorts in place and returns None, so assigning its result replaces the list with None."
+  },
+  {
+   "id": "d335-07-bug-02",
+   "objective": "D335.07",
+   "type": "bug",
+   "difficulty": 2,
+   "prompt": "This should print `[1, 2, 3]` and keep `original` unchanged as `[1, 2]`. Click the buggy line.",
+   "code": "original = [1, 2]\ncopy = original\ncopy.append(3)\nprint(copy, original)",
+   "answer": 2,
+   "fix": "copy = original.copy()",
+   "expected": "[1, 2, 3] [1, 2]",
+   "actual": "[1, 2, 3] [1, 2, 3]",
+   "explanation": "Assignment doesn't copy a list; both names share one object. Copy it with .copy() or slicing."
+  },
+  {
+   "id": "d335-07-bug-03",
+   "objective": "D335.07",
+   "type": "bug",
+   "difficulty": 2,
+   "prompt": "This should print the last item, 30. Click the buggy line.",
+   "code": "values = [10, 20, 30]\nprint(values[3])",
+   "answer": 2,
+   "fix": "print(values[-1])",
+   "expected": "30",
+   "actual": "IndexError",
+   "explanation": "With 3 items the valid indexes are 0, 1 and 2, so values[3] raises IndexError."
+  },
+  {
+   "id": "d335-07-bug-04",
+   "objective": "D335.07",
+   "type": "bug",
+   "difficulty": 3,
+   "prompt": "This should remove all the odd numbers and print `[2, 4]`. Click the buggy line.",
+   "code": "nums = [1, 3, 2, 5, 4]\nfor n in nums:\n    if n % 2 == 1:\n        nums.remove(n)\nprint(nums)",
+   "answer": 2,
+   "fix": "for n in nums[:]:",
+   "expected": "[2, 4]",
+   "actual": "[3, 2, 4]",
+   "explanation": "Removing items from a list while looping over it shifts positions, so some items are skipped (3 survives). Loop over a copy, or build a new list with a comprehension."
+  },
+  {
+   "id": "d335-07-code-01",
+   "objective": "D335.07",
+   "type": "code",
+   "difficulty": 1,
+   "prompt": "Read integers on one line separated by spaces and print their sum.",
+   "starter": "# Write your program here\n",
+   "tests": [
+    {
+     "stdin": "1 2 3",
+     "expected": "6",
+     "hidden": false
+    },
+    {
+     "stdin": "10",
+     "expected": "10",
+     "hidden": false
+    },
+    {
+     "stdin": "-5 5 7 8",
+     "expected": "15",
+     "hidden": true
+    }
+   ],
+   "solution": "nums = [int(x) for x in input().split()]\nprint(sum(nums))",
+   "explanation": "split() the line, convert each piece with int(), then sum()."
+  },
+  {
+   "id": "d335-07-code-02",
+   "objective": "D335.07",
+   "type": "code",
+   "difficulty": 2,
+   "prompt": "Read integers on one line separated by spaces. Print the largest and smallest values, separated by a space.",
+   "starter": "# Write your program here\n",
+   "tests": [
+    {
+     "stdin": "4 9 1 7",
+     "expected": "9 1",
+     "hidden": false
+    },
+    {
+     "stdin": "5",
+     "expected": "5 5",
+     "hidden": false
+    },
+    {
+     "stdin": "-3 -8 -1",
+     "expected": "-1 -8",
+     "hidden": true
+    }
+   ],
+   "solution": "nums = [int(x) for x in input().split()]\nprint(max(nums), min(nums))",
+   "explanation": "Build a list from the input and use max() and min()."
+  },
+  {
+   "id": "d335-07-code-03",
+   "objective": "D335.07",
+   "type": "code",
+   "difficulty": 2,
+   "prompt": "Read words on one line separated by spaces and print them sorted alphabetically, separated by spaces.",
+   "starter": "# Write your program here\n",
+   "tests": [
+    {
+     "stdin": "pear apple fig",
+     "expected": "apple fig pear",
+     "hidden": false
+    },
+    {
+     "stdin": "zeta alpha",
+     "expected": "alpha zeta",
+     "hidden": false
+    },
+    {
+     "stdin": "one",
+     "expected": "one",
+     "hidden": true
+    }
+   ],
+   "solution": "print(\" \".join(sorted(input().split())))",
+   "explanation": "sorted() returns a new list; join it back into a single line."
+  },
+  {
+   "id": "d335-07-code-04",
+   "objective": "D335.07",
+   "type": "code",
+   "difficulty": 3,
+   "prompt": "Read integers on one line separated by spaces and print only the even ones (in their original order) separated by spaces. If there are none, print `none`.",
+   "starter": "# Write your program here\n",
+   "tests": [
+    {
+     "stdin": "1 2 3 4",
+     "expected": "2 4",
+     "hidden": false
+    },
+    {
+     "stdin": "7 9",
+     "expected": "none",
+     "hidden": false
+    },
+    {
+     "stdin": "10 -2 5 6",
+     "expected": "10 -2 6",
+     "hidden": true
+    }
+   ],
+   "solution": "evens = [n for n in input().split() if int(n) % 2 == 0]\nprint(\" \".join(evens) if evens else \"none\")",
+   "explanation": "Filter with a comprehension, then handle the empty case separately."
+  },
+  {
+   "id": "d335-08-mcq-01",
+   "objective": "D335.08",
+   "type": "mcq",
+   "difficulty": 1,
+   "prompt": "How do you get the value stored under key 'age' in dict `p`?",
+   "choices": [
+    "p.age",
+    "p[age]  (without quotes)",
+    "p(age)",
+    "p['age']"
+   ],
+   "answer": 3,
+   "explanation": "Dictionaries are indexed by key with square brackets. A bare name `age` would be looked up as a variable."
+  },
+  {
+   "id": "d335-08-mcq-02",
+   "objective": "D335.08",
+   "type": "mcq",
+   "difficulty": 1,
+   "prompt": "What happens when you read a key that isn't in a dictionary with `d[key]`?",
+   "choices": [
+    "It returns None",
+    "A KeyError is raised",
+    "The key is added",
+    "It returns 0"
+   ],
+   "answer": 1,
+   "explanation": "Use `d.get(key)` (or `d.get(key, default)`) to avoid the KeyError."
+  },
+  {
+   "id": "d335-08-mcq-03",
+   "objective": "D335.08",
+   "type": "mcq",
+   "difficulty": 2,
+   "prompt": "What does `{'a': 1}.get('b', 0)` return?",
+   "choices": [
+    "KeyError",
+    "0",
+    "None",
+    "'b'"
+   ],
+   "answer": 1,
+   "explanation": "get() returns the default when the key is missing."
+  },
+  {
+   "id": "d335-08-mcq-04",
+   "objective": "D335.08",
+   "type": "mcq",
+   "difficulty": 2,
+   "prompt": "What does `'x' in {'x': 5, 'y': 6}` test?",
+   "choices": [
+    "Whether 'x' is a value",
+    "It raises TypeError",
+    "Whether 'x' is a key",
+    "Whether 5 is present"
+   ],
+   "answer": 2,
+   "explanation": "Membership tests on a dict check its keys. Use `in d.values()` for values."
+  },
+  {
+   "id": "d335-08-mcq-05",
+   "objective": "D335.08",
+   "type": "mcq",
+   "difficulty": 2,
+   "prompt": "Which loop gives you each key and value together?",
+   "choices": [
+    "for k, v in d.items():",
+    "for k in d.values():",
+    "for k, v in d.keys():",
+    "for k, v in d:"
+   ],
+   "answer": 0,
+   "explanation": "items() yields (key, value) pairs that unpack into two loop variables."
+  },
+  {
+   "id": "d335-08-mcq-06",
+   "objective": "D335.08",
+   "type": "mcq",
+   "difficulty": 2,
+   "prompt": "What is `len(set([1, 2, 2, 3, 3, 3]))`?",
+   "choices": [
+    "6",
+    "4",
+    "3",
+    "1"
+   ],
+   "answer": 2,
+   "explanation": "A set keeps only unique values: {1, 2, 3}."
+  },
+  {
+   "id": "d335-08-mcq-07",
+   "objective": "D335.08",
+   "type": "mcq",
+   "difficulty": 2,
+   "prompt": "What happens when you assign to a key that already exists: `d['k'] = new`?",
+   "choices": [
+    "The old value is replaced",
+    "A second 'k' entry is added",
+    "KeyError",
+    "Nothing changes"
+   ],
+   "answer": 0,
+   "explanation": "Keys are unique, so assignment overwrites the existing value."
+  },
+  {
+   "id": "d335-08-mcq-08",
+   "objective": "D335.08",
+   "type": "mcq",
+   "difficulty": 3,
+   "prompt": "Which of these can NOT be used as a dictionary key?",
+   "choices": [
+    "[1, 2]",
+    "(1, 2)",
+    "12",
+    "'12'"
+   ],
+   "answer": 0,
+   "explanation": "Keys must be hashable (immutable). A list is mutable, so it raises TypeError; a tuple works."
+  },
+  {
+   "id": "d335-08-mcq-09",
+   "objective": "D335.08",
+   "type": "mcq",
+   "difficulty": 2,
+   "prompt": "What does `{1, 2, 3} & {2, 3, 4}` produce?",
+   "choices": [
+    "{2, 3}",
+    "{1, 2, 3, 4}",
+    "{1}",
+    "{1, 4}"
+   ],
+   "answer": 0,
+   "explanation": "`&` is set intersection: the items in both sets."
+  },
+  {
+   "id": "d335-08-mcq-10",
+   "objective": "D335.08",
+   "type": "mcq",
+   "difficulty": 2,
+   "prompt": "How do you remove the key 'temp' from dict `d` and get its value back?",
+   "choices": [
+    "d.delete('temp')",
+    "d['temp'] = None",
+    "d.remove('temp')",
+    "d.pop('temp')"
+   ],
+   "answer": 3,
+   "explanation": "pop(key) deletes the entry and returns its value. `del d['temp']` deletes without returning."
+  },
+  {
+   "id": "d335-08-out-01",
+   "objective": "D335.08",
+   "type": "output",
+   "difficulty": 1,
+   "prompt": "What does this program print?",
+   "code": "stock = {\"apple\": 3, \"pear\": 5}\nstock[\"apple\"] += 2\nstock[\"kiwi\"] = 1\nprint(stock[\"apple\"], len(stock))",
+   "answer": "5 3",
+   "explanation": "apple goes from 3 to 5 and kiwi is a new key, giving 3 keys. Output: 5 3."
+  },
+  {
+   "id": "d335-08-out-02",
+   "objective": "D335.08",
+   "type": "output",
+   "difficulty": 2,
+   "prompt": "What does this program print?",
+   "code": "text = \"a b a c b a\"\ncounts = {}\nfor w in text.split():\n    counts[w] = counts.get(w, 0) + 1\nprint(counts)",
+   "answer": "{'a': 3, 'b': 2, 'c': 1}",
+   "explanation": "get(w, 0) starts each new word at zero before adding 1. Dicts keep insertion order: {'a': 3, 'b': 2, 'c': 1}."
+  },
+  {
+   "id": "d335-08-out-03",
+   "objective": "D335.08",
+   "type": "output",
+   "difficulty": 2,
+   "prompt": "What does this program print?",
+   "code": "ages = {\"kim\": 31, \"lu\": 25, \"max\": 40}\nfor name, age in ages.items():\n    if age > 30:\n        print(name)",
+   "answer": "kim\nmax",
+   "explanation": "items() yields each name/age pair; only the ages over 30 are printed: kim / max."
+  },
+  {
+   "id": "d335-08-out-04",
+   "objective": "D335.08",
+   "type": "output",
+   "difficulty": 2,
+   "prompt": "What does this program print?",
+   "code": "d = {\"x\": 1, \"y\": 2}\nprint(list(d.keys()), sum(d.values()))",
+   "answer": "['x', 'y'] 3",
+   "explanation": "keys() lists the keys in insertion order and values() can be summed: ['x', 'y'] 3."
+  },
+  {
+   "id": "d335-08-out-05",
+   "objective": "D335.08",
+   "type": "output",
+   "difficulty": 2,
+   "prompt": "What does this program print?",
+   "code": "a = {1, 2, 3}\nb = {3, 4}\nprint(sorted(a | b), sorted(a - b))",
+   "answer": "[1, 2, 3, 4] [1, 2]",
+   "explanation": "`|` is union and `-` is difference (items in a but not b): [1, 2, 3, 4] [1, 2]."
+  },
+  {
+   "id": "d335-08-out-06",
+   "objective": "D335.08",
+   "type": "output",
+   "difficulty": 3,
+   "prompt": "What does this program print?",
+   "code": "grades = {\"ana\": [90, 80], \"bo\": [70]}\ngrades[\"bo\"].append(100)\nprint(sum(grades[\"bo\"]) / len(grades[\"bo\"]), len(grades))",
+   "answer": "85.0 2",
+   "explanation": "Values can be lists that you mutate in place; bo's average is (70 + 100) / 2. Output: 85.0 2."
+  },
+  {
+   "id": "d335-08-out-07",
+   "objective": "D335.08",
+   "type": "output",
+   "difficulty": 2,
+   "prompt": "What does this program print?",
+   "code": "colors = [\"red\", \"blue\", \"red\", \"green\", \"blue\"]\nunique = set(colors)\nprint(len(colors), len(unique))",
+   "answer": "5 3",
+   "explanation": "The list has 5 items but only 3 distinct colors: 5 3."
+  },
+  {
+   "id": "d335-08-out-08",
+   "objective": "D335.08",
+   "type": "output",
+   "difficulty": 3,
+   "prompt": "What does this program print?",
+   "code": "squares = {n: n * n for n in range(1, 4)}\nprint(squares, squares.get(5, \"none\"))",
+   "answer": "{1: 1, 2: 4, 3: 9} none",
+   "explanation": "A dict comprehension builds key: value pairs; 5 is missing so get returns the default. Output: {1: 1, 2: 4, 3: 9} none."
+  },
+  {
+   "id": "d335-08-bug-01",
+   "objective": "D335.08",
+   "type": "bug",
+   "difficulty": 1,
+   "prompt": "This should print 0 for a missing product instead of crashing. Click the buggy line.",
+   "code": "prices = {\"tea\": 3, \"coffee\": 4}\nitem = \"juice\"\nprint(prices[item])",
+   "answer": 3,
+   "fix": "print(prices.get(item, 0))",
+   "expected": "0",
+   "actual": "KeyError",
+   "explanation": "Indexing a missing key raises KeyError. get() with a default returns 0 instead."
+  },
+  {
+   "id": "d335-08-bug-02",
+   "objective": "D335.08",
+   "type": "bug",
+   "difficulty": 2,
+   "prompt": "This should count letters and print `{'a': 2, 'b': 1}`. Click the buggy line.",
+   "code": "counts = {}\nfor ch in \"aba\":\n    counts[ch] += 1\nprint(counts)",
+   "answer": 3,
+   "fix": "    counts[ch] = counts.get(ch, 0) + 1",
+   "expected": "{'a': 2, 'b': 1}",
+   "actual": "KeyError",
+   "explanation": "The first time a letter appears its key doesn't exist yet, so `+= 1` raises KeyError."
+  },
+  {
+   "id": "d335-08-bug-03",
+   "objective": "D335.08",
+   "type": "bug",
+   "difficulty": 2,
+   "prompt": "This should print each name and its score like `ana 90`. Click the buggy line.",
+   "code": "scores = {\"ana\": 90, \"bo\": 75}\nfor name, score in scores:\n    print(name, score)",
+   "answer": 2,
+   "fix": "for name, score in scores.items():",
+   "expected": "ana 90\nbo 75",
+   "actual": "ValueError",
+   "explanation": "Looping over a dict gives only keys; unpacking the string 'ana' into two names fails with ValueError. Use .items()."
+  },
+  {
+   "id": "d335-08-code-01",
+   "objective": "D335.08",
+   "type": "code",
+   "difficulty": 2,
+   "prompt": "Read a line of words and print each distinct word with how many times it appears, in order of first appearance, as `word count` lines.",
+   "starter": "# Write your program here\n",
+   "tests": [
+    {
+     "stdin": "red blue red",
+     "expected": "red 2\nblue 1",
+     "hidden": false
+    },
+    {
+     "stdin": "a a a",
+     "expected": "a 3",
+     "hidden": false
+    },
+    {
+     "stdin": "x y z y",
+     "expected": "x 1\ny 2\nz 1",
+     "hidden": true
+    }
+   ],
+   "solution": "counts = {}\nfor w in input().split():\n    counts[w] = counts.get(w, 0) + 1\nfor w, c in counts.items():\n    print(w, c)",
+   "explanation": "Use a dict as a counter with get(w, 0) + 1; dicts remember insertion order."
+  },
+  {
+   "id": "d335-08-code-02",
+   "objective": "D335.08",
+   "type": "code",
+   "difficulty": 2,
+   "prompt": "A phone book is given as `pb = {'ana': '555-0101', 'bo': '555-0199', 'cy': '555-0142'}`. Read a name and print the number, or `not found`.",
+   "starter": "pb = {'ana': '555-0101', 'bo': '555-0199', 'cy': '555-0142'}\n# read a name and print the number or 'not found'",
+   "tests": [
+    {
+     "stdin": "bo",
+     "expected": "555-0199",
+     "hidden": false
+    },
+    {
+     "stdin": "zed",
+     "expected": "not found",
+     "hidden": false
+    },
+    {
+     "stdin": "ana",
+     "expected": "555-0101",
+     "hidden": true
+    }
+   ],
+   "solution": "pb = {'ana': '555-0101', 'bo': '555-0199', 'cy': '555-0142'}\nprint(pb.get(input().strip(), \"not found\"))",
+   "explanation": "get() with a default handles missing names without an if."
+  },
+  {
+   "id": "d335-08-code-03",
+   "objective": "D335.08",
+   "type": "code",
+   "difficulty": 3,
+   "prompt": "Read two lines of space-separated words. Print the words that appear in both lines, sorted alphabetically and separated by spaces, or `none` if there are none.",
+   "starter": "# Write your program here\n",
+   "tests": [
+    {
+     "stdin": "cat dog fish\ndog bird cat",
+     "expected": "cat dog",
+     "hidden": false
+    },
+    {
+     "stdin": "one two\nthree four",
+     "expected": "none",
+     "hidden": false
+    },
+    {
+     "stdin": "x\nx",
+     "expected": "x",
+     "hidden": true
+    }
+   ],
+   "solution": "a = set(input().split())\nb = set(input().split())\ncommon = sorted(a & b)\nprint(\" \".join(common) if common else \"none\")",
+   "explanation": "Convert each line to a set and take the intersection."
+  },
+  {
+   "id": "d335-09-mcq-01",
+   "objective": "D335.09",
+   "type": "mcq",
+   "difficulty": 1,
+   "prompt": "What error does `int('abc')` raise?",
+   "choices": [
+    "TypeError",
+    "SyntaxError",
+    "NameError",
+    "ValueError"
+   ],
+   "answer": 3,
+   "explanation": "The type (str) is acceptable to int(), but this particular value can't be parsed: that's a ValueError."
+  },
+  {
+   "id": "d335-09-mcq-02",
+   "objective": "D335.09",
+   "type": "mcq",
+   "difficulty": 1,
+   "prompt": "What error does `10 / 0` raise?",
+   "choices": [
+    "It returns infinity",
+    "ValueError",
+    "ZeroDivisionError",
+    "ArithmeticWarning"
+   ],
+   "answer": 2,
+   "explanation": "Dividing by zero raises ZeroDivisionError (for /, // and %)."
+  },
+  {
+   "id": "d335-09-mcq-03",
+   "objective": "D335.09",
+   "type": "mcq",
+   "difficulty": 1,
+   "prompt": "What error does `'5' + 5` raise?",
+   "choices": [
+    "It returns '55'",
+    "TypeError",
+    "ValueError",
+    "SyntaxError"
+   ],
+   "answer": 1,
+   "explanation": "You cannot add a str and an int; the operand types are incompatible."
+  },
+  {
+   "id": "d335-09-mcq-04",
+   "objective": "D335.09",
+   "type": "mcq",
+   "difficulty": 2,
+   "prompt": "Using a variable before assigning it raises...",
+   "choices": [
+    "NameError",
+    "KeyError",
+    "IndexError",
+    "ValueError"
+   ],
+   "answer": 0,
+   "explanation": "NameError means Python couldn't find that name; often a typo or a missing assignment."
+  },
+  {
+   "id": "d335-09-mcq-05",
+   "objective": "D335.09",
+   "type": "mcq",
+   "difficulty": 2,
+   "prompt": "When does a `finally` block run?",
+   "choices": [
+    "Only if an exception occurred",
+    "Always, whether or not an exception occurred",
+    "Only if no exception occurred",
+    "Only after a return"
+   ],
+   "answer": 1,
+   "explanation": "finally is for cleanup that must happen no matter what, like closing a resource."
+  },
+  {
+   "id": "d335-09-mcq-06",
+   "objective": "D335.09",
+   "type": "mcq",
+   "difficulty": 2,
+   "prompt": "When does the `else` block of a try statement run?",
+   "choices": [
+    "Never; it is invalid",
+    "When the try block finished without an exception",
+    "Always",
+    "When an exception was caught"
+   ],
+   "answer": 1,
+   "explanation": "try/except/else: the else runs only if no exception was raised in the try block."
+  },
+  {
+   "id": "d335-09-mcq-07",
+   "objective": "D335.09",
+   "type": "mcq",
+   "difficulty": 2,
+   "prompt": "In a traceback, where is the line that actually failed usually shown?",
+   "choices": [
+    "At the bottom, just above the error message",
+    "In the first line",
+    "It is never shown",
+    "At the top"
+   ],
+   "answer": 0,
+   "explanation": "Tracebacks list calls from outermost to innermost; the last frame and the error type/message are at the bottom."
+  },
+  {
+   "id": "d335-09-mcq-08",
+   "objective": "D335.09",
+   "type": "mcq",
+   "difficulty": 3,
+   "prompt": "Which statement raises your own error with a message?",
+   "choices": [
+    "throw ValueError('bad input')",
+    "raise ValueError('bad input')",
+    "except ValueError('bad input')",
+    "error('bad input')"
+   ],
+   "answer": 1,
+   "explanation": "Python uses `raise`, not throw."
+  },
+  {
+   "id": "d335-09-mcq-09",
+   "objective": "D335.09",
+   "type": "mcq",
+   "difficulty": 2,
+   "prompt": "Which is a syntax error rather than a runtime exception?",
+   "choices": [
+    "int('x')",
+    "[1][5]",
+    "10 / 0",
+    "if x > 3  (missing colon)"
+   ],
+   "answer": 3,
+   "explanation": "Syntax errors are detected before the program runs; the others only fail while running."
+  },
+  {
+   "id": "d335-09-mcq-10",
+   "objective": "D335.09",
+   "type": "mcq",
+   "difficulty": 3,
+   "prompt": "Why is a bare `except:` that silently passes considered a bad habit?",
+   "choices": [
+    "It only catches KeyError",
+    "It hides every error, including bugs you need to see",
+    "It is a syntax error",
+    "It runs slower"
+   ],
+   "answer": 1,
+   "explanation": "Catch the specific exception you expect (e.g. `except ValueError:`) so unexpected bugs still surface."
+  },
+  {
+   "id": "d335-09-out-01",
+   "objective": "D335.09",
+   "type": "output",
+   "difficulty": 1,
+   "prompt": "What does this program print for the input shown?",
+   "code": "text = input()\ntry:\n    n = int(text)\n    print(\"ok\", n * 2)\nexcept ValueError:\n    print(\"not a whole number\")",
+   "answer": "ok 84",
+   "explanation": "int() succeeds only for whole-number text; otherwise the ValueError handler runs. Output: ok 84.",
+   "stdin": "42"
+  },
+  {
+   "id": "d335-09-out-02",
+   "objective": "D335.09",
+   "type": "output",
+   "difficulty": 1,
+   "prompt": "What does this program print for the input shown?",
+   "code": "text = input()\ntry:\n    n = int(text)\n    print(\"ok\", n * 2)\nexcept ValueError:\n    print(\"not a whole number\")",
+   "answer": "not a whole number",
+   "explanation": "int() succeeds only for whole-number text; otherwise the ValueError handler runs. Output: not a whole number.",
+   "stdin": "4.2"
+  },
+  {
+   "id": "d335-09-out-03",
+   "objective": "D335.09",
+   "type": "output",
+   "difficulty": 1,
+   "prompt": "What does this program print for the input shown?",
+   "code": "text = input()\ntry:\n    n = int(text)\n    print(\"ok\", n * 2)\nexcept ValueError:\n    print(\"not a whole number\")",
+   "answer": "not a whole number",
+   "explanation": "int() succeeds only for whole-number text; otherwise the ValueError handler runs. Output: not a whole number.",
+   "stdin": "hello"
+  },
+  {
+   "id": "d335-09-out-04",
+   "objective": "D335.09",
+   "type": "output",
+   "difficulty": 2,
+   "prompt": "What does this program print?",
+   "code": "try:\n    print(\"start\")\n    x = 1 / 0\n    print(\"after\")\nexcept ZeroDivisionError:\n    print(\"caught\")\nfinally:\n    print(\"cleanup\")",
+   "answer": "start\ncaught\ncleanup",
+   "explanation": "The error skips the rest of the try block; the handler runs and finally always runs. Output: start / caught / cleanup."
+  },
+  {
+   "id": "d335-09-out-05",
+   "objective": "D335.09",
+   "type": "output",
+   "difficulty": 2,
+   "prompt": "What does this program print?",
+   "code": "try:\n    value = [1, 2, 3][1]\nexcept IndexError:\n    print(\"bad index\")\nelse:\n    print(\"got\", value)",
+   "answer": "got 2",
+   "explanation": "No exception occurs, so the else block runs: got 2."
+  },
+  {
+   "id": "d335-09-out-06",
+   "objective": "D335.09",
+   "type": "output",
+   "difficulty": 3,
+   "prompt": "What does this program print?",
+   "code": "def check(age):\n    if age < 0:\n        raise ValueError(\"negative\")\n    return age\n\nfor a in [5, -1]:\n    try:\n        print(check(a))\n    except ValueError as e:\n        print(\"error:\", e)",
+   "answer": "5\nerror: negative",
+   "explanation": "The second call raises ValueError; `as e` captures it and printing e shows its message. Output: 5 / error: negative."
+  },
+  {
+   "id": "d335-09-out-07",
+   "objective": "D335.09",
+   "type": "output",
+   "difficulty": 3,
+   "prompt": "What does this program print?",
+   "code": "data = {\"a\": 1}\ntry:\n    print(data[\"b\"])\nexcept (KeyError, IndexError) as e:\n    print(type(e).__name__)",
+   "answer": "KeyError",
+   "explanation": "A tuple in except catches any of the listed types; the missing key raises KeyError: KeyError."
+  },
+  {
+   "id": "d335-09-bug-01",
+   "objective": "D335.09",
+   "type": "bug",
+   "difficulty": 1,
+   "prompt": "This should print `5`. Click the line with the bug.",
+   "code": "count = 5\nprint(Count)",
+   "answer": 2,
+   "fix": "print(count)",
+   "expected": "5",
+   "actual": "NameError",
+   "explanation": "Names are case-sensitive; `Count` is undefined and raises NameError."
+  },
+  {
+   "id": "d335-09-bug-02",
+   "objective": "D335.09",
+   "type": "bug",
+   "difficulty": 2,
+   "prompt": "This should print `invalid` for non-numeric input instead of crashing. Click the buggy line.",
+   "code": "text = input()\ntry:\n    n = int(text)\n    print(n)\nexcept TypeError:\n    print(\"invalid\")",
+   "answer": 5,
+   "fix": "except ValueError:",
+   "expected": "invalid",
+   "actual": "ValueError",
+   "explanation": "int('abc') raises ValueError, not TypeError, so the handler doesn't catch it.",
+   "stdin": "abc"
+  },
+  {
+   "id": "d335-09-bug-03",
+   "objective": "D335.09",
+   "type": "bug",
+   "difficulty": 2,
+   "prompt": "This should print the average 2.5. Click the buggy line.",
+   "code": "nums = [1, 2, 3, 4]\ntotal = 0\nfor n in nums:\n    total += n\nprint(total / len(num))",
+   "answer": 5,
+   "fix": "print(total / len(nums))",
+   "expected": "2.5",
+   "actual": "NameError",
+   "explanation": "`num` is a typo for `nums`, causing a NameError."
+  },
+  {
+   "id": "d335-09-bug-04",
+   "objective": "D335.09",
+   "type": "bug",
+   "difficulty": 3,
+   "prompt": "Both prints should show `safe: 0` instead of crashing. Click the buggy line.",
+   "code": "def safe_div(a, b):\n    try:\n        return a / b\n    except ZeroDivisionError:\n        return 0\n\nprint(\"safe:\", safe_div(5, 0))\nprint(\"safe:\", 5 / 0)",
+   "answer": 8,
+   "fix": "print(\"safe:\", safe_div(5, 0))",
+   "expected": "safe: 0\nsafe: 0",
+   "actual": "ZeroDivisionError",
+   "explanation": "Line 8 divides directly, outside the protected function, so it still raises ZeroDivisionError. Route the division through safe_div."
+  },
+  {
+   "id": "d335-09-code-01",
+   "objective": "D335.09",
+   "type": "code",
+   "difficulty": 2,
+   "prompt": "Read two lines, a and b. Print a / b rounded to 2 decimals. If either isn't a number print `bad input`; if b is zero print `cannot divide by zero`.",
+   "starter": "# Write your program here\n",
+   "tests": [
+    {
+     "stdin": "7\n2",
+     "expected": "3.5",
+     "hidden": false
+    },
+    {
+     "stdin": "x\n2",
+     "expected": "bad input",
+     "hidden": false
+    },
+    {
+     "stdin": "5\n0",
+     "expected": "cannot divide by zero",
+     "hidden": true
+    },
+    {
+     "stdin": "1\n3",
+     "expected": "0.33",
+     "hidden": true
+    }
+   ],
+   "solution": "try:\n    a = float(input())\n    b = float(input())\n    print(round(a / b, 2))\nexcept ValueError:\n    print(\"bad input\")\nexcept ZeroDivisionError:\n    print(\"cannot divide by zero\")",
+   "explanation": "Catch ValueError from float() and ZeroDivisionError from the division in separate handlers."
+  },
+  {
+   "id": "d335-09-code-02",
+   "objective": "D335.09",
+   "type": "code",
+   "difficulty": 3,
+   "prompt": "Read lines until the line `done`. Each other line should be an integer; ignore lines that aren't. Print the sum of the valid integers.",
+   "starter": "# Write your program here\n",
+   "tests": [
+    {
+     "stdin": "3\nx\n4\ndone",
+     "expected": "7",
+     "hidden": false
+    },
+    {
+     "stdin": "done",
+     "expected": "0",
+     "hidden": false
+    },
+    {
+     "stdin": "10\n-3\n2.5\nseven\n1\ndone",
+     "expected": "8",
+     "hidden": true
+    }
+   ],
+   "solution": "total = 0\nwhile True:\n    line = input()\n    if line == \"done\":\n        break\n    try:\n        total += int(line)\n    except ValueError:\n        pass\nprint(total)",
+   "explanation": "Wrap only the conversion in try so a bad line is skipped and the loop continues."
+  },
+  {
+   "id": "d335-09-code-03",
+   "objective": "D335.09",
+   "type": "code",
+   "difficulty": 2,
+   "prompt": "Write `get_item(items, i)` that returns items[i], or the string `out of range` if the index is invalid (use try/except IndexError). Read an integer index and print `get_item(['a', 'b', 'c'], index)`.",
+   "starter": "# Write your program here\n",
+   "tests": [
+    {
+     "stdin": "1",
+     "expected": "b",
+     "hidden": false
+    },
+    {
+     "stdin": "5",
+     "expected": "out of range",
+     "hidden": false
+    },
+    {
+     "stdin": "-1",
+     "expected": "c",
+     "hidden": true
+    },
+    {
+     "stdin": "3",
+     "expected": "out of range",
+     "hidden": true
+    }
+   ],
+   "solution": "def get_item(items, i):\n    try:\n        return items[i]\n    except IndexError:\n        return \"out of range\"\n\nprint(get_item(['a', 'b', 'c'], int(input())))",
+   "explanation": "IndexError is raised for any index outside -len..len-1."
+  },
+  {
+   "id": "d335-10-mcq-01",
+   "objective": "D335.10",
+   "type": "mcq",
+   "difficulty": 1,
+   "prompt": "After `import math`, how do you compute a square root?",
+   "choices": [
+    "16.sqrt()",
+    "math.sqrt(16)",
+    "sqrt(16)",
+    "math.root(16)"
+   ],
+   "answer": 1,
+   "explanation": "With `import math` the module's names are reached through the module: math.sqrt."
+  },
+  {
+   "id": "d335-10-mcq-02",
+   "objective": "D335.10",
+   "type": "mcq",
+   "difficulty": 2,
+   "prompt": "What does `from math import pi` allow?",
+   "choices": [
+    "Using every math function without a prefix",
+    "Using `pi` directly without the `math.` prefix",
+    "Renaming math to pi",
+    "Nothing; it's invalid"
+   ],
+   "answer": 1,
+   "explanation": "from-import copies the named object into your namespace."
+  },
+  {
+   "id": "d335-10-mcq-03",
+   "objective": "D335.10",
+   "type": "mcq",
+   "difficulty": 2,
+   "prompt": "What does `import random as rnd` do?",
+   "choices": [
+    "Imports only random.rnd",
+    "Creates a random number called rnd",
+    "Imports random under the alias rnd",
+    "Raises ImportError"
+   ],
+   "answer": 2,
+   "explanation": "`as` gives the module a shorter local name: rnd.randint(1, 6)."
+  },
+  {
+   "id": "d335-10-mcq-04",
+   "objective": "D335.10",
+   "type": "mcq",
+   "difficulty": 2,
+   "prompt": "Which call can return 6 when simulating a die roll?",
+   "choices": [
+    "random.random() * 6",
+    "random.randrange(1, 6)",
+    "random.randint(1, 6)",
+    "random.choice(range(6))"
+   ],
+   "answer": 2,
+   "explanation": "randint includes both endpoints. randrange(1, 6) stops before 6, and choice(range(6)) picks 0..5."
+  },
+  {
+   "id": "d335-10-mcq-05",
+   "objective": "D335.10",
+   "type": "mcq",
+   "difficulty": 2,
+   "prompt": "What is `math.floor(-2.5)`?",
+   "choices": [
+    "-2",
+    "-3",
+    "-2.5",
+    "2"
+   ],
+   "answer": 1,
+   "explanation": "floor rounds down toward negative infinity."
+  },
+  {
+   "id": "d335-10-mcq-06",
+   "objective": "D335.10",
+   "type": "mcq",
+   "difficulty": 2,
+   "prompt": "What is `math.ceil(4.1)`?",
+   "choices": [
+    "5",
+    "4",
+    "4.1",
+    "4.0"
+   ],
+   "answer": 0,
+   "explanation": "ceil rounds up to the next whole number."
+  },
+  {
+   "id": "d335-10-mcq-07",
+   "objective": "D335.10",
+   "type": "mcq",
+   "difficulty": 3,
+   "prompt": "What is `__name__` equal to inside a file that is being run directly (not imported)?",
+   "choices": [
+    "'__main__'",
+    "None",
+    "The file name",
+    "'main'"
+   ],
+   "answer": 0,
+   "explanation": "That's why scripts guard their entry point with `if __name__ == '__main__':`; on import, `__name__` is the module's name instead."
+  },
+  {
+   "id": "d335-10-mcq-08",
+   "objective": "D335.10",
+   "type": "mcq",
+   "difficulty": 3,
+   "prompt": "Why guard code with `if __name__ == '__main__':`?",
+   "choices": [
+    "It's required for every program",
+    "To hide it from the debugger",
+    "To make it run faster",
+    "So it runs when the file is executed but not when it is imported"
+   ],
+   "answer": 3,
+   "explanation": "Imports execute a module's top-level code; the guard keeps demo/test code from running on import."
+  },
+  {
+   "id": "d335-10-mcq-09",
+   "objective": "D335.10",
+   "type": "mcq",
+   "difficulty": 2,
+   "prompt": "Which function returns a random item from a list?",
+   "choices": [
+    "items.random()",
+    "random.item(items)",
+    "random.pick(items)",
+    "random.choice(items)"
+   ],
+   "answer": 3,
+   "explanation": "random.choice selects one element; random.shuffle reorders a list in place."
+  },
+  {
+   "id": "d335-10-mcq-10",
+   "objective": "D335.10",
+   "type": "mcq",
+   "difficulty": 2,
+   "prompt": "Where would you look up everything a module provides from inside Python?",
+   "choices": [
+    "print(module)",
+    "import *",
+    "dir(module) or help(module)",
+    "module.list()"
+   ],
+   "answer": 2,
+   "explanation": "dir() lists the names; help() shows the documentation."
+  },
+  {
+   "id": "d335-10-out-01",
+   "objective": "D335.10",
+   "type": "output",
+   "difficulty": 1,
+   "prompt": "What does this program print?",
+   "code": "import math\nprint(math.sqrt(49), math.pi > 3)",
+   "answer": "7.0 True",
+   "explanation": "sqrt returns a float, so 49 gives 7.0; pi is about 3.14159. Output: 7.0 True."
+  },
+  {
+   "id": "d335-10-out-02",
+   "objective": "D335.10",
+   "type": "output",
+   "difficulty": 2,
+   "prompt": "What does this program print?",
+   "code": "import math\nprint(math.floor(7.8), math.ceil(7.2), round(7.5))",
+   "answer": "7 8 8",
+   "explanation": "floor rounds down, ceil rounds up, and round(7.5) goes to the even neighbour 8. Output: 7 8 8."
+  },
+  {
+   "id": "d335-10-out-03",
+   "objective": "D335.10",
+   "type": "output",
+   "difficulty": 2,
+   "prompt": "What does this program print?",
+   "code": "from math import gcd, factorial\nprint(gcd(12, 18), factorial(4))",
+   "answer": "6 24",
+   "explanation": "gcd finds the greatest common divisor (6) and factorial(4) is 24. Output: 6 24."
+  },
+  {
+   "id": "d335-10-out-04",
+   "objective": "D335.10",
+   "type": "output",
+   "difficulty": 2,
+   "prompt": "What does this program print?",
+   "code": "import datetime\nd = datetime.date(2024, 3, 1)\nprint(d.year, d.month, d.day)",
+   "answer": "2024 3 1",
+   "explanation": "A date object exposes year, month and day attributes: 2024 3 1."
+  },
+  {
+   "id": "d335-10-out-05",
+   "objective": "D335.10",
+   "type": "output",
+   "difficulty": 3,
+   "prompt": "What does this program print?",
+   "code": "from datetime import date, timedelta\nstart = date(2024, 2, 27)\nlater = start + timedelta(days=3)\nprint(later)",
+   "answer": "2024-03-01",
+   "explanation": "2024 is a leap year, so three days after Feb 27 is Mar 1. A date prints in ISO format: 2024-03-01."
+  },
+  {
+   "id": "d335-10-out-06",
+   "objective": "D335.10",
+   "type": "output",
+   "difficulty": 2,
+   "prompt": "What does this program print?",
+   "code": "import random\nrandom.seed(1)\nnums = [random.randint(1, 3) for _ in range(20)]\nprint(min(nums) >= 1, max(nums) <= 3)",
+   "answer": "True True",
+   "explanation": "randint(1, 3) always returns a value from 1 to 3 inclusive, so both checks are True: True True."
+  },
+  {
+   "id": "d335-10-out-07",
+   "objective": "D335.10",
+   "type": "output",
+   "difficulty": 2,
+   "prompt": "What does this program print?",
+   "code": "import string\nprint(string.ascii_lowercase[:5], len(string.digits))",
+   "answer": "abcde 10",
+   "explanation": "string.ascii_lowercase is 'abc...z' and string.digits is '0123456789'. Output: abcde 10."
+  },
+  {
+   "id": "d335-10-out-08",
+   "objective": "D335.10",
+   "type": "output",
+   "difficulty": 3,
+   "prompt": "What does this program print?",
+   "code": "import math as m\nprint(round(m.hypot(3, 4)), m.isclose(0.1 + 0.2, 0.3))",
+   "answer": "5 True",
+   "explanation": "hypot(3, 4) is the length of the hypotenuse, 5.0. Floating point makes 0.1 + 0.2 slightly off, but isclose tolerates that. Output: 5 True."
+  },
+  {
+   "id": "d335-10-out-09",
+   "objective": "D335.10",
+   "type": "output",
+   "difficulty": 2,
+   "prompt": "What does this program print?",
+   "code": "def main():\n    print(\"running main\")\n\nif __name__ == \"__main__\":\n    main()\nprint(__name__)",
+   "answer": "running main\n__main__",
+   "explanation": "Run directly, the module's __name__ is '__main__', so the guard calls main(). Output: running main / __main__."
+  },
+  {
+   "id": "d335-10-bug-01",
+   "objective": "D335.10",
+   "type": "bug",
+   "difficulty": 1,
+   "prompt": "This should print 4.0. Click the buggy line.",
+   "code": "import math\nprint(sqrt(16))",
+   "answer": 2,
+   "fix": "print(math.sqrt(16))",
+   "expected": "4.0",
+   "actual": "NameError",
+   "explanation": "`import math` doesn't put sqrt into your namespace; use math.sqrt or `from math import sqrt`."
+  },
+  {
+   "id": "d335-10-bug-02",
+   "objective": "D335.10",
+   "type": "bug",
+   "difficulty": 2,
+   "prompt": "This should print 10 (the ceiling of 9.2). Click the buggy line.",
+   "code": "from math import ceil\nvalue = 9.2\nprint(math.ceil(value))",
+   "answer": 3,
+   "fix": "print(ceil(value))",
+   "expected": "10",
+   "actual": "NameError",
+   "explanation": "Only ceil was imported, so the name `math` is not defined (NameError)."
+  },
+  {
+   "id": "d335-10-bug-03",
+   "objective": "D335.10",
+   "type": "bug",
+   "difficulty": 2,
+   "prompt": "This should print the number of days between the two dates (10). Click the buggy line.",
+   "code": "from datetime import date\na = date(2024, 1, 1)\nb = date(2024, 1, 11)\nprint((b - a).day)",
+   "answer": 4,
+   "fix": "print((b - a).days)",
+   "expected": "10",
+   "actual": "AttributeError",
+   "explanation": "Subtracting dates gives a timedelta, whose attribute is `days` (plural)."
+  },
+  {
+   "id": "d335-10-code-01",
+   "objective": "D335.10",
+   "type": "code",
+   "difficulty": 2,
+   "prompt": "Read the two legs of a right triangle (floats, one per line) and print the hypotenuse rounded to 2 decimals using the math module.",
+   "starter": "# Write your program here\n",
+   "tests": [
+    {
+     "stdin": "3\n4",
+     "expected": "5.0",
+     "hidden": false
+    },
+    {
+     "stdin": "1\n1",
+     "expected": "1.41",
+     "hidden": false
+    },
+    {
+     "stdin": "5.5\n2",
+     "expected": "5.85",
+     "hidden": true
+    }
+   ],
+   "solution": "import math\na = float(input())\nb = float(input())\nprint(round(math.sqrt(a ** 2 + b ** 2), 2))",
+   "explanation": "math.sqrt (or math.hypot) computes the square root of a squared plus b squared."
+  },
+  {
+   "id": "d335-10-code-02",
+   "objective": "D335.10",
+   "type": "code",
+   "difficulty": 3,
+   "prompt": "Read a date as `YYYY-MM-DD` and print the day of the week it falls on, e.g. `Monday`. Use the datetime module.",
+   "starter": "# Write your program here\n",
+   "tests": [
+    {
+     "stdin": "2024-01-01",
+     "expected": "Monday",
+     "hidden": false
+    },
+    {
+     "stdin": "2000-02-29",
+     "expected": "Tuesday",
+     "hidden": false
+    },
+    {
+     "stdin": "2026-10-30",
+     "expected": "Friday",
+     "hidden": true
+    }
+   ],
+   "solution": "from datetime import date\ny, m, d = map(int, input().split(\"-\"))\nprint(date(y, m, d).strftime(\"%A\"))",
+   "explanation": "Split the text, build a date, and format it with %A (full weekday name)."
+  },
+  {
+   "id": "d335-10-code-03",
+   "objective": "D335.10",
+   "type": "code",
+   "difficulty": 2,
+   "prompt": "Read a positive integer n and print the numbers 1..n that are perfect squares, separated by spaces. Use math.isqrt or math.sqrt.",
+   "starter": "# Write your program here\n",
+   "tests": [
+    {
+     "stdin": "20",
+     "expected": "1 4 9 16",
+     "hidden": false
+    },
+    {
+     "stdin": "1",
+     "expected": "1",
+     "hidden": false
+    },
+    {
+     "stdin": "50",
+     "expected": "1 4 9 16 25 36 49",
+     "hidden": true
+    }
+   ],
+   "solution": "import math\nn = int(input())\nprint(\" \".join(str(i) for i in range(1, n + 1) if math.isqrt(i) ** 2 == i))",
+   "explanation": "A number is a perfect square when its integer square root, squared, gives the number back."
+  },
+  {
+   "id": "d335-11-mcq-01",
+   "objective": "D335.11",
+   "type": "mcq",
+   "difficulty": 1,
+   "prompt": "Which mode opens a file for reading?",
+   "choices": [
+    "'a'",
+    "'r'",
+    "'w'",
+    "'x'"
+   ],
+   "answer": 1,
+   "explanation": "'r' (the default) reads. 'w' truncates/creates for writing, 'a' appends, 'x' creates and fails if the file exists."
+  },
+  {
+   "id": "d335-11-mcq-02",
+   "objective": "D335.11",
+   "type": "mcq",
+   "difficulty": 2,
+   "prompt": "What happens to an existing file opened with mode 'w'?",
+   "choices": [
+    "New text is added at the end",
+    "It opens read-only",
+    "Its contents are erased before writing",
+    "It raises FileExistsError"
+   ],
+   "answer": 2,
+   "explanation": "'w' truncates the file. Use 'a' to add to the end."
+  },
+  {
+   "id": "d335-11-mcq-03",
+   "objective": "D335.11",
+   "type": "mcq",
+   "difficulty": 2,
+   "prompt": "Why use `with open(...) as f:`?",
+   "choices": [
+    "It reads faster",
+    "It is required for writing",
+    "It locks the file forever",
+    "The file is closed automatically when the block ends, even after an error"
+   ],
+   "answer": 3,
+   "explanation": "The with statement is a context manager that guarantees f.close()."
+  },
+  {
+   "id": "d335-11-mcq-04",
+   "objective": "D335.11",
+   "type": "mcq",
+   "difficulty": 2,
+   "prompt": "What does `f.readline()` return at the end of the file?",
+   "choices": [
+    "'\\n'",
+    "None",
+    "It raises EOFError",
+    "An empty string ''"
+   ],
+   "answer": 3,
+   "explanation": "readline() returns '' once there is nothing left; a blank line inside the file would be '\\n'."
+  },
+  {
+   "id": "d335-11-mcq-05",
+   "objective": "D335.11",
+   "type": "mcq",
+   "difficulty": 2,
+   "prompt": "What does `f.write('hi')` NOT do automatically?",
+   "choices": [
+    "Return the number of characters written",
+    "Write the text",
+    "Work with mode 'w'",
+    "Add a newline"
+   ],
+   "answer": 3,
+   "explanation": "Unlike print, write() adds no newline; include '\\n' yourself."
+  },
+  {
+   "id": "d335-11-mcq-06",
+   "objective": "D335.11",
+   "type": "mcq",
+   "difficulty": 2,
+   "prompt": "What is the most common way to process a text file one line at a time?",
+   "choices": [
+    "f.lines()",
+    "while f:",
+    "for line in f:",
+    "for line in f.read():"
+   ],
+   "answer": 2,
+   "explanation": "Iterating over the file object yields lines (each ending in '\\n'). Iterating over f.read() would yield single characters."
+  },
+  {
+   "id": "d335-11-mcq-07",
+   "objective": "D335.11",
+   "type": "mcq",
+   "difficulty": 1,
+   "prompt": "Opening a file that doesn't exist with mode 'r' raises...",
+   "choices": [
+    "ValueError",
+    "FileNotFoundError",
+    "KeyError",
+    "It creates the file"
+   ],
+   "answer": 1,
+   "explanation": "Reading requires the file to exist; 'w' or 'a' would create it."
+  },
+  {
+   "id": "d335-11-mcq-08",
+   "objective": "D335.11",
+   "type": "mcq",
+   "difficulty": 3,
+   "prompt": "Each line from `for line in f` ends with a newline. Which call gives you the text without it?",
+   "choices": [
+    "line.lower()",
+    "line.split()",
+    "line[1:]",
+    "line.rstrip('\\n')"
+   ],
+   "answer": 3,
+   "explanation": "rstrip('\\n') (or strip()) removes the trailing newline. split() also splits on inner spaces."
+  },
+  {
+   "id": "d335-11-mcq-09",
+   "objective": "D335.11",
+   "type": "mcq",
+   "difficulty": 2,
+   "prompt": "In a CSV line `'ana,90,85'`, which call gives `['ana', '90', '85']`?",
+   "choices": [
+    "line.join(',')",
+    "line.split(',')",
+    "list(line)",
+    "line.split()"
+   ],
+   "answer": 1,
+   "explanation": "Split on the comma delimiter. (The csv module handles quoted fields too.)"
+  },
+  {
+   "id": "d335-11-out-01",
+   "objective": "D335.11",
+   "type": "output",
+   "difficulty": 1,
+   "prompt": "What does this program print?",
+   "code": "with open(\"notes.txt\") as f:\n    lines = f.readlines()\nprint(len(lines), lines[0].strip())",
+   "answer": "3 first line",
+   "explanation": "notes.txt has three lines; readlines() returns them in a list (with newlines, which strip() removes). Output: 3 first line.",
+   "files": {
+    "notes.txt": "first line\nsecond line\nthird line\n"
+   }
+  },
+  {
+   "id": "d335-11-out-02",
+   "objective": "D335.11",
+   "type": "output",
+   "difficulty": 2,
+   "prompt": "What does this program print?",
+   "code": "with open(\"notes.txt\") as f:\n    first = f.readline()\n    rest = f.read()\nprint(first.strip(), \"|\", rest.count(\"\\n\"))",
+   "answer": "first line | 2",
+   "explanation": "readline() consumes the first line; read() returns the remaining two lines, which contain two newlines. Output: first line | 2.",
+   "files": {
+    "notes.txt": "first line\nsecond line\nthird line\n"
+   }
+  },
+  {
+   "id": "d335-11-out-03",
+   "objective": "D335.11",
+   "type": "output",
+   "difficulty": 2,
+   "prompt": "What does this program print?",
+   "code": "with open(\"log.txt\", \"w\") as f:\n    f.write(\"a\\n\")\nwith open(\"log.txt\", \"a\") as f:\n    f.write(\"b\\n\")\nwith open(\"log.txt\") as f:\n    print(f.read().split())",
+   "answer": "['a', 'b']",
+   "explanation": "'w' creates the file with 'a'; 'a' appends 'b'. Reading back and splitting gives ['a', 'b']."
+  },
+  {
+   "id": "d335-11-out-04",
+   "objective": "D335.11",
+   "type": "output",
+   "difficulty": 2,
+   "prompt": "What does this program print?",
+   "code": "with open(\"out.txt\", \"w\") as f:\n    f.write(\"x\")\nwith open(\"out.txt\", \"w\") as f:\n    f.write(\"y\")\nprint(open(\"out.txt\").read())",
+   "answer": "y",
+   "explanation": "Each 'w' open erases the file, so only the second write survives: y."
+  },
+  {
+   "id": "d335-11-out-05",
+   "objective": "D335.11",
+   "type": "output",
+   "difficulty": 3,
+   "prompt": "What does this program print?",
+   "code": "total = 0\nwith open(\"scores.csv\") as f:\n    next(f)\n    for line in f:\n        name, score = line.strip().split(\",\")\n        total += int(score)\nprint(total)",
+   "answer": "225",
+   "explanation": "next(f) skips the header row; the remaining scores 90, 75 and 60 add up to 225.",
+   "files": {
+    "scores.csv": "name,score\nana,90\nbo,75\ncy,60\n"
+   }
+  },
+  {
+   "id": "d335-11-out-06",
+   "objective": "D335.11",
+   "type": "output",
+   "difficulty": 3,
+   "prompt": "What does this program print?",
+   "code": "import csv\nwith open(\"people.csv\", newline=\"\") as f:\n    rows = list(csv.DictReader(f))\nprint(len(rows), rows[1][\"city\"])",
+   "answer": "2 Boise",
+   "explanation": "DictReader uses the header for keys; there are two data rows and the second one's city is 2 Boise.",
+   "files": {
+    "people.csv": "name,city\nAna,Austin\nBo,Boise\n"
+   }
+  },
+  {
+   "id": "d335-11-out-07",
+   "objective": "D335.11",
+   "type": "output",
+   "difficulty": 2,
+   "prompt": "What does this program print?",
+   "code": "with open(\"notes.txt\") as f:\n    for i, line in enumerate(f, start=1):\n        if \"second\" in line:\n            print(i)",
+   "answer": "2",
+   "explanation": "enumerate numbers the lines starting at 1; 'second' is on line 2.",
+   "files": {
+    "notes.txt": "first line\nsecond line\nthird line\n"
+   }
+  },
+  {
+   "id": "d335-11-bug-01",
+   "objective": "D335.11",
+   "type": "bug",
+   "difficulty": 1,
+   "prompt": "This should add a line to the end of log.txt, keeping the old line, and print 2. Click the buggy line.",
+   "code": "with open(\"log.txt\", \"w\") as f:\n    f.write(\"old\\n\")\nwith open(\"log.txt\", \"w\") as f:\n    f.write(\"new\\n\")\nprint(len(open(\"log.txt\").readlines()))",
+   "answer": 3,
+   "fix": "with open(\"log.txt\", \"a\") as f:",
+   "expected": "2",
+   "actual": "1",
+   "explanation": "Mode 'w' wipes the file. Mode 'a' appends."
+  },
+  {
+   "id": "d335-11-bug-02",
+   "objective": "D335.11",
+   "type": "bug",
+   "difficulty": 2,
+   "prompt": "This should print each line of notes.txt without blank lines in between. Click the buggy line.",
+   "code": "with open(\"notes.txt\") as f:\n    for line in f:\n        print(line)",
+   "answer": 3,
+   "fix": "        print(line.rstrip())",
+   "expected": "first line\nsecond line\nthird line",
+   "actual": "first line\n\nsecond line\n\nthird line",
+   "explanation": "Each line already ends in '\\n' and print adds another, producing blank lines.",
+   "files": {
+    "notes.txt": "first line\nsecond line\nthird line\n"
+   }
+  },
+  {
+   "id": "d335-11-bug-03",
+   "objective": "D335.11",
+   "type": "bug",
+   "difficulty": 2,
+   "prompt": "This should write two lines, `a` and `b`, and print 2. Click the buggy line.",
+   "code": "with open(\"pair.txt\", \"w\") as f:\n    f.write(\"a\")\n    f.write(\"b\\n\")\nprint(len(open(\"pair.txt\").readlines()))",
+   "answer": 2,
+   "fix": "    f.write(\"a\\n\")",
+   "expected": "2",
+   "actual": "1",
+   "explanation": "write() doesn't add newlines, so the file contains 'ab' on one line."
+  },
+  {
+   "id": "d335-11-code-01",
+   "objective": "D335.11",
+   "type": "code",
+   "difficulty": 2,
+   "prompt": "A file `notes.txt` exists (it is created for you). Print the number of lines it contains, then the longest line (without its newline). If several lines are equally long, print the first.",
+   "starter": "# Write your program here\n",
+   "tests": [
+    {
+     "stdin": "",
+     "expected": "3\nbravo charlie",
+     "hidden": false
+    }
+   ],
+   "solution": "with open(\"notes.txt\") as f:\n    lines = [line.rstrip(\"\\n\") for line in f]\nprint(len(lines))\nprint(max(lines, key=len))",
+   "explanation": "Read the lines, strip newlines, then use len() and max(key=len).",
+   "files": {
+    "notes.txt": "alpha\nbravo charlie\ndelta\n"
+   }
+  },
+  {
+   "id": "d335-11-code-02",
+   "objective": "D335.11",
+   "type": "code",
+   "difficulty": 2,
+   "prompt": "Read a line of text from input, write it to a new file `copy.txt`, then open `copy.txt` again and print its contents in upper case.",
+   "starter": "# Write your program here\n",
+   "tests": [
+    {
+     "stdin": "hello file",
+     "expected": "HELLO FILE",
+     "hidden": false
+    },
+    {
+     "stdin": "Python 3",
+     "expected": "PYTHON 3",
+     "hidden": false
+    },
+    {
+     "stdin": "x",
+     "expected": "X",
+     "hidden": true
+    }
+   ],
+   "solution": "text = input()\nwith open(\"copy.txt\", \"w\") as f:\n    f.write(text)\nwith open(\"copy.txt\") as f:\n    print(f.read().upper())",
+   "explanation": "Open once with 'w' to write and again with 'r' to read it back."
+  },
+  {
+   "id": "d335-11-code-03",
+   "objective": "D335.11",
+   "type": "code",
+   "difficulty": 3,
+   "prompt": "The file `grades.csv` has a header `name,score` followed by one row per student (it is created for you). Print the name of the student with the highest score.",
+   "starter": "# Write your program here\n",
+   "tests": [
+    {
+     "stdin": "",
+     "expected": "bo",
+     "hidden": false
+    }
+   ],
+   "solution": "best_name, best = None, -1\nwith open(\"grades.csv\") as f:\n    next(f)\n    for line in f:\n        name, score = line.strip().split(\",\")\n        if int(score) > best:\n            best_name, best = name, int(score)\nprint(best_name)",
+   "explanation": "Skip the header, split each row on commas, convert the score and track the maximum.",
+   "files": {
+    "grades.csv": "name,score\nana,88\nbo,93\ncy,71\n"
+   }
+  }
+ ]
+}

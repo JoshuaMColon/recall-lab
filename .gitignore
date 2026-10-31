@@ -1,0 +1,11 @@
+node_modules
+dist
+public/pyodide
+.env
+.env.local
+.env*.local
+.vercel
+playwright-report
+test-results
+*.tsbuildinfo
+__pycache__

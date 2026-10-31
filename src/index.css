@@ -1,0 +1,199 @@
+@import 'tailwindcss';
+@import '@fontsource-variable/fraunces';
+@import '@fontsource-variable/jetbrains-mono';
+@import '@fontsource-variable/atkinson-hyperlegible-next';
+
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
+
+/* Recall Lab: a lab notebook. Graph paper, ink, a highlighter and a red correcting pen.
+   Dark mode is a chalkboard with chalk and a lime highlighter. */
+:root {
+  --paper: #f7f4ec;
+  --card: #fffdf7;
+  --sunk: #efeadc;
+  --ink: #1b2a41;
+  --muted: #4b5567;
+  --line: #d6cfbd;
+  --grid: rgb(27 42 65 / 0.07);
+  --hl: #e8ff59;
+  --on-hl: #1b2a41;
+  --teal: #0f766e;
+  --on-teal: #ffffff;
+  --coral: #ff6b4a;
+  --pen: #b4321b;
+  --good: #166534;
+  --good-bg: #dcf5e3;
+  --bad: #a3221a;
+  --bad-bg: #fde4df;
+  --code-bg: #1b2a41;
+  --code-ink: #f2efe6;
+  --shadow: 3px 3px 0 0 var(--ink);
+  color-scheme: light;
+}
+[data-theme='dark'] {
+  --paper: #10201b;
+  --card: #152a23;
+  --sunk: #0b1814;
+  --ink: #e9efe6;
+  --muted: #a8bdb2;
+  --line: #2d4b40;
+  --grid: rgb(233 239 230 / 0.05);
+  --hl: #d4ff3a;
+  --on-hl: #10201b;
+  --teal: #5eead4;
+  --on-teal: #062a24;
+  --coral: #ff8a70;
+  --pen: #ff9b85;
+  --good: #7ee2a0;
+  --good-bg: #123d2a;
+  --bad: #ffaaa0;
+  --bad-bg: #4a1d19;
+  --code-bg: #07120f;
+  --code-ink: #e9efe6;
+  --shadow: 3px 3px 0 0 #000;
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-paper: var(--paper);
+  --color-card: var(--card);
+  --color-sunk: var(--sunk);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-hl: var(--hl);
+  --color-on-hl: var(--on-hl);
+  --color-teal: var(--teal);
+  --color-on-teal: var(--on-teal);
+  --color-coral: var(--coral);
+  --color-pen: var(--pen);
+  --color-good: var(--good);
+  --color-good-bg: var(--good-bg);
+  --color-bad: var(--bad);
+  --color-bad-bg: var(--bad-bg);
+  --color-code-bg: var(--code-bg);
+  --color-code-ink: var(--code-ink);
+  --font-display: 'Fraunces Variable', Georgia, serif;
+  --font-sans: 'Atkinson Hyperlegible Next Variable', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono Variable', ui-monospace, monospace;
+  --shadow-ink: var(--shadow);
+}
+
+html {
+  background: var(--paper);
+}
+body {
+  min-height: 100dvh;
+  color: var(--ink);
+  font-family: var(--font-sans);
+  background-color: var(--paper);
+  /* graph paper: fine 8px grid plus a stronger 40px grid */
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px),
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 40px 40px, 40px 40px, 8px 8px, 8px 8px;
+  background-attachment: fixed;
+  -webkit-font-smoothing: antialiased;
+}
+
+:focus-visible {
+  outline: 3px solid var(--teal);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* Highlighter swipe behind a word. */
+.hl {
+  background: linear-gradient(100deg, transparent 0 2%, var(--hl) 3% 97%, transparent 98%);
+  color: var(--on-hl);
+  padding: 0 0.15em;
+  border-radius: 0.2em;
+  box-decoration-break: clone;
+}
+
+/* Every pressable thing sinks into the page when pressed (visible click / tap feedback). */
+.press {
+  transition: transform 90ms ease, box-shadow 90ms ease, background-color 120ms ease;
+  box-shadow: var(--shadow);
+}
+.press:hover:not(:disabled) {
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0 0 var(--ink);
+}
+[data-theme='dark'] .press:hover:not(:disabled) {
+  box-shadow: 4px 4px 0 0 #000;
+}
+.press:active:not(:disabled),
+.press[data-pressed='true'] {
+  transform: translate(3px, 3px);
+  box-shadow: 0 0 0 0 transparent;
+}
+.press:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* Ripple dot spawned at the tap point. */
+.tap-dot {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: currentColor;
+  opacity: 0.35;
+  pointer-events: none;
+  transform: translate(-50%, -50%) scale(0);
+  animation: tap 420ms ease-out forwards;
+}
+@keyframes tap {
+  to {
+    transform: translate(-50%, -50%) scale(14);
+    opacity: 0;
+  }
+}
+
+.stamp-in {
+  animation: stamp 260ms cubic-bezier(0.2, 1.6, 0.4, 1) both;
+}
+@keyframes stamp {
+  from {
+    transform: scale(1.25) rotate(-4deg);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1) rotate(-2deg);
+    opacity: 1;
+  }
+}
+
+.tooltip {
+  animation: tip-in 120ms ease-out both;
+}
+@keyframes tip-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 2px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+pre,
+code,
+textarea.code {
+  font-family: var(--font-mono);
+  font-variant-ligatures: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    transition-duration: 1ms !important;
+  }
+}
