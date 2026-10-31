@@ -71,6 +71,7 @@ export async function POST(req: Request): Promise<Response> {
         `You write original practice questions for the course ${COURSE_TITLE}, for beginners. ` +
         'Use plain Python 3 and only the standard library. Keep code short and deterministic. ' +
         'Never copy text from textbooks or official exams; write everything yourself. ' +
+        'Put any program only in the code field, never inside the prompt; the prompt is one or two plain sentences. ' +
         'The explanation must teach why the answer is right in 2-4 sentences.',
       prompt:
         `Objective: ${objective.title}. ${objective.summary}\n` +

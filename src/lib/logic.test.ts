@@ -121,3 +121,11 @@ describe('hashText', () => {
     expect(hashText('abc')).not.toBe(hashText('abd'))
   })
 })
+
+import { cleanPrompt } from './ai'
+describe('cleanPrompt', () => {
+  it('drops a fenced copy of the program when code is shown separately', () => {
+    expect(cleanPrompt('Consider this:\n```python\nx = 1\nprint(x)\n```\nWhat is printed?', true)).toBe('Consider this: What is printed?')
+    expect(cleanPrompt('Plain `x` prompt', true)).toBe('Plain `x` prompt')
+  })
+})

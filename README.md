@@ -2,7 +2,7 @@
 
 A study lab for **WGU D335 – Introduction to Programming in Python**. It quizzes you objective by objective, grades code by actually running it, schedules reviews with spaced repetition, and shows how ready you are for the objective assessment (OA).
 
-**Live:** https://recall-lab.vercel.app · **Guest demo:** [/demo](https://recall-lab.vercel.app/demo) (no sign-up; guest data is deleted after a day)
+**Live:** https://recall-lab-ruby.vercel.app · **Guest demo:** [/demo](https://recall-lab-ruby.vercel.app/demo) (no sign-up; guest data is deleted after a day)
 
 > Recall Lab is an independent study tool. It is not affiliated with or endorsed by WGU or zyBooks. Every question, explanation and objective summary here is original. The objective list paraphrases the publicly described course competencies; it is not official course material.
 

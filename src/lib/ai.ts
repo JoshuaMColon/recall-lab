@@ -70,20 +70,26 @@ const invalid = () => new AiError('invalid', 'The AI wrote a question that faile
  * bug fixes must change the behaviour, and code tasks get their expected outputs from the
  * reference solution. Only multiple-choice keys can't be machine-checked; they are labelled.
  */
+/** Models sometimes paste the program into the prompt as a fenced block as well; the code is shown separately. */
+export function cleanPrompt(prompt: string, hasCode: boolean): string {
+  const p = hasCode ? prompt.replace(/```[a-z]*\n[\s\S]*?```/gi, ' ') : prompt
+  return p.replace(/\s+/g, ' ').trim() || 'What does this program do?'
+}
+
 export async function verify(type: QType, objective: string, raw: unknown): Promise<Question> {
   const base = { id: 'ai-pending', objective, difficulty: 2 as const, source: 'ai' as const }
   switch (type) {
     case 'mcq': {
       const r = raw as RawMcq
       if (new Set(r.choices).size !== r.choices.length || r.answerIndex < 0 || r.answerIndex >= r.choices.length) throw invalid()
-      return { ...base, type, prompt: r.prompt, explanation: r.explanation, code: r.code?.trim() || undefined, choices: r.choices, answer: r.answerIndex }
+      return { ...base, type, prompt: cleanPrompt(r.prompt, !!r.code?.trim()), explanation: r.explanation, code: r.code?.trim() || undefined, choices: r.choices, answer: r.answerIndex }
     }
     case 'output': {
       const r = raw as RawOutput
       const [run] = await python.run(r.code, [{ stdin: '' }])
       const out = normalizeOutput(run.stdout)
       if (run.error || run.timedOut || !out || out.split('\n').length > 8) throw invalid()
-      return { ...base, type, prompt: r.prompt || 'What does this program print?', explanation: r.explanation, code: r.code, answer: out }
+      return { ...base, type, prompt: cleanPrompt(r.prompt || 'What does this program print?', true), explanation: r.explanation, code: r.code, answer: out }
     }
     case 'bug': {
       const r = raw as RawBug
@@ -99,7 +105,7 @@ export async function verify(type: QType, objective: string, raw: unknown): Prom
       return {
         ...base,
         type,
-        prompt: r.prompt,
+        prompt: cleanPrompt(r.prompt, true),
         explanation: r.explanation,
         code: r.code,
         answer: r.bugLine,
