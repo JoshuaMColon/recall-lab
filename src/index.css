@@ -1,56 +1,76 @@
 @import 'tailwindcss';
-@import '@fontsource-variable/fraunces';
+@import '@fontsource-variable/unbounded';
 @import '@fontsource-variable/jetbrains-mono';
 @import '@fontsource-variable/atkinson-hyperlegible-next';
 
 @custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
 
-/* Recall Lab: a lab notebook. Graph paper, ink, a highlighter and a red correcting pen.
-   Dark mode is a chalkboard with chalk and a lime highlighter. */
+/* Recall Lab: deep space. Two accents only: nebula violet (--teal, the "accent" token) and
+   warm starlight gold (--hl). Token names are kept from v1 so components did not need renaming:
+   --teal = accent violet, --hl = star gold, --coral = amber (badges, the gauge target star).
+   Light mode is "stardust dawn": pale lilac paper with a faint star chart and constellation lines. */
 :root {
-  --paper: #f7f4ec;
-  --card: #fffdf7;
-  --sunk: #efeadc;
-  --ink: #1b2a41;
-  --muted: #4b5567;
-  --line: #d6cfbd;
-  --grid: rgb(27 42 65 / 0.07);
-  --hl: #e8ff59;
-  --on-hl: #1b2a41;
-  --teal: #0f766e;
+  --paper: #f3f1fa;
+  --card: #ffffff;
+  --sunk: #ebe8f6;
+  --ink: #17163a;
+  --muted: #4b4a72;
+  --line: #dcd7f0;
+  --edge: #8780bd;
+  --hl: #ffcd5c;
+  --on-hl: #17163a;
+  --teal: #5a3fd1;
   --on-teal: #ffffff;
-  --coral: #ff6b4a;
-  --pen: #b4321b;
-  --good: #166534;
-  --good-bg: #dcf5e3;
-  --bad: #a3221a;
-  --bad-bg: #fde4df;
-  --code-bg: #1b2a41;
-  --code-ink: #f2efe6;
-  --shadow: 3px 3px 0 0 var(--ink);
+  --coral: #f0a63c;
+  --pen: #b0275a;
+  --good: #136b45;
+  --good-bg: #def5ea;
+  --bad: #a8233f;
+  --bad-bg: #fde6ec;
+  --code-bg: #15143a;
+  --code-ink: #eeeaff;
+  --glow: 90 63 209;
+  --star: 74 58 170;
+  --title-a: #4a2fc4;
+  --title-b: #8a4b00;
+  --shadow: 0 1px 0 0 rgb(23 22 58 / 0.08), 0 10px 24px -14px rgb(var(--glow) / 0.45);
+  --shadow-hover: 0 1px 0 0 rgb(23 22 58 / 0.1), 0 14px 30px -12px rgb(var(--glow) / 0.6);
+  --nebula:
+    radial-gradient(55rem 34rem at 88% -8%, rgb(90 63 209 / 0.13), transparent 62%),
+    radial-gradient(44rem 30rem at -8% 38%, rgb(255 205 92 / 0.2), transparent 60%),
+    radial-gradient(40rem 28rem at 60% 112%, rgb(90 63 209 / 0.08), transparent 60%);
   color-scheme: light;
 }
 [data-theme='dark'] {
-  --paper: #10201b;
-  --card: #152a23;
-  --sunk: #0b1814;
-  --ink: #e9efe6;
-  --muted: #a8bdb2;
-  --line: #2d4b40;
-  --grid: rgb(233 239 230 / 0.05);
-  --hl: #d4ff3a;
-  --on-hl: #10201b;
-  --teal: #5eead4;
-  --on-teal: #062a24;
-  --coral: #ff8a70;
-  --pen: #ff9b85;
-  --good: #7ee2a0;
-  --good-bg: #123d2a;
-  --bad: #ffaaa0;
-  --bad-bg: #4a1d19;
-  --code-bg: #07120f;
-  --code-ink: #e9efe6;
-  --shadow: 3px 3px 0 0 #000;
+  --paper: #070917;
+  --card: #0f1430;
+  --sunk: #0a0e24;
+  --ink: #eceefe;
+  --muted: #a9b0d6;
+  --line: #262d58;
+  --edge: #6d74b9;
+  --hl: #ffcf6e;
+  --on-hl: #120f24;
+  --teal: #b39dff;
+  --on-teal: #120f24;
+  --coral: #ffb36b;
+  --pen: #ff9db5;
+  --good: #7be3bd;
+  --good-bg: #0f2e2a;
+  --bad: #ffa3b6;
+  --bad-bg: #3a1328;
+  --code-bg: #060818;
+  --code-ink: #e6e8ff;
+  --glow: 140 112 255;
+  --star: 236 238 254;
+  --title-a: #ffd98a;
+  --title-b: #c2b0ff;
+  --shadow: 0 0 0 1px rgb(var(--glow) / 0.14), 0 12px 32px -14px rgb(var(--glow) / 0.55);
+  --shadow-hover: 0 0 0 1px rgb(var(--glow) / 0.35), 0 14px 38px -10px rgb(var(--glow) / 0.75);
+  --nebula:
+    radial-gradient(60rem 38rem at 88% -12%, rgb(124 92 255 / 0.24), transparent 62%),
+    radial-gradient(48rem 34rem at -12% 34%, rgb(76 58 196 / 0.18), transparent 62%),
+    radial-gradient(42rem 30rem at 66% 115%, rgb(255 190 110 / 0.09), transparent 60%);
   color-scheme: dark;
 }
 
@@ -61,6 +81,7 @@
   --color-ink: var(--ink);
   --color-muted: var(--muted);
   --color-line: var(--line);
+  --color-edge: var(--edge);
   --color-hl: var(--hl);
   --color-on-hl: var(--on-hl);
   --color-teal: var(--teal);
@@ -73,7 +94,7 @@
   --color-bad-bg: var(--bad-bg);
   --color-code-bg: var(--code-bg);
   --color-code-ink: var(--code-ink);
-  --font-display: 'Fraunces Variable', Georgia, serif;
+  --font-display: 'Unbounded Variable', 'Atkinson Hyperlegible Next Variable', system-ui, sans-serif;
   --font-sans: 'Atkinson Hyperlegible Next Variable', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono Variable', ui-monospace, monospace;
   --shadow-ink: var(--shadow);
@@ -86,16 +107,18 @@ body {
   min-height: 100dvh;
   color: var(--ink);
   font-family: var(--font-sans);
-  background-color: var(--paper);
-  /* graph paper: fine 8px grid plus a stronger 40px grid */
-  background-image:
-    linear-gradient(var(--grid) 1px, transparent 1px),
-    linear-gradient(90deg, var(--grid) 1px, transparent 1px),
-    linear-gradient(var(--grid) 1px, transparent 1px),
-    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
-  background-size: 40px 40px, 40px 40px, 8px 8px, 8px 8px;
-  background-attachment: fixed;
+  /* no body background: it would paint over the nebula and starfield layers (negative z-index) */
   -webkit-font-smoothing: antialiased;
+}
+/* Nebula glow on its own fixed layer (background-attachment: fixed is janky on mobile).
+   The starfield canvas sits above it at z-index -1; all content sits on solid cards above both. */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  background: var(--nebula);
 }
 
 @layer base {
@@ -107,38 +130,108 @@ body {
   }
 }
 
-/* Highlighter swipe behind a word. */
+/* Starlight gradient on a key word: gold to violet in space, deep violet to amber at dawn. */
 .hl {
-  background: linear-gradient(100deg, transparent 0 2%, var(--hl) 3% 97%, transparent 98%);
-  color: var(--on-hl);
-  padding: 0 0.15em;
-  border-radius: 0.2em;
+  background: linear-gradient(95deg, var(--title-a), var(--title-b));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
   box-decoration-break: clone;
 }
+@media (forced-colors: active) {
+  .hl {
+    color: CanvasText;
+    background: none;
+  }
+}
 
-/* Every pressable thing sinks into the page when pressed (visible click / tap feedback). */
+/* Every pressable thing lifts on hover and sinks with a brighter glow on press. */
 .press {
-  transition: transform 90ms ease, box-shadow 90ms ease, background-color 120ms ease;
+  transition: transform 110ms ease, box-shadow 140ms ease, background-color 140ms ease, border-color 140ms ease;
   box-shadow: var(--shadow);
 }
 .press:hover:not(:disabled) {
-  transform: translate(-1px, -1px);
-  box-shadow: 4px 4px 0 0 var(--ink);
-}
-[data-theme='dark'] .press:hover:not(:disabled) {
-  box-shadow: 4px 4px 0 0 #000;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-hover);
 }
 .press:active:not(:disabled),
 .press[data-pressed='true'] {
-  transform: translate(3px, 3px);
-  box-shadow: 0 0 0 0 transparent;
+  transform: translateY(1px) scale(0.98);
+  box-shadow: 0 0 0 3px rgb(var(--glow) / 0.35), 0 0 18px 2px rgb(var(--glow) / 0.35);
 }
 .press:disabled {
   opacity: 0.55;
   cursor: not-allowed;
 }
 
-/* Ripple dot spawned at the tap point. */
+/* Cards: solid surface for readability, a faint violet sheen at the top edge. */
+.card-surface {
+  background:
+    linear-gradient(180deg, rgb(var(--glow) / 0.07), transparent 7rem),
+    var(--card);
+}
+
+/* Orbit progress bars: the fill ends in a small glowing star. */
+.orbit-fill {
+  position: relative;
+}
+.orbit-fill::after {
+  content: '';
+  position: absolute;
+  right: -3px;
+  top: 50%;
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+  transform: translateY(-50%);
+  background: #fff;
+  box-shadow: 0 0 0 2px currentColor, 0 0 10px 2px currentColor;
+}
+.orbit-fill[data-empty='true']::after {
+  display: none;
+}
+
+/* Star burst on a correct answer. */
+.burst {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+.burst i {
+  position: absolute;
+  left: -3.5px;
+  top: -3.5px;
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: var(--hl);
+  box-shadow: 0 0 8px 1px var(--hl);
+  opacity: 0;
+  animation: burst 800ms cubic-bezier(0.2, 0.7, 0.3, 1) forwards;
+}
+.burst i:nth-child(even) {
+  background: var(--teal);
+  box-shadow: 0 0 8px 1px var(--teal);
+  width: 5px;
+  height: 5px;
+}
+@keyframes burst {
+  0% {
+    opacity: 1;
+    transform: rotate(var(--a)) translateX(0) scale(1);
+  }
+  55% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: rotate(var(--a)) translateX(var(--d, 56px)) scale(0.3);
+  }
+}
+
 .tap-dot {
   position: absolute;
   width: 10px;
@@ -162,12 +255,14 @@ body {
 }
 @keyframes stamp {
   from {
-    transform: scale(1.25) rotate(-4deg);
+    transform: scale(1.2);
     opacity: 0;
+    filter: blur(2px);
   }
   to {
-    transform: scale(1) rotate(-2deg);
+    transform: scale(1);
     opacity: 1;
+    filter: none;
   }
 }
 
@@ -193,6 +288,9 @@ textarea.code {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .burst {
+    display: none;
+  }
   *,
   *::before,
   *::after {

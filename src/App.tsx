@@ -27,7 +27,7 @@ function NotFound() {
   return (
     <Card className="mx-auto max-w-md text-center">
       <p className="font-mono text-6xl font-bold text-pen">404</p>
-      <h1 className="font-display text-2xl font-bold">That page isn’t in the notebook</h1>
+      <h1 className="font-display text-2xl font-bold">That page is off the star chart</h1>
       <div className="mt-4"><LinkBtn to="/" tip="Back to the home page" variant="hl">Go home</LinkBtn></div>
     </Card>
   )
@@ -36,7 +36,7 @@ function NotFound() {
 function Loading() {
   return (
     <p role="status" className="flex items-center justify-center gap-2 py-20 text-muted">
-      <Loader2 aria-hidden="true" className="animate-spin" /> Loading your notebook…
+      <Loader2 aria-hidden="true" className="animate-spin" /> Loading your star chart…
     </p>
   )
 }

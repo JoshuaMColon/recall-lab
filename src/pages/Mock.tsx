@@ -103,14 +103,14 @@ export function Mock() {
     return (
       <div className="mx-auto max-w-2xl">
         <Card>
-          <p className="font-mono text-sm font-semibold uppercase tracking-widest text-teal">Mock OA</p>
-          <h1 className="font-display text-4xl font-bold">A timed dress rehearsal</h1>
+          <p className="font-mono text-sm font-semibold uppercase tracking-widest text-teal">Mock OA · Mission briefing</p>
+          <h1 className="font-display text-3xl font-bold sm:text-4xl">A timed launch rehearsal</h1>
           <ul className="mt-4 space-y-2">
             <li className="flex gap-2"><Timer aria-hidden="true" className="shrink-0 text-teal" /> {MOCK_DEFAULT.count} questions in {MOCK_DEFAULT.minutes} minutes, including {MOCK_DEFAULT.codeSlots} write-the-code tasks at the end.</li>
             <li className="flex gap-2"><Flag aria-hidden="true" className="shrink-0 text-teal" /> No feedback until you submit. Flag questions to come back to them.</li>
             <li className="flex gap-2"><AlarmClock aria-hidden="true" className="shrink-0 text-teal" /> Questions are spread across objectives by weight; when time runs out it submits itself.</li>
           </ul>
-          <p className="mt-4 rounded-xl border-2 border-dashed border-ink p-3 text-sm text-muted">
+          <p className="mt-4 rounded-xl border-2 border-dashed border-edge p-3 text-sm text-muted">
             This is Recall Lab’s own practice format with a {Math.round(MOCK_DEFAULT.passTarget * 100)}% target. It is not the official OA and doesn’t predict its length, question style or cut score.
           </p>
           <div className="mt-6 flex gap-2">
@@ -141,7 +141,7 @@ export function Mock() {
     return (
       <div className="mx-auto max-w-3xl space-y-4">
         <Card>
-          <p className="font-mono text-sm font-semibold uppercase tracking-widest text-teal">Mock OA results</p>
+          <p className="font-mono text-sm font-semibold uppercase tracking-widest text-teal">Mission debrief · <span>Mock OA results</span></p>
           <h1 className="font-display text-5xl font-bold">{Math.round(pct * 100)}%</h1>
           <p className={`mt-1 font-semibold ${pct >= MOCK_DEFAULT.passTarget ? 'text-good' : 'text-bad'}`}>
             {correct} of {qs.length} correct · {pct >= MOCK_DEFAULT.passTarget ? 'above' : 'below'} the {Math.round(MOCK_DEFAULT.passTarget * 100)}% practice target
@@ -161,7 +161,7 @@ export function Mock() {
         </Card>
         <h2 className="font-display text-2xl font-bold">Question by question</h2>
         {qs.map((q, k) => (
-          <details key={k} className="rounded-2xl border-2 border-ink bg-card p-4">
+          <details key={k} className="rounded-2xl card-surface border border-line p-4">
             <summary className="flex cursor-pointer items-center gap-3 font-semibold">
               <span className={grades[k].correct ? 'text-good' : 'text-bad'}>{grades[k].correct ? '✓' : '✗'}</span>
               <span className="font-mono">Q{k + 1}</span>
@@ -221,7 +221,7 @@ export function Mock() {
             })}
           </div>
           {confirm ? (
-            <div className="mt-4 space-y-2 rounded-xl border-2 border-ink p-3" role="alertdialog" aria-label="Confirm submission">
+            <div className="mt-4 space-y-2 rounded-xl border-2 border-edge p-3" role="alertdialog" aria-label="Confirm submission">
               <p className="text-sm font-semibold">Submit now? {qs.length - answeredCount} unanswered.</p>
               <div className="flex gap-2">
                 <Btn tip="Grade the exam now" variant="hl" size="sm" onClick={() => void finish()}>Submit</Btn>

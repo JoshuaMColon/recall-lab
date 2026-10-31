@@ -28,8 +28,8 @@ export function Landing() {
       <section className="grid items-center gap-10 lg:grid-cols-[1.1fr_0.9fr]">
         <div>
           <p className="mb-3 font-mono text-sm font-semibold uppercase tracking-widest text-teal">{COURSE.code} · {COURSE.title}</p>
-          <h1 className="font-display text-4xl font-bold leading-[1.05] tracking-tight sm:text-6xl">
-            Study Python like a <span className="hl">lab notebook</span>, not a cram sheet.
+          <h1 className="font-display text-[2.05rem] font-bold leading-[1.12] tracking-tight sm:text-5xl lg:text-[3.35rem]">
+            Chart every Python objective, <span className="hl">one star at a time.</span>
           </h1>
           <p className="mt-5 max-w-xl text-lg text-muted">
             {BANK.length} original practice questions across every objective — predict the output, find the bug, write the code — graded instantly by real Python, with spaced repetition that remembers what you miss.
@@ -37,7 +37,7 @@ export function Landing() {
           <div className="mt-7 flex flex-wrap gap-3">
             {signedIn ? (
               <LinkBtn to="/dashboard" tip="Open your mastery dashboard" variant="hl" size="lg">
-                Open my lab <ArrowRight aria-hidden="true" size={20} />
+                Open my star chart <ArrowRight aria-hidden="true" size={20} />
               </LinkBtn>
             ) : (
               <>
@@ -65,8 +65,8 @@ export function Landing() {
           </dl>
         </div>
 
-        <Card as="article" className="relative rotate-[0.6deg]" aria-labelledby="sample-q">
-          <div className="absolute -top-3 right-6 rotate-3 rounded-md border-2 border-ink bg-coral px-2 py-0.5 font-mono text-xs font-bold text-on-hl">sample</div>
+        <Card as="article" className="relative" aria-labelledby="sample-q">
+          <div className="absolute -top-3 right-6 rounded-full border border-hl bg-hl px-2.5 py-0.5 font-mono text-xs font-bold text-on-hl shadow-[0_0_16px_rgb(255_207_110/0.55)]">sample</div>
           <p className="mb-1 font-mono text-xs font-semibold uppercase tracking-wider text-teal">04 · Loops · Predict the output</p>
           <h2 id="sample-q" className="mb-3 font-display text-xl font-semibold">What does this program print?</h2>
           <CodeBlock code={SAMPLE} label="Sample question code" />
@@ -80,7 +80,7 @@ export function Landing() {
       </section>
 
       <section aria-labelledby="features">
-        <h2 id="features" className="mb-5 font-display text-3xl font-bold">What’s on the bench</h2>
+        <h2 id="features" className="mb-5 font-display text-3xl font-bold">What’s on board</h2>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {FEATURES.map(({ Icon, title, body }) => (
             <Card key={title} as="article">
@@ -103,7 +103,7 @@ export function Landing() {
         </div>
         <ol className="grid gap-2 sm:grid-cols-2">
           {OBJECTIVES.map((o) => (
-            <li key={o.id} className="flex items-baseline gap-3 rounded-xl border-2 border-line bg-card px-3 py-2">
+            <li key={o.id} className="flex items-baseline gap-3 rounded-xl border border-line bg-card px-3 py-2">
               <span className="font-mono text-sm font-bold text-teal">{o.code}</span>
               <span className="font-medium">{o.title}</span>
               <span className="ml-auto font-mono text-xs text-muted">{o.weight}%</span>

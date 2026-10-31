@@ -53,9 +53,9 @@ export function Login() {
   return (
     <div className="mx-auto grid max-w-4xl items-start gap-8 md:grid-cols-2">
       <div>
-        <h1 className="font-display text-4xl font-bold">{mode === 'in' ? 'Welcome back to the lab.' : 'Open a new notebook.'}</h1>
+        <h1 className="font-display text-4xl font-bold">{mode === 'in' ? 'Welcome back, navigator.' : 'Chart a new course.'}</h1>
         <p className="mt-3 text-muted">An account keeps your attempts, review schedule and mock results across devices. Guests can try everything, but their data is deleted after a day.</p>
-        {isGuest && <p className="mt-3 rounded-xl border-2 border-dashed border-ink p-3 text-sm">You are in a guest session. Signing in to an account starts a fresh notebook; guest progress is not moved over.</p>}
+        {isGuest && <p className="mt-3 rounded-xl border-2 border-dashed border-edge p-3 text-sm">You are in a guest session. Signing in to an account starts a fresh star chart; guest progress is not moved over.</p>}
       </div>
       <Card>
         <div role="tablist" aria-label="Account" className="mb-5 grid grid-cols-2 gap-2">
@@ -68,7 +68,7 @@ export function Login() {
         <form onSubmit={submit} className="space-y-4">
           <label className="block">
             <span className="mb-1 block text-sm font-semibold">Email</span>
-            <input type="email" required autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full rounded-xl border-2 border-ink bg-paper px-3 py-2" />
+            <input type="email" required autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full rounded-xl border-2 border-edge bg-paper px-3 py-2" />
           </label>
           <label className="block">
             <span className="mb-1 block text-sm font-semibold">Password</span>
@@ -79,7 +79,7 @@ export function Login() {
               autoComplete={mode === 'in' ? 'current-password' : 'new-password'}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full rounded-xl border-2 border-ink bg-paper px-3 py-2"
+              className="w-full rounded-xl border-2 border-edge bg-paper px-3 py-2"
             />
             {mode === 'up' && <span className="mt-1 block text-xs text-muted">At least 8 characters.</span>}
           </label>
@@ -134,7 +134,7 @@ export function Demo() {
         </>
       ) : (
         <p role="status" className="flex items-center justify-center gap-2 font-semibold">
-          <Loader2 aria-hidden="true" className="animate-spin" /> Setting up a guest notebook…
+          <Loader2 aria-hidden="true" className="animate-spin" /> Setting up a guest star chart…
         </p>
       )}
     </Card>
