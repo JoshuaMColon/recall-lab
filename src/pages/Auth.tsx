@@ -101,7 +101,9 @@ export function Login() {
   )
 }
 
-// One guest sign-in per page load, even if React runs the effect twice.
+// One guest sign-in at a time, even if React runs the effect twice. Cleared
+// once it settles, so "Try the demo" after signing out starts a fresh guest
+// instead of replaying the old (already signed-out) sign-in.
 let demoStart: ReturnType<NonNullable<typeof supabase>['auth']['signInAnonymously']> | null = null
 
 export function Demo() {
@@ -113,9 +115,9 @@ export function Demo() {
       return
     }
     let live = true
-    demoStart ??= supabase.auth.signInAnonymously()
-    demoStart.then(({ error }) => {
-      if (error) demoStart = null
+    const start = (demoStart ??= supabase.auth.signInAnonymously())
+    void start.then(({ error }) => {
+      if (demoStart === start) demoStart = null
       if (!live) return
       if (error) setErr(error.message)
       else navigate('/dashboard', true)
