@@ -1,8 +1,10 @@
 import { useEffect, useState, type AnchorHTMLAttributes, type MouseEvent } from 'react'
+import { stopSpeech } from './lib/speech'
 
 const listeners = new Set<() => void>()
 
 export function navigate(to: string, replace = false) {
+  stopSpeech()
   if (replace) history.replaceState(null, '', to)
   else history.pushState(null, '', to)
   listeners.forEach((l) => l())

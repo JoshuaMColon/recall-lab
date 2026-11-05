@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { Loader2 } from 'lucide-react'
+import { stopSpeech } from './lib/speech'
 import { navigate, useLocation } from './router'
 import { useApp } from './state'
 import { AppShell } from './components/Shell'
@@ -49,6 +50,8 @@ export function App() {
 
   useEffect(() => {
     document.title = TITLES[path] ?? 'Not found · Recall Lab'
+    // Back/forward does not go through navigate(); stop any in-progress reading.
+    stopSpeech()
   }, [path])
 
   useEffect(() => {
