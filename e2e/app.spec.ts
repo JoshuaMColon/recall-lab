@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test'
-import { expectAxeClean, setTheme } from './helpers'
+import { expectAxeClean, installSpeechStub, setTheme, speechLog } from './helpers'
 
 test.describe('landing', () => {
   for (const theme of ['light', 'dark'] as const) {
@@ -83,17 +83,7 @@ test.describe('practice', () => {
 
 test.describe('beginner guide', () => {
   test('is linked from the landing page and Listen never autoplays', async ({ page }) => {
-    await page.addInitScript(() => {
-      const calls: string[] = []
-      ;(window as unknown as { __speaks: string[] }).__speaks = calls
-      const synth = window.speechSynthesis
-      synth.speak = ((utterance: SpeechSynthesisUtterance) => {
-        calls.push(`speak:${utterance.text.slice(0, 80)}`)
-      }) as typeof synth.speak
-      synth.cancel = () => {
-        calls.push('cancel')
-      }
-    })
+    await installSpeechStub(page)
     await page.goto('/')
     await page.getByRole('link', { name: 'How to use this' }).click()
     await expect(page).toHaveURL(/\/guide$/)
@@ -101,10 +91,10 @@ test.describe('beginner guide', () => {
     for (const title of ['Guest demo or a free account', 'Dashboard, Practice, Review, and Mock OA', 'The four kinds of questions', 'How grading works', 'Spaced repetition, in plain English']) {
       await expect(page.getByRole('heading', { name: title })).toBeVisible()
     }
-    const before = await page.evaluate(() => (window as unknown as { __speaks: string[] }).__speaks)
+    const before = await speechLog(page)
     expect(before.filter((entry) => entry.startsWith('speak:'))).toEqual([])
     await page.getByRole('button', { name: 'Listen to the whole guide' }).click()
-    await expect.poll(async () => page.evaluate(() => (window as unknown as { __speaks: string[] }).__speaks.some((entry) => entry.startsWith('speak:')))).toBe(true)
+    await expect.poll(async () => (await speechLog(page)).some((entry) => entry.startsWith('speak:'))).toBe(true)
     await expect(page.getByRole('status').filter({ hasText: 'Speaking' }).first()).toBeVisible()
     await page.getByRole('button', { name: 'Stop' }).click()
     await expect(page.getByRole('button', { name: 'Listen to the whole guide' })).toBeVisible()
@@ -114,24 +104,14 @@ test.describe('beginner guide', () => {
 
 test.describe('lessons', () => {
   test('index loads and Listen does not autoplay', async ({ page }) => {
-    await page.addInitScript(() => {
-      const calls: string[] = []
-      ;(window as unknown as { __speaks: string[] }).__speaks = calls
-      const synth = window.speechSynthesis
-      synth.speak = ((utterance: SpeechSynthesisUtterance) => {
-        calls.push(`speak:${utterance.text.slice(0, 80)}`)
-      }) as typeof synth.speak
-      synth.cancel = () => {
-        calls.push('cancel')
-      }
-    })
+    await installSpeechStub(page)
     await page.goto('/lessons')
     await expect(page.getByRole('heading', { level: 1, name: /one topic at a time/i })).toBeVisible()
     await expect(page.getByRole('heading', { name: /Scripts with control flow/ })).toBeVisible()
     await expect(page.getByRole('heading', { name: /Reuse and file I\/O/ })).toBeVisible()
     await expect(page.getByRole('link', { name: /Variables, expressions/ })).toBeVisible()
     await expect(page.getByRole('link', { name: /Files/ }).first()).toBeVisible()
-    const before = await page.evaluate(() => (window as unknown as { __speaks: string[] }).__speaks)
+    const before = await speechLog(page)
     expect(before.filter((entry) => entry.startsWith('speak:'))).toEqual([])
     await expect(page.getByRole('status').filter({ hasText: 'Speaking' })).toHaveCount(0)
     await expectAxeClean(page)
@@ -141,15 +121,26 @@ test.describe('lessons', () => {
     await expect(page.getByRole('heading', { level: 1, name: 'Variables, expressions & operators' })).toBeVisible()
     await expect(page.getByRole('button', { name: 'Listen to this lesson' })).toBeVisible()
     await expect(page.getByRole('link', { name: 'Practice this topic' })).toHaveAttribute('href', /\/quiz\?o=D335\.01&n=5/)
-    const onLesson = await page.evaluate(() => (window as unknown as { __speaks: string[] }).__speaks)
+    const onLesson = await speechLog(page)
     expect(onLesson.filter((entry) => entry.startsWith('speak:'))).toEqual([])
 
     await page.getByRole('button', { name: 'Listen to this lesson' }).click()
-    await expect.poll(async () => page.evaluate(() => (window as unknown as { __speaks: string[] }).__speaks.some((entry) => entry.startsWith('speak:')))).toBe(true)
+    await expect.poll(async () => (await speechLog(page)).some((entry) => entry.startsWith('speak:'))).toBe(true)
     await expect(page.getByRole('status').filter({ hasText: 'Speaking' }).first()).toBeVisible()
     await page.getByRole('button', { name: 'Stop' }).click()
     await expect(page.getByRole('button', { name: 'Listen to this lesson' })).toBeVisible()
     await expectAxeClean(page)
+  })
+
+  test('shows an error and returns to Listen when speech fails', async ({ page }) => {
+    await installSpeechStub(page, 'error')
+    await page.goto('/guide')
+    await page.getByRole('button', { name: 'Listen to the whole guide' }).click()
+    await expect(page.getByRole('alert')).toContainText(/Couldn't play voice/i)
+    await expect(page.getByRole('button', { name: 'Listen to the whole guide' })).toBeEnabled()
+    await expect(page.getByRole('status').filter({ hasText: 'Speaking' })).toHaveCount(0)
+    const added = await speechLog(page)
+    expect(added.some((entry) => entry.startsWith('speak:'))).toBe(true)
   })
 
   test('unknown lesson shows the not-found page', async ({ page }) => {
