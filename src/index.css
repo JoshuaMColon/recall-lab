@@ -147,6 +147,9 @@ body::before {
 
 /* Every pressable thing lifts on hover and sinks with a brighter glow on press. */
 .press {
+  /* Keep the tap inside the user-activation window. A double-tap zoom delay can
+     expire it before click, and iOS then drops speechSynthesis.speak() with no error. */
+  touch-action: manipulation;
   transition: transform 110ms ease, box-shadow 140ms ease, background-color 140ms ease, border-color 140ms ease;
   box-shadow: var(--shadow);
 }
