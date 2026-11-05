@@ -1,6 +1,6 @@
 import { useEffect, useId, useSyncExternalStore } from 'react'
 import { Square, Volume2 } from 'lucide-react'
-import { speaker } from '../lib/speech'
+import { NO_VOICE_TIP, SILENT_SWITCH_HINT, speaker } from '../lib/speech'
 import { Btn } from './ui'
 
 function subscribe(fn: () => void) {
@@ -24,8 +24,11 @@ export function ListenButton({
 }) {
   const id = useId()
   const activeId = useSyncExternalStore(subscribe, () => speaker.activeId, () => null)
+  const error = useSyncExternalStore(subscribe, () => speaker.error, () => null)
+  const voicesUnavailable = useSyncExternalStore(subscribe, () => speaker.voicesUnavailable, () => false)
   const speaking = activeId === id
   const supported = speaker.supported
+  const problem = error?.id === id ? error.message : null
 
   useEffect(() => {
     return () => {
@@ -43,13 +46,24 @@ export function ListenButton({
     )
   }
 
+  if (voicesUnavailable && !speaking) {
+    return (
+      <Btn tip={NO_VOICE_TIP} size={size} variant="plain" disabled>
+        <Volume2 aria-hidden="true" size={16} /> {label}
+      </Btn>
+    )
+  }
+
+  const idleTip = tip.includes('silent switch') ? tip : `${tip} ${SILENT_SWITCH_HINT}`
+
   return (
-    <span className="inline-flex items-center gap-2">
+    <span className="inline-flex max-w-full flex-wrap items-center gap-2">
       <Btn
-        tip={speaking ? 'Stop the voice' : tip}
+        tip={speaking ? 'Stop the voice' : idleTip}
         size={size}
         variant={speaking ? 'hl' : 'ghost'}
         aria-pressed={speaking}
+        aria-errormessage={problem ? `${id}-speech-error` : undefined}
         className={speaking ? 'listen-live' : ''}
         onClick={() => speaker.toggle(id, text)}
       >
@@ -59,6 +73,11 @@ export function ListenButton({
       {speaking && (
         <span role="status" className="text-xs font-semibold uppercase tracking-wide text-teal">
           Speaking
+        </span>
+      )}
+      {problem && !speaking && (
+        <span id={`${id}-speech-error`} role="alert" className="max-w-64 text-xs font-semibold leading-snug text-bad">
+          {problem}
         </span>
       )}
     </span>
