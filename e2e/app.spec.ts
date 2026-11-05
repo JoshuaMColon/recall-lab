@@ -57,7 +57,7 @@ test.describe('practice', () => {
     await page.getByRole('textbox', { name: 'Exact output' }).fill('definitely wrong')
     await page.getByRole('button', { name: 'Check answer' }).click()
     await expect(page.getByText('Not quite')).toBeVisible()
-    await expect(page.getByText('Python prints')).toBeVisible()
+    await expect(page.getByText('Python prints', { exact: true })).toBeVisible()
   })
 
   test('find the bug: choosing a line grades it and shows the fix', async ({ page }) => {
