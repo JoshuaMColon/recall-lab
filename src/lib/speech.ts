@@ -84,7 +84,7 @@ export interface Speaker {
 }
 
 export function createSpeaker(synth: SpeechSynth | null, makeUtterance?: (text: string) => SpeechUtterance): Speaker {
-  const make = makeUtterance ?? ((text: string) => new SpeechSynthesisUtterance(text))
+  const make = makeUtterance ?? ((text: string) => new SpeechSynthesisUtterance(text) as unknown as SpeechUtterance)
   const listeners = new Set<() => void>()
   let activeId: string | null = null
   let token = 0
@@ -130,7 +130,7 @@ export function createSpeaker(synth: SpeechSynth | null, makeUtterance?: (text: 
         u.lang = 'en-US'
         u.rate = 0.96
         u.onend = () => run(i + 1)
-        u.onerror = (ev) => {
+        u.onerror = (ev: { error?: string }) => {
           if (token !== mine) return
           if (ev.error === 'interrupted' || ev.error === 'canceled' || ev.error === 'cancelled') return
           setActive(null)
@@ -156,7 +156,7 @@ function browserSynth(): SpeechSynth | null {
   if (typeof window === 'undefined') return null
   const synth = window.speechSynthesis
   if (!synth || typeof synth.speak !== 'function' || typeof synth.cancel !== 'function') return null
-  return synth
+  return synth as unknown as SpeechSynth
 }
 
 /** Shared speaker so starting one Listen target cancels any other. */
