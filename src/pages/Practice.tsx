@@ -5,10 +5,24 @@ import { LEVEL_LABEL } from '../lib/mastery'
 import type { QType } from '../lib/types'
 import { navigate } from '../router'
 import { useApp } from '../state'
+import { ListenButton } from '../components/ListenButton'
 import { Btn, Card } from '../components/ui'
+import { Prose } from '../components/Prose'
 
 const TYPES: QType[] = ['mcq', 'output', 'bug', 'code']
 const COUNTS = [5, 10, 20]
+
+const PRACTICE_HELP = `Practice is a short quiz you build yourself. Nothing is timed. After every question you see if you were right, plus an explanation.
+
+1. Topics are the numbered rows below, such as variables or loops. Press one or more to practice only those. Press Mixed if you are not sure. Mixed leans toward topics you have been missing.
+
+2. Question types are the four kinds of questions: multiple choice, predict the output, find the bug, and write the code. If none are selected, you get a mix of all four. Press a type to keep only that kind.
+
+3. Length is how many questions you want. Five is a good first session. Ten and twenty are there when you want more.
+
+4. Press Start. Questions that are "due" come first. Due means the app thinks it is time to see that question again so you do not forget it. It does not mean you failed.
+
+5. Read each question slowly, then press Check answer. Read the explanation before you move on. Its Listen button reads it aloud only if you press it.`
 
 export function Practice() {
   const { mastery, questions } = useApp()
@@ -30,8 +44,18 @@ export function Practice() {
     <div className="space-y-6">
       <div>
         <h1 className="font-display text-3xl font-bold sm:text-4xl">Set up a practice run</h1>
-        <p className="mt-1 text-muted">Pick one objective to drill it, several to mix them, or none for a mixed set that leans on your weak spots. Due reviews always come first.</p>
+        <p className="mt-1 text-muted">Choose what to practice, then start. If you are brand new, leave the choices as they are and do 5 questions.</p>
       </div>
+
+      <Card aria-labelledby="how-h">
+        <div className="mb-3 flex flex-wrap items-start justify-between gap-3">
+          <h2 id="how-h" className="font-display text-xl font-semibold">What to do on this page</h2>
+          <ListenButton text={PRACTICE_HELP} tip="Read these practice instructions aloud. Sound starts only when you press Listen." />
+        </div>
+        <div className="text-[0.98rem] leading-relaxed">
+          <Prose text={PRACTICE_HELP} />
+        </div>
+      </Card>
 
       <Card aria-labelledby="obj-h">
         <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
@@ -48,7 +72,7 @@ export function Practice() {
                 const on = objs.includes(o.id)
                 const m = mastery.find((x) => x.objective === o.id)!
                 return (
-                  <Btn key={o.id} tip={`${o.summary}`} aria-pressed={on} variant={on ? 'hl' : 'ghost'} block className="!justify-start text-left" onClick={() => setObjs(toggle(objs, o.id))}>
+                  <Btn key={o.id} tip={`Practice this topic: ${o.summary}`} aria-pressed={on} variant={on ? 'hl' : 'ghost'} block className="!justify-start text-left" onClick={() => setObjs(toggle(objs, o.id))}>
                     <span className="font-mono text-teal">{o.code}</span>
                     <span className="flex-1">{o.title}</span>
                     <span className="text-xs font-normal opacity-80">{LEVEL_LABEL[m.level]}</span>
@@ -67,7 +91,7 @@ export function Practice() {
             {TYPES.map((t) => {
               const on = types.includes(t)
               return (
-                <Btn key={t} tip={on ? `Remove ${TYPE_LABEL[t]}` : `Only include the types you select; none selected means all`} aria-pressed={on} variant={on ? 'hl' : 'ghost'} size="sm" onClick={() => setTypes(toggle(types, t))}>
+                <Btn key={t} tip={on ? `Stop limiting the quiz to ${TYPE_LABEL[t]}` : `Include ${TYPE_LABEL[t]}. If no type is selected, all four kinds are included.`} aria-pressed={on} variant={on ? 'hl' : 'ghost'} size="sm" onClick={() => setTypes(toggle(types, t))}>
                   {TYPE_LABEL[t]}
                 </Btn>
               )

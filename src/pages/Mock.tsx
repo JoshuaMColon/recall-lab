@@ -1,16 +1,34 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { AlarmClock, ArrowLeft, ArrowRight, Flag, Loader2, Send, Timer } from 'lucide-react'
+import { AlarmClock, ArrowLeft, ArrowRight, Flag, Loader2, Send } from 'lucide-react'
 import { buildMock, MOCK_DEFAULT } from '../lib/select'
 import { blankResponse, check, isAnswered } from '../lib/check'
 import { python } from '../lib/python'
 import { OBJECTIVES, objectiveLabel } from '../lib/bank'
 import type { Grade, MockResult, Question, Response } from '../lib/types'
 import { useApp } from '../state'
+import { ListenButton } from '../components/ListenButton'
 import { Bar, Btn, Card, LinkBtn } from '../components/ui'
+import { Prose } from '../components/Prose'
 import { QuestionHeader, QuestionView } from '../components/QuestionView'
 import { Feedback } from '../components/Feedback'
 
 type Phase = 'intro' | 'running' | 'grading' | 'results'
+
+const BRIEFING = `This is a practice exam. It lets you feel a timer before a real course exam. It is not the official WGU exam, and it cannot tell you your official score.
+
+Here is what happens when you press Start.
+
+1. A timer of ${MOCK_DEFAULT.minutes} minutes starts right then. It does not run while you are reading this page.
+
+2. You get ${MOCK_DEFAULT.count} questions, spread across the course topics. Topics that count for more of this practice exam show up a little more often. The last ${MOCK_DEFAULT.codeSlots} questions ask you to write Python. The ones before that are a mix of the other kinds.
+
+3. You will not be told if an answer is right or wrong until you submit. That is on purpose, so it feels like an exam. Press Flag on a question you want to come back to. Use Back, Next, or the numbered buttons to move around.
+
+4. If the timer reaches zero, the exam submits itself. A question you left blank counts as not correct.
+
+5. At the end you see a percent and which topics to study next. The practice target on this page is ${Math.round(MOCK_DEFAULT.passTarget * 100)} percent. Reaching it means this practice set went well. It is not a promise about the real exam.
+
+Read this at your own pace. Press Start only when you want the timer to begin. Press Not now to return to the dashboard.`
 
 function fmt(ms: number) {
   const s = Math.max(0, Math.ceil(ms / 1000))
@@ -101,17 +119,19 @@ export function Mock() {
 
   if (phase === 'intro') {
     return (
-      <div className="mx-auto max-w-2xl">
+      <div className="mx-auto max-w-3xl">
         <Card>
           <p className="font-mono text-sm font-semibold uppercase tracking-widest text-teal">Mock OA · Mission briefing</p>
-          <h1 className="font-display text-3xl font-bold sm:text-4xl">A timed launch rehearsal</h1>
-          <ul className="mt-4 space-y-2">
-            <li className="flex gap-2"><Timer aria-hidden="true" className="shrink-0 text-teal" /> {MOCK_DEFAULT.count} questions in {MOCK_DEFAULT.minutes} minutes, including {MOCK_DEFAULT.codeSlots} write-the-code tasks at the end.</li>
-            <li className="flex gap-2"><Flag aria-hidden="true" className="shrink-0 text-teal" /> No feedback until you submit. Flag questions to come back to them.</li>
-            <li className="flex gap-2"><AlarmClock aria-hidden="true" className="shrink-0 text-teal" /> Questions are spread across objectives by weight; when time runs out it submits itself.</li>
-          </ul>
-          <p className="mt-4 rounded-xl border-2 border-dashed border-edge p-3 text-sm text-muted">
-            This is Recall Lab’s own practice format with a {Math.round(MOCK_DEFAULT.passTarget * 100)}% target. It is not the official OA and doesn’t predict its length, question style or cut score.
+          <div className="mt-1 flex flex-wrap items-start justify-between gap-3">
+            <h1 className="font-display text-3xl font-bold sm:text-4xl">Read this before the timer starts</h1>
+            <ListenButton text={BRIEFING} tip="Read this practice-exam briefing aloud. Sound starts only when you press Listen." />
+          </div>
+          <div className="mt-4 text-[0.98rem] leading-relaxed">
+            <Prose text={BRIEFING} />
+          </div>
+          <p className="mt-4 flex gap-2 rounded-xl border-2 border-dashed border-edge p-3 text-sm text-muted">
+            <AlarmClock aria-hidden="true" className="shrink-0 text-teal" />
+            <span>Recall Lab’s own practice format. Not the official exam, and not a prediction of its length, style, or passing score.</span>
           </p>
           <div className="mt-6 flex gap-2">
             <Btn tip={`Start the ${MOCK_DEFAULT.minutes}-minute timer now`} variant="hl" size="lg" onClick={start}>Start mock OA</Btn>

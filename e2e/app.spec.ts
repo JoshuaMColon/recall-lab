@@ -115,6 +115,8 @@ test.describe('beginner guide', () => {
 test.describe('practice setup and mock OA', () => {
   test('setup page builds a filtered quiz', async ({ page }) => {
     await page.goto('/practice')
+    await expect(page.getByRole('heading', { name: 'What to do on this page' })).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Listen' }).first()).toBeVisible()
     await expectAxeClean(page)
     await page.getByRole('button', { name: /Multiple choice/ }).click()
     await page.getByRole('button', { name: '5', exact: true }).click()
@@ -125,6 +127,8 @@ test.describe('practice setup and mock OA', () => {
 
   test('mock OA runs, submits and reports by objective', async ({ page }) => {
     await page.goto('/mock')
+    await expect(page.getByRole('heading', { name: /before the timer/i })).toBeVisible()
+    await expect(page.getByText(/not the official WGU exam/i)).toBeVisible()
     await page.getByRole('button', { name: 'Start mock OA' }).click()
     await expect(page.getByRole('timer')).toContainText(/\d+:\d\d/)
     await expect(page.getByText('Q1/25')).toBeVisible()
