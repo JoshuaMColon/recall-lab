@@ -1,7 +1,9 @@
 import { ArrowRight, Bug, CheckCircle2, Code2, Gauge, ListChecks, Repeat, Sparkles, Terminal, Timer } from 'lucide-react'
 import { COURSE, OBJECTIVES, BANK } from '../lib/bank'
+import { findLesson, lessonPath } from '../content/lessons'
 import { useApp } from '../state'
-import { LinkBtn, Card, CodeBlock } from '../components/ui'
+import { LinkBtn, Card, CodeBlock, Tip } from '../components/ui'
+import { Link } from '../router'
 
 const FEATURES = [
   { Icon: ListChecks, title: 'Mapped to objectives', body: 'Every question is tagged to one of 11 course objectives, written in our own words from the public course description.' },
@@ -49,6 +51,9 @@ export function Landing() {
                 </LinkBtn>
               </>
             )}
+            <LinkBtn to="/lessons" tip="Short lessons for each topic, written for someone new to Python" variant="ghost" size="lg">
+              Read the lessons
+            </LinkBtn>
             <LinkBtn to="/guide" tip="A plain-language tour for people who are new to Python and to this app" variant="ghost" size="lg">
               How to use this
             </LinkBtn>
@@ -99,19 +104,33 @@ export function Landing() {
         <div>
           <h2 id="objectives" className="font-display text-3xl font-bold">The objectives</h2>
           <p className="mt-3 text-muted">{COURSE.note}</p>
+          <p className="mt-3 text-muted">Each row opens a short lesson in plain language. The numbers are topic labels in this app.</p>
           <div className="mt-5 flex gap-3 text-sm">
             <span className="flex items-center gap-1.5"><Code2 aria-hidden="true" size={16} className="text-teal" /> {COURSE.competencies[0]?.title}</span>
             <span className="flex items-center gap-1.5"><Bug aria-hidden="true" size={16} className="text-pen" /> {COURSE.competencies[1]?.title}</span>
           </div>
         </div>
         <ol className="grid gap-2 sm:grid-cols-2">
-          {OBJECTIVES.map((o) => (
-            <li key={o.id} className="flex items-baseline gap-3 rounded-xl border border-line bg-card px-3 py-2">
-              <span className="font-mono text-sm font-bold text-teal">{o.code}</span>
-              <span className="font-medium">{o.title}</span>
-              <span className="ml-auto font-mono text-xs text-muted">{o.weight}%</span>
-            </li>
-          ))}
+          {OBJECTIVES.map((o) => {
+            const lesson = findLesson(o.id)!
+            return (
+              <li key={o.id}>
+                <Tip tip={`Read the beginner lesson: ${o.title}`} block>
+                  {(d) => (
+                    <Link
+                      to={lessonPath(lesson)}
+                      {...d}
+                      className="press flex w-full items-baseline gap-3 rounded-xl border border-line bg-card px-3 py-2"
+                    >
+                      <span className="font-mono text-sm font-bold text-teal">{o.code}</span>
+                      <span className="font-medium">{o.title}</span>
+                      <span className="ml-auto font-mono text-xs text-muted">{o.weight}%</span>
+                    </Link>
+                  )}
+                </Tip>
+              </li>
+            )
+          })}
         </ol>
       </section>
     </div>

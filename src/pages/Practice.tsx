@@ -6,7 +6,7 @@ import type { QType } from '../lib/types'
 import { navigate } from '../router'
 import { useApp } from '../state'
 import { ListenButton } from '../components/ListenButton'
-import { Btn, Card } from '../components/ui'
+import { Btn, Card, LinkBtn } from '../components/ui'
 import { Prose } from '../components/Prose'
 
 const TYPES: QType[] = ['mcq', 'output', 'bug', 'code']
@@ -22,7 +22,9 @@ const PRACTICE_HELP = `Practice is a short quiz you build yourself. Nothing is t
 
 4. Press Start. Questions that are "due" come first. Due means the app thinks it is time to see that question again so you do not forget it. It does not mean you failed.
 
-5. Read each question slowly, then press Check answer. Read the explanation before you move on. Its Listen button reads it aloud only if you press it.`
+5. Read each question slowly, then press Check answer. Read the explanation before you move on. Its Listen button reads it aloud only if you press it.
+
+If you want the idea explained before the questions, open Lessons and read that topic first. Each lesson ends with a button that starts practice on only that topic.`
 
 export function Practice() {
   const { mastery, questions } = useApp()
@@ -44,7 +46,12 @@ export function Practice() {
     <div className="space-y-6">
       <div>
         <h1 className="font-display text-3xl font-bold sm:text-4xl">Set up a practice run</h1>
-        <p className="mt-1 text-muted">Choose what to practice, then start. If you are brand new, leave the choices as they are and do 5 questions.</p>
+        <p className="mt-1 text-muted">Choose what to practice, then start. If you are brand new, leave the choices as they are and do 5 questions. Or read a lesson first.</p>
+        <div className="mt-3">
+          <LinkBtn to="/lessons" tip="Read a plain-language lesson for a topic before you start a quiz" size="sm">
+            Read the lessons
+          </LinkBtn>
+        </div>
       </div>
 
       <Card aria-labelledby="how-h">

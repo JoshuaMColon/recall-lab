@@ -92,19 +92,38 @@ You can study the whole course with the built-in questions, the explanations, th
 **Listen** buttons are optional too. They use your browser's own voice. There is no account and no fee. Sound never starts by itself. Press Listen when you want to hear something. Press Stop when you have heard enough. If your browser cannot speak, the button stays off and the text is still there to read.`,
   },
   {
+    id: 'lessons',
+    title: 'Lessons before you practice',
+    body: `Lessons are short walkthroughs, one per topic, written here in plain language for a first-time programmer.
+
+They follow the same two groups as the rest of Recall Lab.
+
+**Scripts with control flow.** Names and math, input and output, decisions, loops, functions, text, lists, dictionaries, and errors.
+
+**Reuse and file I/O.** Using modules that already exist, and reading and writing files.
+
+Open Lessons from the home page, the top of the screen, or the footer. Pick a topic. Read it, or press Listen if you want it read aloud. Sound does not start by itself.
+
+At the bottom of a lesson, press "Practice this topic". That starts a short quiz on only that topic. The lesson is the explanation. Practice is the questions.
+
+These lessons are Recall Lab's own words. They are not a textbook, and they are not official course material.`,
+  },
+  {
     id: 'first',
     title: 'A calm first session',
     body: `1. Read this guide once. Press Listen on any section if you would rather hear it.
 
 2. Start the guest demo, or create an account if you want to keep your work.
 
-3. Open Practice. Leave the topics on Mixed. Leave the question types on all of them. Choose 5 questions.
+3. Optional: open Lessons and read the first topic, variables. Press Listen on a section if you would rather hear it.
 
-4. Answer slowly. After each one, read the explanation. Press Listen on the explanation if you want it read aloud.
+4. Open Practice. Leave the topics on Mixed. Leave the question types on all of them. Choose 5 questions. Or use the practice button at the bottom of a lesson to quiz only that topic.
 
-5. When you miss something, do not rush past it. That idea will come back in Review.
+5. Answer slowly. After each one, read the explanation. Press Listen on the explanation if you want it read aloud.
 
-6. Try a Mock OA only after a few practice sets, when you want to feel a timer. You can submit early. Unanswered questions count as not correct.
+6. When you miss something, do not rush past it. That idea will come back in Review.
+
+7. Try a Mock OA only after a few practice sets, when you want to feel a timer. You can submit early. Unanswered questions count as not correct.
 
 That is the whole app. You are allowed to be a beginner here.`,
   },

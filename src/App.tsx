@@ -12,6 +12,10 @@ import { Practice } from './pages/Practice'
 import { Quiz } from './pages/Quiz'
 import { Mock } from './pages/Mock'
 import { Guide } from './pages/Guide'
+import { Lessons } from './pages/Lessons'
+import { LessonPage } from './pages/Lesson'
+import { matchLessonPath } from './content/lessons'
+import { objectiveLabel } from './lib/bank'
 
 const TITLES: Record<string, string> = {
   '/': 'Recall Lab · D335 Python practice',
@@ -47,14 +51,17 @@ function Loading() {
 export function App() {
   const { path, search } = useLocation()
   const { ready, signedIn } = useApp()
+  const lessonMatch = matchLessonPath(path)
 
   const gated = PRIVATE.has(path) && !signedIn
 
   useEffect(() => {
-    document.title = TITLES[path] ?? 'Not found · Recall Lab'
+    if (lessonMatch === 'index') document.title = 'Lessons · Recall Lab'
+    else if (lessonMatch != null && lessonMatch !== 'missing') document.title = `${objectiveLabel(lessonMatch.objectiveId)} · Lessons · Recall Lab`
+    else document.title = TITLES[path] ?? 'Not found · Recall Lab'
     // Back/forward does not go through navigate(); stop any in-progress reading.
     stopSpeech()
-  }, [path])
+  }, [path, lessonMatch])
 
   useEffect(() => {
     if (ready && gated) navigate(`/login?next=${encodeURIComponent(path + search)}`, true)
@@ -70,6 +77,8 @@ export function App() {
   else if (path === '/quiz' || path === '/review') page = <Quiz key={path + search} />
   else if (path === '/mock') page = <Mock />
   else if (path === '/guide') page = <Guide />
+  else if (lessonMatch === 'index') page = <Lessons />
+  else if (lessonMatch != null && lessonMatch !== 'missing') page = <LessonPage key={lessonMatch.slug} lesson={lessonMatch} />
   else page = <NotFound />
   return <AppShell>{page}</AppShell>
 }

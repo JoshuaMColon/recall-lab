@@ -19,6 +19,8 @@ describe('beginner guide', () => {
       'does not mean you failed',
       'never have to use AI',
       'never starts by itself',
+      'Lessons',
+      'Practice this topic',
     ]) {
       expect(text, phrase).toContain(phrase)
     }

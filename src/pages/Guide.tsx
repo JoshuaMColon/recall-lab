@@ -34,6 +34,13 @@ export function Guide() {
           <div className="text-[1.02rem] leading-relaxed">
             <Prose text={section.body} />
           </div>
+          {section.id === 'lessons' && (
+            <div className="mt-4">
+              <LinkBtn to="/lessons" tip="Open the lesson list, grouped by topic" variant="hl" size="sm">
+                Open lessons
+              </LinkBtn>
+            </div>
+          )}
         </Card>
       ))}
 
@@ -49,6 +56,7 @@ export function Guide() {
               Try the demo
             </LinkBtn>
           )}
+          <LinkBtn to="/lessons" tip="Read a plain-language lesson for one topic">Lessons</LinkBtn>
           <LinkBtn to="/" tip="Back to the home page">Home</LinkBtn>
         </div>
       </Card>

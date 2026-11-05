@@ -94,9 +94,9 @@ export function Btn({ tip, variant = 'ghost', size = 'md', iconOnly, side, block
 }
 
 /** A link that looks like a button (navigates within the app). */
-export function LinkBtn({ to, tip, variant = 'ghost', size = 'md', className = '', children, block }: { to: string; tip: string; variant?: Variant; size?: 'sm' | 'md' | 'lg'; className?: string; children: ReactNode; block?: boolean }) {
+export function LinkBtn({ to, tip, variant = 'ghost', size = 'md', className = '', children, block, side }: { to: string; tip: string; variant?: Variant; size?: 'sm' | 'md' | 'lg'; className?: string; children: ReactNode; block?: boolean; side?: 'top' | 'bottom' }) {
   return (
-    <Tip tip={tip} block={block}>
+    <Tip tip={tip} block={block} side={side}>
       {(d) => (
         <a
           href={to}
