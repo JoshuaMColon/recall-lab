@@ -6,6 +6,7 @@ import type { QType } from '../lib/types'
 import { navigate } from '../router'
 import { useApp } from '../state'
 import { ListenButton } from '../components/ListenButton'
+import { ListenSettings } from '../components/ListenSettings'
 import { Btn, Card, LinkBtn } from '../components/ui'
 import { Prose } from '../components/Prose'
 
@@ -55,9 +56,12 @@ export function Practice() {
       </div>
 
       <Card aria-labelledby="how-h">
-        <div className="mb-3 flex flex-wrap items-start justify-between gap-3">
-          <h2 id="how-h" className="font-display text-xl font-semibold">What to do on this page</h2>
-          <ListenButton text={PRACTICE_HELP} tip="Read these practice instructions aloud. Sound starts only when you press Listen." />
+        <div className="mb-3">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <h2 id="how-h" className="font-display text-xl font-semibold">What to do on this page</h2>
+            <ListenButton text={PRACTICE_HELP} tip="Read these practice instructions aloud. Sound starts only when you press Listen." />
+          </div>
+          <ListenSettings />
         </div>
         <div className="text-[0.98rem] leading-relaxed">
           <Prose text={PRACTICE_HELP} />

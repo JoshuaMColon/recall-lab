@@ -1,5 +1,20 @@
 import { describe, expect, it, vi } from 'vitest'
-import { chunkSpeech, createSpeaker, pickVoice, SILENCE_GRACE_MS, toSpokenText, VOICE_SETTLE_MS, type SpeechUtterance, type SpeechVoice } from './speech'
+import {
+  chunkSpeech,
+  createSpeaker,
+  englishVoiceOptions,
+  memoryPrefs,
+  pickVoice,
+  RATE_PREF_KEY,
+  SILENCE_GRACE_MS,
+  speechRate,
+  toSpokenText,
+  VOICE_PREF_KEY,
+  VOICE_SETTLE_MS,
+  voiceLabel,
+  type SpeechUtterance,
+  type SpeechVoice,
+} from './speech'
 
 class FakeSynth {
   calls: string[] = []
@@ -318,12 +333,142 @@ describe('speaker', () => {
 })
 
 describe('pickVoice', () => {
+  const robot = { lang: 'en-US', name: 'English United States', localService: true, voiceURI: 'robot' }
+  const google = { lang: 'en-US', name: 'Google US English', localService: false, voiceURI: 'google' }
+  const samantha = { lang: 'en_US', name: 'Samantha', localService: true, voiceURI: 'Samantha' }
+  const aria = {
+    lang: 'en-US',
+    name: 'Microsoft Aria Online (Natural) - English (United States)',
+    localService: false,
+    voiceURI: 'Aria',
+  }
+
   it('matches iOS en_US and falls back to any English voice', () => {
     expect(pickVoice([])).toBeNull()
     const remote = { lang: 'en-US', name: 'Google', localService: false }
-    const ios = { lang: 'en_US', name: 'Samantha', localService: true }
-    expect(pickVoice([remote, ios])?.name).toBe('Samantha')
+    expect(pickVoice([remote, samantha])?.name).toBe('Samantha')
     expect(pickVoice([{ lang: 'en-GB', name: 'Daniel', localService: true }, { lang: 'fr-FR', name: 'Thomas', default: true }])?.name).toBe('Daniel')
     expect(pickVoice([{ lang: 'fr-FR', name: 'Thomas', default: true }])?.name).toBe('Thomas')
+  })
+
+  it('prefers a natural or named voice over a compact local one', () => {
+    expect(pickVoice([robot, google])?.voiceURI).toBe('google')
+    expect(pickVoice([robot, samantha])?.name).toBe('Samantha')
+    expect(pickVoice([samantha, aria])?.voiceURI).toBe('Aria')
+    expect(pickVoice([robot, { lang: 'en-US', name: 'Zoe', localService: true, voiceURI: 'Zoe' }])?.name).toBe('Zoe')
+    expect(pickVoice([samantha, { lang: 'en-US', name: 'Samantha (Enhanced)', localService: true, voiceURI: 'SamE' }])?.voiceURI).toBe('SamE')
+    expect(pickVoice([google, { lang: 'en-GB', name: 'Daniel (Premium)', localService: true, voiceURI: 'Dan' }])?.voiceURI).toBe('Dan')
+    expect(pickVoice([robot, { lang: 'en-AU', name: 'Karen', localService: true, voiceURI: 'Karen' }])?.voiceURI).toBe('robot')
+  })
+
+  it('uses a friendly label and a stable id', () => {
+    expect(voiceLabel(aria)).toBe('Aria (Natural) · English (US)')
+    expect(voiceLabel(samantha)).toBe('Samantha · English (US)')
+    expect(voiceLabel(google)).toBe('Google US English')
+    expect(voiceLabel({ name: 'Samantha (Enhanced)', lang: 'en-US' })).toBe('Samantha (Enhanced) · English (US)')
+    const options = englishVoiceOptions([robot, aria, { lang: 'fr-FR', name: 'Thomas', voiceURI: 'fr' }])
+    expect(options.map((option) => option.name)).toEqual([aria.name, robot.name])
+    expect(options[0].id).toBe('uri:Aria')
+    expect(options[0].label).toBe('Aria (Natural) · English (US)')
+  })
+})
+
+describe('voice preference', () => {
+  function voicedSynth(voices: SpeechVoice[]) {
+    const synth = new FakeSynth()
+    synth.getVoices = () => voices
+    return synth
+  }
+
+  const voices: SpeechVoice[] = [
+    { lang: 'en-US', name: 'Fred', localService: true, voiceURI: 'Fred' },
+    { lang: 'en-US', name: 'Microsoft Aria Online (Natural) - English (United States)', localService: false, voiceURI: 'Aria' },
+  ]
+
+  it('speaks the best voice until a choice is saved, and does not speak while choosing', () => {
+    const prefs = memoryPrefs()
+    const synth = voicedSynth(voices)
+    const speaker = createSpeaker(synth, utterance, prefs)
+    expect(speaker.voiceId).toBe('')
+    expect(speaker.rateId).toBe('normal')
+    expect(speaker.rate).toBe(speechRate('normal').rate)
+    expect(speaker.englishVoices.map((option) => option.id)).toEqual(['uri:Aria', 'uri:Fred'])
+    speaker.setVoice('uri:Fred')
+    speaker.setRate('faster')
+    expect(synth.calls.filter((call) => call === 'speak')).toEqual([])
+    expect(prefs.get(VOICE_PREF_KEY)).toBe('uri:Fred')
+    expect(prefs.get(RATE_PREF_KEY)).toBe('faster')
+    speaker.speak('a', 'Hello there.')
+    expect(synth.last?.voice?.voiceURI).toBe('Fred')
+    expect(synth.last?.lang).toBe('en-US')
+    expect(synth.last?.rate).toBe(speechRate('faster').rate)
+    speaker.stop()
+
+    const restored = createSpeaker(synth, utterance, prefs)
+    expect(restored.voiceId).toBe('uri:Fred')
+    expect(restored.rateId).toBe('faster')
+    restored.speak('b', 'Hello again.')
+    expect(synth.last?.voice?.voiceURI).toBe('Fred')
+    expect(synth.last?.rate).toBe(speechRate('faster').rate)
+    restored.setVoice('')
+    expect(prefs.get(VOICE_PREF_KEY)).toBe('')
+    restored.speak('c', 'Back to the best voice.')
+    expect(synth.last?.voice?.voiceURI).toBe('Aria')
+    restored.stop()
+  })
+
+  it('falls back to the best installed voice when the saved one is missing', () => {
+    const prefs = memoryPrefs({ [VOICE_PREF_KEY]: 'uri:Gone', [RATE_PREF_KEY]: 'nope' })
+    const synth = voicedSynth([
+      { lang: 'en-US', name: 'English United States', localService: true, voiceURI: 'robot' },
+      { lang: 'en-US', name: 'Google US English', localService: false, voiceURI: 'google' },
+    ])
+    const speaker = createSpeaker(synth, utterance, prefs)
+    expect(speaker.voiceId).toBe('uri:Gone')
+    expect(speaker.rateId).toBe('normal')
+    speaker.speak('a', 'Hello there.')
+    expect(synth.last?.voice?.voiceURI).toBe('google')
+    expect(synth.last?.rate).toBe(speechRate('normal').rate)
+    speaker.setRate('slower')
+    speaker.speak('b', 'A bit slower now.')
+    expect(synth.last?.rate).toBe(speechRate('slower').rate)
+    speaker.stop()
+  })
+
+  it('refreshes the English voice list when voiceschanged fires', () => {
+    vi.useFakeTimers()
+    try {
+      let voices: SpeechVoice[] = []
+      const listeners = new Set<() => void>()
+      const synth = new FakeSynth()
+      synth.getVoices = () => voices
+      synth.addEventListener = (type, fn) => {
+        if (type === 'voiceschanged') listeners.add(fn)
+      }
+      const speaker = createSpeaker(synth, utterance, memoryPrefs())
+      expect(speaker.englishVoices).toEqual([])
+      expect(speaker.hasVoices).toBe(false)
+      voices = [
+        { name: 'Thomas', lang: 'fr-FR', voiceURI: 'fr' },
+        { name: 'Ava', lang: 'en-US', localService: true, voiceURI: 'Ava' },
+      ]
+      listeners.forEach((fn) => fn())
+      expect(speaker.hasVoices).toBe(true)
+      expect(speaker.voicesUnavailable).toBe(false)
+      expect(speaker.englishVoices.map((option) => option.name)).toEqual(['Ava'])
+      expect(speaker.englishVoices[0].label).toContain('Ava')
+      speaker.speak('later', 'Hello again.')
+      expect(synth.last?.voice?.voiceURI).toBe('Ava')
+      voices = [
+        { name: 'Thomas', lang: 'fr-FR', voiceURI: 'fr' },
+        { name: 'Ava', lang: 'en-US', localService: true, voiceURI: 'Ava' },
+        { name: 'Microsoft Aria Online (Natural) - English (United States)', lang: 'en-US', localService: false, voiceURI: 'Aria' },
+      ]
+      listeners.forEach((fn) => fn())
+      expect(speaker.englishVoices.map((option) => option.id)).toEqual(['uri:Aria', 'uri:Ava'])
+      speaker.stop()
+    } finally {
+      vi.useRealTimers()
+    }
   })
 })

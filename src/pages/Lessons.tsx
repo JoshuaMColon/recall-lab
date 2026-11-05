@@ -3,6 +3,7 @@ import { COURSE, objectiveById } from '../lib/bank'
 import { COMPETENCY_BLURB, LESSONS, LESSONS_INTRO, lessonPath, lessonsIndexSpeech } from '../content/lessons'
 import { useApp } from '../state'
 import { ListenButton } from '../components/ListenButton'
+import { ListenSettings } from '../components/ListenSettings'
 import { Card, LinkBtn } from '../components/ui'
 import { Prose } from '../components/Prose'
 
@@ -25,6 +26,7 @@ export function Lessons() {
             tip="Read the lesson list aloud. Nothing plays until you press this."
             size="md"
           />
+          <ListenSettings />
         </div>
       </header>
 

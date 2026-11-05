@@ -3,6 +3,7 @@ import { COURSE, objectiveById } from '../lib/bank'
 import { examplesSpeech, lessonNeighbors, lessonPath, lessonSpeech, practicePath, sectionSpeech, type Lesson } from '../content/lessons'
 import { useApp } from '../state'
 import { ListenButton } from '../components/ListenButton'
+import { ListenSettings } from '../components/ListenSettings'
 import { Card, CodeBlock, LinkBtn } from '../components/ui'
 import { Prose } from '../components/Prose'
 
@@ -25,16 +26,19 @@ export function LessonPage({ lesson }: { lesson: Lesson }) {
         <p className="mt-2 text-sm text-muted">
           Recall Lab&apos;s own explanation for beginners. The label {objective.code} is the same topic you can practice. It is not a textbook page.
         </p>
-        <div className="mt-4 flex flex-wrap gap-2">
-          <ListenButton
-            text={lessonSpeech(lesson)}
-            label="Listen to this lesson"
-            tip="Read this whole lesson aloud. Nothing plays until you press this."
-            size="md"
-          />
-          <LinkBtn to="/lessons" tip="Back to the list of topics" size="sm">
-            All lessons
-          </LinkBtn>
+        <div className="mt-4">
+          <div className="flex flex-wrap gap-2">
+            <ListenButton
+              text={lessonSpeech(lesson)}
+              label="Listen to this lesson"
+              tip="Read this whole lesson aloud. Nothing plays until you press this."
+              size="md"
+            />
+            <LinkBtn to="/lessons" tip="Back to the list of topics" size="sm">
+              All lessons
+            </LinkBtn>
+          </div>
+          <ListenSettings />
         </div>
       </header>
 

@@ -2,6 +2,7 @@ import { BookOpen } from 'lucide-react'
 import { GUIDE_SECTIONS, guidePlainText } from '../content/guide'
 import { useApp } from '../state'
 import { ListenButton } from '../components/ListenButton'
+import { ListenSettings } from '../components/ListenSettings'
 import { Card, LinkBtn } from '../components/ui'
 import { Prose } from '../components/Prose'
 
@@ -19,6 +20,7 @@ export function Guide() {
         </p>
         <div className="mt-4">
           <ListenButton text={guidePlainText()} label="Listen to the whole guide" tip="Read the entire guide aloud. Nothing plays until you press this." size="md" />
+          <ListenSettings />
         </div>
       </header>
 

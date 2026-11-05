@@ -274,6 +274,12 @@ body::before {
   box-shadow: 0 0 0 3px rgb(255 207 110 / 0.45), 0 0 18px 2px rgb(var(--glow) / 0.45);
 }
 
+/* The closed voice menu stays narrow even when an option name is long. */
+.listen-voice {
+  width: min(100%, 16rem);
+  max-width: 100%;
+}
+
 .tooltip {
   animation: tip-in 120ms ease-out both;
 }
