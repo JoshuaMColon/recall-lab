@@ -5,6 +5,7 @@ Run: python3 scripts/bank/build.py   (CPython 3.11+; every answer is computed by
 import json, os, sys
 sys.path.insert(0, os.path.dirname(__file__))
 import lib, o01_03, o04_07, o08_11  # noqa: E401,F401  (modules register questions on import)
+import beginner
 
 COURSE = {
     "code": "D335",
@@ -35,6 +36,8 @@ def main():
                   for i, (n, c, t, s, w) in enumerate(OBJECTIVES)]
     for q in lib.QUESTIONS:
         q["objective"] = f"D335.{q['objective']}"
+    # Beginner walkthroughs. Answers, prompts, tests and difficulty stay as authored.
+    beginner.expand_all(lib.QUESTIONS)
     ids = [q["id"] for q in lib.QUESTIONS]
     assert len(ids) == len(set(ids)), "duplicate ids"
     data = dict(version=1, course=COURSE, objectives=objectives, questions=lib.QUESTIONS)
