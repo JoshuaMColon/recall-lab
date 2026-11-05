@@ -57,7 +57,7 @@ test.describe('practice', () => {
     await page.getByRole('textbox', { name: 'Exact output' }).fill('definitely wrong')
     await page.getByRole('button', { name: 'Check answer' }).click()
     await expect(page.getByText('Not quite')).toBeVisible()
-    await expect(page.getByText('Python prints')).toBeVisible()
+    await expect(page.getByText('Python prints', { exact: true })).toBeVisible()
   })
 
   test('find the bug: choosing a line grades it and shows the fix', async ({ page }) => {
@@ -81,9 +81,42 @@ test.describe('practice', () => {
   })
 })
 
+test.describe('beginner guide', () => {
+  test('is linked from the landing page and Listen never autoplays', async ({ page }) => {
+    await page.addInitScript(() => {
+      const calls: string[] = []
+      ;(window as unknown as { __speaks: string[] }).__speaks = calls
+      const synth = window.speechSynthesis
+      synth.speak = ((utterance: SpeechSynthesisUtterance) => {
+        calls.push(`speak:${utterance.text.slice(0, 80)}`)
+      }) as typeof synth.speak
+      synth.cancel = () => {
+        calls.push('cancel')
+      }
+    })
+    await page.goto('/')
+    await page.getByRole('link', { name: 'How to use this' }).click()
+    await expect(page).toHaveURL(/\/guide$/)
+    await expect(page.getByRole('heading', { level: 1, name: /first visit/i })).toBeVisible()
+    for (const title of ['Guest demo or a free account', 'Dashboard, Practice, Review, and Mock OA', 'The four kinds of questions', 'How grading works', 'Spaced repetition, in plain English']) {
+      await expect(page.getByRole('heading', { name: title })).toBeVisible()
+    }
+    const before = await page.evaluate(() => (window as unknown as { __speaks: string[] }).__speaks)
+    expect(before.filter((entry) => entry.startsWith('speak:'))).toEqual([])
+    await page.getByRole('button', { name: 'Listen to the whole guide' }).click()
+    await expect.poll(async () => page.evaluate(() => (window as unknown as { __speaks: string[] }).__speaks.some((entry) => entry.startsWith('speak:')))).toBe(true)
+    await expect(page.getByRole('status').filter({ hasText: 'Speaking' }).first()).toBeVisible()
+    await page.getByRole('button', { name: 'Stop' }).click()
+    await expect(page.getByRole('button', { name: 'Listen to the whole guide' })).toBeVisible()
+    await expectAxeClean(page)
+  })
+})
+
 test.describe('practice setup and mock OA', () => {
   test('setup page builds a filtered quiz', async ({ page }) => {
     await page.goto('/practice')
+    await expect(page.getByRole('heading', { name: 'What to do on this page' })).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Listen' }).first()).toBeVisible()
     await expectAxeClean(page)
     await page.getByRole('button', { name: /Multiple choice/ }).click()
     await page.getByRole('button', { name: '5', exact: true }).click()
@@ -94,6 +127,8 @@ test.describe('practice setup and mock OA', () => {
 
   test('mock OA runs, submits and reports by objective', async ({ page }) => {
     await page.goto('/mock')
+    await expect(page.getByRole('heading', { name: /before the timer/i })).toBeVisible()
+    await expect(page.getByText(/not the official WGU exam/i)).toBeVisible()
     await page.getByRole('button', { name: 'Start mock OA' }).click()
     await expect(page.getByRole('timer')).toContainText(/\d+:\d\d/)
     await expect(page.getByText('Q1/25')).toBeVisible()

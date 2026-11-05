@@ -16,6 +16,21 @@ function attempt(objective: string, correct: boolean, daysAgo = 0, i = 0): Attem
   return { id: `${objective}-${daysAgo}-${i}`, questionId: `q${i}`, objective, qtype: 'mcq', correct, score: correct ? 1 : 0, mode: 'practice', elapsedMs: 5000, createdAt: d.toISOString() }
 }
 
+describe('beginner explanations', () => {
+  it('walks through every bank question in plain language', () => {
+    for (const q of BANK) {
+      expect(q.explanation.length, q.id).toBeGreaterThan(400)
+      expect(q.explanation, q.id).toContain('**')
+    }
+    const mcq = BANK.find((q) => q.id === 'd335-01-mcq-01')
+    const output = BANK.find((q) => q.id === 'd335-01-out-01')
+    expect(mcq?.explanation).toContain('remainder')
+    expect(mcq?.explanation).toContain('The right choice')
+    expect(output?.explanation).toContain('Walk through it')
+    expect(output?.explanation).toContain('Line 1')
+  })
+})
+
 describe('grading', () => {
   it('normalises output whitespace at line ends and trailing blank lines', () => {
     expect(normalizeOutput('a  \r\nb\n\n')).toBe('a\nb')

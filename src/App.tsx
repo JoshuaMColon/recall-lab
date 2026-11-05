@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { Loader2 } from 'lucide-react'
+import { stopSpeech } from './lib/speech'
 import { navigate, useLocation } from './router'
 import { useApp } from './state'
 import { AppShell } from './components/Shell'
@@ -10,6 +11,7 @@ import { Dashboard } from './pages/Dashboard'
 import { Practice } from './pages/Practice'
 import { Quiz } from './pages/Quiz'
 import { Mock } from './pages/Mock'
+import { Guide } from './pages/Guide'
 
 const TITLES: Record<string, string> = {
   '/': 'Recall Lab · D335 Python practice',
@@ -20,6 +22,7 @@ const TITLES: Record<string, string> = {
   '/quiz': 'Quiz · Recall Lab',
   '/review': 'Review · Recall Lab',
   '/mock': 'Mock OA · Recall Lab',
+  '/guide': 'How to use · Recall Lab',
 }
 const PRIVATE = new Set(['/dashboard', '/practice', '/quiz', '/review', '/mock'])
 
@@ -49,6 +52,8 @@ export function App() {
 
   useEffect(() => {
     document.title = TITLES[path] ?? 'Not found · Recall Lab'
+    // Back/forward does not go through navigate(); stop any in-progress reading.
+    stopSpeech()
   }, [path])
 
   useEffect(() => {
@@ -64,6 +69,7 @@ export function App() {
   else if (path === '/practice') page = <Practice />
   else if (path === '/quiz' || path === '/review') page = <Quiz key={path + search} />
   else if (path === '/mock') page = <Mock />
+  else if (path === '/guide') page = <Guide />
   else page = <NotFound />
   return <AppShell>{page}</AppShell>
 }

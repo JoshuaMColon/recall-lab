@@ -8,6 +8,19 @@ import { useApp } from '../state'
 import { Btn, CodeBlock } from './ui'
 import { TestTable } from './QuestionView'
 import { Prose } from './Prose'
+import { ListenButton } from './ListenButton'
+
+function spokenFeedback(q: Question, grade: Grade, response: Response): string {
+  const parts: string[] = []
+  if (q.type === 'mcq' && !grade.correct) parts.push(`The answer is ${q.choices[q.answer]}.`)
+  if (q.type === 'output') parts.push(`Python prints: ${q.answer}`)
+  if (q.type === 'bug') {
+    const picked = response.type === 'bug' && response.line > 0 ? ` You picked line ${response.line}.` : ''
+    parts.push(`The bug is on line ${q.answer}.${picked} One fix is: ${q.fix}`)
+  }
+  parts.push(q.explanation)
+  return parts.join('\n\n')
+}
 
 function useAiNote() {
   const { store } = useApp()
@@ -48,7 +61,16 @@ function AiBox({ title, note }: { title: string; note: ReturnType<typeof useAiNo
         {note.busy && <Loader2 aria-hidden="true" size={14} className="animate-spin" />} {title}
         {note.cached && <span className="font-normal normal-case text-muted">· saved earlier, no AI used</span>}
       </p>
-      {note.err ? <p className="text-bad">{note.err}</p> : <Prose text={note.text || 'Thinking…'} />}
+      {note.err ? <p className="text-bad">{note.err}</p> : (
+        <>
+          <Prose text={note.text || 'Thinking…'} />
+          {note.text && !note.busy && (
+            <div className="mt-2">
+              <ListenButton text={note.text} tip="Read this note aloud. Sound starts only when you press Listen." />
+            </div>
+          )}
+        </>
+      )}
     </div>
   )
 }
@@ -146,6 +168,9 @@ export function Feedback({ q, grade, response, ai = true }: { q: Question; grade
         )}
         <div className="text-[0.95rem] leading-relaxed">
           <Prose text={q.explanation} />
+        </div>
+        <div className="mt-3">
+          <ListenButton text={spokenFeedback(q, grade, response)} tip="Read this explanation aloud. Sound starts only when you press Listen." />
         </div>
       </div>
 

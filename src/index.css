@@ -266,6 +266,11 @@ body::before {
   }
 }
 
+/* Speaking: a soft gold pulse so the Listen control shows it is live. */
+.listen-live {
+  box-shadow: 0 0 0 3px rgb(255 207 110 / 0.45), 0 0 18px 2px rgb(var(--glow) / 0.45);
+}
+
 .tooltip {
   animation: tip-in 120ms ease-out both;
 }

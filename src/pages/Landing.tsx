@@ -49,6 +49,9 @@ export function Landing() {
                 </LinkBtn>
               </>
             )}
+            <LinkBtn to="/guide" tip="A plain-language tour for people who are new to Python and to this app" variant="ghost" size="lg">
+              How to use this
+            </LinkBtn>
           </div>
           <dl className="mt-8 flex flex-wrap gap-x-8 gap-y-3 text-sm">
             {[
