@@ -17,7 +17,8 @@ export async function installSpeechStub(page: Page, mode: SpeechStubMode = 'read
     const synth = window.speechSynthesis
     const listeners = new Set<() => void>()
     const samantha = { name: 'Samantha', lang: 'en_US', default: true, localService: true, voiceURI: 'Samantha' } as SpeechSynthesisVoice
-    let voices: SpeechSynthesisVoice[] = mode === 'no-voices' || mode === 'loading' ? [] : [samantha]
+    const fred = { name: 'Fred', lang: 'en-US', default: false, localService: true, voiceURI: 'Fred' } as SpeechSynthesisVoice
+    let voices: SpeechSynthesisVoice[] = mode === 'no-voices' || mode === 'loading' ? [] : [fred, samantha]
 
     const override = (key: string, value: unknown) => {
       try {
@@ -27,9 +28,27 @@ export async function installSpeechStub(page: Page, mode: SpeechStubMode = 'read
       }
     }
 
+    const voiceSlot = new WeakMap<SpeechSynthesisUtterance, SpeechSynthesisVoice | null>()
+    const voiceDesc = Object.getOwnPropertyDescriptor(SpeechSynthesisUtterance.prototype, 'voice')
+    Object.defineProperty(SpeechSynthesisUtterance.prototype, 'voice', {
+      configurable: true,
+      enumerable: true,
+      get() {
+        return voiceSlot.has(this) ? voiceSlot.get(this) : (voiceDesc?.get?.call(this) ?? null)
+      },
+      set(value: SpeechSynthesisVoice | null) {
+        voiceSlot.set(this, value)
+        try {
+          voiceDesc?.set?.call(this, value)
+        } catch {
+          // The stub's voices are plain objects. Chrome rejects them, which would hide the choice.
+        }
+      },
+    })
+
     override('getVoices', () => voices.slice())
     override('speak', (utterance: SpeechSynthesisUtterance) => {
-      calls.push(`speak:${utterance.text.slice(0, 80)}|lang:${utterance.lang}|voice:${utterance.voice?.lang ?? ''}`)
+      calls.push(`speak:${utterance.text.slice(0, 80)}|lang:${utterance.lang}|voice:${utterance.voice?.lang ?? ''}|name:${utterance.voice?.name ?? ''}`)
       if (mode === 'error') {
         utterance.onerror?.({ error: 'synthesis-failed' } as SpeechSynthesisErrorEvent)
         return

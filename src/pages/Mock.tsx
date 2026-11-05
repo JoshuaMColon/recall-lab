@@ -7,6 +7,7 @@ import { OBJECTIVES, objectiveLabel } from '../lib/bank'
 import type { Grade, MockResult, Question, Response } from '../lib/types'
 import { useApp } from '../state'
 import { ListenButton } from '../components/ListenButton'
+import { ListenSettings } from '../components/ListenSettings'
 import { Bar, Btn, Card, LinkBtn } from '../components/ui'
 import { Prose } from '../components/Prose'
 import { QuestionHeader, QuestionView } from '../components/QuestionView'
@@ -122,9 +123,12 @@ export function Mock() {
       <div className="mx-auto max-w-3xl">
         <Card>
           <p className="font-mono text-sm font-semibold uppercase tracking-widest text-teal">Mock OA · Mission briefing</p>
-          <div className="mt-1 flex flex-wrap items-start justify-between gap-3">
-            <h1 className="font-display text-3xl font-bold sm:text-4xl">Read this before the timer starts</h1>
-            <ListenButton text={BRIEFING} tip="Read this practice-exam briefing aloud. Sound starts only when you press Listen." />
+          <div className="mt-1">
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <h1 className="font-display text-3xl font-bold sm:text-4xl">Read this before the timer starts</h1>
+              <ListenButton text={BRIEFING} tip="Read this practice-exam briefing aloud. Sound starts only when you press Listen." />
+            </div>
+            <ListenSettings />
           </div>
           <div className="mt-4 text-[0.98rem] leading-relaxed">
             <Prose text={BRIEFING} />

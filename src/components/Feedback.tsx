@@ -9,6 +9,7 @@ import { Btn, CodeBlock } from './ui'
 import { TestTable } from './QuestionView'
 import { Prose } from './Prose'
 import { ListenButton } from './ListenButton'
+import { ListenSettings } from './ListenSettings'
 
 function spokenFeedback(q: Question, grade: Grade, response: Response): string {
   const parts: string[] = []
@@ -171,6 +172,7 @@ export function Feedback({ q, grade, response, ai = true }: { q: Question; grade
         </div>
         <div className="mt-3">
           <ListenButton text={spokenFeedback(q, grade, response)} tip="Read this explanation aloud. Sound starts only when you press Listen." />
+          <ListenSettings />
         </div>
       </div>
 

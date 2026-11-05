@@ -89,7 +89,7 @@ You do not manage the schedule yourself. Answer honestly, then open Review when 
 
 You can study the whole course with the built-in questions, the explanations, the grader, Review, and the mock exam. You never have to use AI.
 
-**Listen** buttons are optional too. They use your browser's own voice. There is no account and no fee. Sound never starts by itself. Press Listen when you want to hear something. Press Stop when you have heard enough. If your browser cannot speak, the button stays off and the text is still there to read.`,
+**Listen** buttons are optional too. They use your browser's own voice. There is no account and no fee, and no paid voice service. How human it sounds depends on this phone or computer. Some devices only have a robotic voice. Next to Listen you can pick another English voice that is already installed, and a slower or faster speed. That list cannot add a voice the device does not have. Sound never starts by itself. Press Listen when you want to hear something. Press Stop when you have heard enough. If your browser cannot speak, the button stays off and the text is still there to read.`,
   },
   {
     id: 'lessons',
