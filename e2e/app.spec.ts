@@ -112,6 +112,52 @@ test.describe('beginner guide', () => {
   })
 })
 
+test.describe('lessons', () => {
+  test('index loads and Listen does not autoplay', async ({ page }) => {
+    await page.addInitScript(() => {
+      const calls: string[] = []
+      ;(window as unknown as { __speaks: string[] }).__speaks = calls
+      const synth = window.speechSynthesis
+      synth.speak = ((utterance: SpeechSynthesisUtterance) => {
+        calls.push(`speak:${utterance.text.slice(0, 80)}`)
+      }) as typeof synth.speak
+      synth.cancel = () => {
+        calls.push('cancel')
+      }
+    })
+    await page.goto('/lessons')
+    await expect(page.getByRole('heading', { level: 1, name: /one topic at a time/i })).toBeVisible()
+    await expect(page.getByRole('heading', { name: /Scripts with control flow/ })).toBeVisible()
+    await expect(page.getByRole('heading', { name: /Reuse and file I\/O/ })).toBeVisible()
+    await expect(page.getByRole('link', { name: /Variables, expressions/ })).toBeVisible()
+    await expect(page.getByRole('link', { name: /Files/ }).first()).toBeVisible()
+    const before = await page.evaluate(() => (window as unknown as { __speaks: string[] }).__speaks)
+    expect(before.filter((entry) => entry.startsWith('speak:'))).toEqual([])
+    await expect(page.getByRole('status').filter({ hasText: 'Speaking' })).toHaveCount(0)
+    await expectAxeClean(page)
+
+    await page.getByRole('link', { name: /Variables, expressions/ }).click()
+    await expect(page).toHaveURL(/\/lessons\/01-variables$/)
+    await expect(page.getByRole('heading', { level: 1, name: 'Variables, expressions & operators' })).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Listen to this lesson' })).toBeVisible()
+    await expect(page.getByRole('link', { name: 'Practice this topic' })).toHaveAttribute('href', /\/quiz\?o=D335\.01&n=5/)
+    const onLesson = await page.evaluate(() => (window as unknown as { __speaks: string[] }).__speaks)
+    expect(onLesson.filter((entry) => entry.startsWith('speak:'))).toEqual([])
+
+    await page.getByRole('button', { name: 'Listen to this lesson' }).click()
+    await expect.poll(async () => page.evaluate(() => (window as unknown as { __speaks: string[] }).__speaks.some((entry) => entry.startsWith('speak:')))).toBe(true)
+    await expect(page.getByRole('status').filter({ hasText: 'Speaking' }).first()).toBeVisible()
+    await page.getByRole('button', { name: 'Stop' }).click()
+    await expect(page.getByRole('button', { name: 'Listen to this lesson' })).toBeVisible()
+    await expectAxeClean(page)
+  })
+
+  test('unknown lesson shows the not-found page', async ({ page }) => {
+    await page.goto('/lessons/no-such-topic')
+    await expect(page.getByText('404')).toBeVisible()
+  })
+})
+
 test.describe('practice setup and mock OA', () => {
   test('setup page builds a filtered quiz', async ({ page }) => {
     await page.goto('/practice')

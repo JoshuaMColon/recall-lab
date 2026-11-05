@@ -21,11 +21,14 @@ export function toSpokenText(raw: string): string {
   const noFence = raw.replace(/```[a-z]*\n?([\s\S]*?)```/gi, ' $1 ')
   const plain = noFence
     .replace(/`([^`]+)`/g, '$1')
-    .replace(/\*\*([^*]+)\*\*/g, '$1')
+    // Bold is **like this**, with no space against the markers. Python's ** operator
+    // has spaces around it (2 ** 3), so it is left alone for read-aloud.
+    .replace(/\*\*([^\s*](?:[^*]*[^\s*])?)\*\*/g, '$1')
     .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
     .replace(/^#{1,6}\s+/gm, '')
     .replace(/^\s*[-*]\s+/gm, '')
-    .replace(/[*_]/g, '')
+  // Keep * and _. Lessons speak Python (** for powers, total_cost, __name__).
+  // Bold and list markers are already removed above.
   return plain
     .replace(/\n{2,}/g, '. ')
     .replace(/\n/g, ' ')

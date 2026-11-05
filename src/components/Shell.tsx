@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { BookOpen, Orbit, LayoutDashboard, LogOut, Moon, NotebookPen, RotateCcw, Sun, Timer } from 'lucide-react'
+import { BookOpen, Library, Orbit, LayoutDashboard, LogOut, Moon, NotebookPen, RotateCcw, Sun, Timer } from 'lucide-react'
 import { Link, useLocation } from '../router'
 import { useApp } from '../state'
 import { Btn, Tip } from './ui'
@@ -87,6 +87,21 @@ export function AppShell({ children }: { children: ReactNode }) {
             </nav>
           )}
           <div className="ml-auto flex items-center gap-2">
+            <Tip tip="Plain-language lessons for each topic" side="bottom">
+              {(d) => (
+                <Link
+                  to="/lessons"
+                  {...d}
+                  aria-current={path.startsWith('/lessons') ? 'page' : undefined}
+                  className={`press flex items-center gap-1.5 rounded-lg border-2 px-2.5 py-1.5 text-sm font-semibold !shadow-none ${
+                    path.startsWith('/lessons') ? 'border-hl bg-hl text-on-hl' : 'border-transparent hover:border-teal'
+                  }`}
+                >
+                  <Library aria-hidden="true" size={16} />
+                  <span className="max-sm:sr-only">Lessons</span>
+                </Link>
+              )}
+            </Tip>
             <Tip tip="Beginner guide: what the app is and how to study" side="bottom">
               {(d) => (
                 <Link
@@ -155,6 +170,14 @@ export function AppShell({ children }: { children: ReactNode }) {
       <footer className="border-t border-line px-4 py-5 text-center text-xs text-muted">
         <Orbit aria-hidden="true" size={14} className="mr-1 inline" />
         Recall Lab is an independent study tool. It is not affiliated with or endorsed by WGU or zyBooks; all questions are original.
+        <span className="mx-1">·</span>
+        <Tip tip="Short lessons for each topic, in plain language" side="top">
+          {(d) => (
+            <Link to="/lessons" {...d} className="press rounded-md px-1 font-semibold text-teal underline-offset-2 hover:underline">
+              Lessons
+            </Link>
+          )}
+        </Tip>
         <span className="mx-1">·</span>
         <Tip tip="A plain-language guide for first-time visitors" side="top">
           {(d) => (

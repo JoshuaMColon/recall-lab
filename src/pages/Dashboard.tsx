@@ -113,6 +113,9 @@ export function Dashboard() {
           <LinkBtn to="/mock" tip={`${MOCK_DEFAULT.count} questions in ${MOCK_DEFAULT.minutes} minutes, graded at the end`}>
             <Timer aria-hidden="true" size={18} /> Mock OA
           </LinkBtn>
+          <LinkBtn to="/lessons" tip="Plain-language lessons for each topic, before you quiz yourself">
+            Lessons
+          </LinkBtn>
           <LinkBtn to="/guide" tip="Plain-language guide: rooms, question types, grading, and reviews">
             How to use
           </LinkBtn>

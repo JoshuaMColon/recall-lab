@@ -32,6 +32,17 @@ describe('toSpokenText', () => {
     expect(spoken).toContain('the guide')
     expect(spoken).not.toContain('/guide')
   })
+
+  it('keeps Python operators and names so a lesson can be read aloud', () => {
+    const spoken = toSpokenText('**Powers.** `2 ** 3` is eight, and `4 ** 2` is 16. The name is `total_cost`. `__name__` equals `"__main__"`.')
+    expect(spoken).toContain('Powers.')
+    expect(spoken).not.toContain('**Powers')
+    expect(spoken).toContain('2 ** 3')
+    expect(spoken).toContain('4 ** 2')
+    expect(spoken).toContain('total_cost')
+    expect(spoken).toContain('__name__')
+    expect(spoken).toContain('__main__')
+  })
 })
 
 describe('speaker', () => {
