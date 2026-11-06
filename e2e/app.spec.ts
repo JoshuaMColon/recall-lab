@@ -100,6 +100,41 @@ test.describe('beginner guide', () => {
     await expect(page.getByRole('button', { name: 'Listen to the whole guide' })).toBeVisible()
     await expectAxeClean(page)
   })
+
+  test('Stop cuts off speech and a speed change applies without another Listen', async ({ page }) => {
+    await installSpeechStub(page)
+    await page.goto('/guide')
+    const listen = page.getByRole('button', { name: 'Listen to the whole guide' })
+    await expect(listen).toBeVisible()
+    const before = await speechLog(page)
+    await page.getByRole('button', { name: 'Faster' }).click()
+    expect((await speechLog(page)).slice(before.length).filter((entry) => entry.startsWith('speak:'))).toEqual([])
+
+    await listen.click()
+    await expect(page.getByRole('button', { name: 'Stop' })).toBeVisible()
+    await expect.poll(async () => (await speechLog(page)).some((entry) => entry.startsWith('speak:') && entry.includes('rate:1.12'))).toBe(true)
+
+    const beforeSpeed = (await speechLog(page)).length
+    await page.getByRole('button', { name: 'Slower' }).click()
+    await expect(page.getByRole('button', { name: 'Stop' })).toBeVisible()
+    const changed = (await speechLog(page)).slice(beforeSpeed)
+    expect(changed.some((entry) => entry.startsWith('speak:') && entry.includes('rate:0.85'))).toBe(true)
+    expect(changed).toContain('cancel')
+    expect(changed.filter((entry) => entry.startsWith('speak:'))).toHaveLength(1)
+
+    const beforeStop = (await speechLog(page)).length
+    await page.getByRole('button', { name: 'Stop' }).click()
+    await expect(listen).toBeVisible()
+    await expect(page.getByRole('status').filter({ hasText: 'Speaking' })).toHaveCount(0)
+    const stopped = (await speechLog(page)).slice(beforeStop)
+    expect(stopped).toContain('pause')
+    expect(stopped).toContain('cancel')
+    expect(stopped.filter((entry) => entry.startsWith('speak:'))).toEqual([])
+    const pauseAt = stopped.indexOf('pause')
+    const cancelAt = stopped.indexOf('cancel')
+    expect(pauseAt).toBeGreaterThan(-1)
+    expect(pauseAt).toBeLessThan(cancelAt)
+  })
 })
 
 test.describe('lessons', () => {
@@ -165,6 +200,7 @@ test.describe('lessons', () => {
     const spoken = (await speechLog(page)).find((entry) => entry.startsWith('speak:'))
     expect(spoken).toContain('lang:en-US')
     expect(spoken).toContain('name:Fred')
+    expect(spoken).toContain('rate:1.12')
   })
 
   test('unknown lesson shows the not-found page', async ({ page }) => {

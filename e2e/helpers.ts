@@ -48,12 +48,15 @@ export async function installSpeechStub(page: Page, mode: SpeechStubMode = 'read
 
     override('getVoices', () => voices.slice())
     override('speak', (utterance: SpeechSynthesisUtterance) => {
-      calls.push(`speak:${utterance.text.slice(0, 80)}|lang:${utterance.lang}|voice:${utterance.voice?.lang ?? ''}|name:${utterance.voice?.name ?? ''}`)
+      calls.push(`speak:${utterance.text.slice(0, 80)}|lang:${utterance.lang}|voice:${utterance.voice?.lang ?? ''}|name:${utterance.voice?.name ?? ''}|rate:${utterance.rate}`)
       if (mode === 'error') {
         utterance.onerror?.({ error: 'synthesis-failed' } as SpeechSynthesisErrorEvent)
         return
       }
       utterance.onstart?.(new Event('start') as SpeechSynthesisEvent)
+    })
+    override('pause', () => {
+      calls.push('pause')
     })
     override('cancel', () => {
       calls.push('cancel')
