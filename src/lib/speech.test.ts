@@ -41,6 +41,7 @@ class FakeSynth {
     this.calls.push('resume')
     this.paused = false
   }
+  pause?: () => void
   last: SpeechUtterance | null = null
 }
 
@@ -330,6 +331,79 @@ describe('speaker', () => {
     expect(cancelAt).toBeLessThan(speakAt)
     speaker.stop()
   })
+
+  it('stop drops queued chunks, even when cancel() is ignored until the engine is paused', () => {
+    const synth = new FakeSynth()
+    const queued: SpeechUtterance[] = []
+    synth.pause = () => {
+      synth.calls.push('pause')
+      synth.paused = true
+    }
+    synth.cancel = () => {
+      synth.calls.push('cancel')
+      // Chrome keeps the current utterance unless pause() ran first.
+      if (!synth.paused) return
+      queued.length = 0
+      synth.speaking = false
+      synth.pending = false
+    }
+    synth.speak = (u) => {
+      synth.calls.push('speak')
+      synth.spoken.push(u.text)
+      synth.last = u
+      queued.push(u)
+      synth.speaking = true
+    }
+    const speaker = createSpeaker(synth, utterance)
+    const long = Array.from({ length: 12 }, (_, i) => `Sentence number ${i + 1} explains the next small idea.`).join(' ')
+    speaker.speak('long', long)
+    const firstEnd = synth.last?.onend
+    firstEnd?.()
+    expect(synth.spoken.length).toBeGreaterThan(1)
+    expect(queued.length).toBeGreaterThan(0)
+    const continueChunk = synth.last?.onend
+    const resumesBeforeStop = synth.calls.filter((call) => call === 'resume').length
+    speaker.stop()
+    expect(speaker.activeId).toBeNull()
+    expect(speaker.error).toBeNull()
+    expect(queued).toEqual([])
+    const pauseAt = synth.calls.lastIndexOf('pause')
+    const cancelAt = synth.calls.lastIndexOf('cancel')
+    expect(pauseAt).toBeGreaterThan(-1)
+    expect(cancelAt).toBeGreaterThan(pauseAt)
+    expect(synth.calls.filter((call) => call === 'resume').length).toBe(resumesBeforeStop)
+    const spoken = synth.spoken.length
+    continueChunk?.()
+    firstEnd?.()
+    expect(synth.spoken).toHaveLength(spoken)
+    expect(speaker.activeId).toBeNull()
+  })
+
+  it('speaks the next Listen after Stop left the engine paused', () => {
+    const synth = new FakeSynth()
+    synth.pause = () => {
+      synth.calls.push('pause')
+      synth.paused = true
+    }
+    synth.cancel = () => {
+      synth.calls.push('cancel')
+      synth.speaking = false
+      synth.pending = false
+      // Firefox does not clear paused inside cancel().
+    }
+    const speaker = createSpeaker(synth, utterance)
+    speaker.speak('a', 'Hello there.')
+    speaker.stop()
+    expect(synth.paused).toBe(true)
+    expect(speaker.activeId).toBeNull()
+    speaker.speak('a', 'Hello again.')
+    expect(speaker.activeId).toBe('a')
+    expect(synth.spoken.at(-1)).toBe('Hello again.')
+    const speakAt = synth.calls.lastIndexOf('speak')
+    expect(synth.calls[speakAt - 1]).toBe('resume')
+    expect(synth.calls.slice(synth.calls.lastIndexOf('cancel') + 1, speakAt)).not.toContain('cancel')
+    speaker.stop()
+  })
 })
 
 describe('pickVoice', () => {
@@ -433,6 +507,62 @@ describe('voice preference', () => {
     speaker.speak('b', 'A bit slower now.')
     expect(synth.last?.rate).toBe(speechRate('slower').rate)
     speaker.stop()
+  })
+
+  it('applies a speed change to the chunk that is speaking and stays quiet when idle', () => {
+    const prefs = memoryPrefs()
+    const synth = voicedSynth([
+      { lang: 'en-US', name: 'Fred', localService: true, voiceURI: 'Fred' },
+      { lang: 'en-US', name: 'Microsoft Aria Online (Natural) - English (United States)', localService: false, voiceURI: 'Aria' },
+    ])
+    const speaker = createSpeaker(synth, utterance, prefs)
+    speaker.setRate('faster')
+    expect(synth.calls.filter((call) => call === 'speak')).toEqual([])
+    expect(speaker.activeId).toBeNull()
+
+    const long = Array.from({ length: 8 }, (_, i) => `Sentence number ${i + 1} explains the next small idea.`).join(' ')
+    speaker.speak('lesson', long)
+    expect(synth.last?.rate).toBe(speechRate('faster').rate)
+    expect(synth.last?.voice?.voiceURI).toBe('Aria')
+    const first = synth.spoken[0]
+    synth.last?.onend?.()
+    const second = synth.spoken[1]
+    expect(second).not.toBe(first)
+
+    const repeatsBefore = synth.spoken.filter((text) => text === first).length
+    speaker.setRate('slower')
+    expect(speaker.activeId).toBe('lesson')
+    expect(speaker.rateId).toBe('slower')
+    expect(prefs.get(RATE_PREF_KEY)).toBe('slower')
+    expect(prefs.get(VOICE_PREF_KEY)).toBeNull()
+    expect(synth.spoken.at(-1)).toBe(second)
+    expect(synth.last?.rate).toBe(speechRate('slower').rate)
+    expect(synth.last?.voice?.voiceURI).toBe('Aria')
+    expect(synth.spoken.filter((text) => text === first)).toHaveLength(repeatsBefore)
+    expect(synth.calls).toContain('cancel')
+
+    speaker.setRate('slower')
+    expect(synth.spoken.filter((text) => text === second)).toHaveLength(2)
+
+    synth.last?.onend?.()
+    expect(synth.last?.rate).toBe(speechRate('slower').rate)
+    expect(synth.spoken.at(-1)).not.toBe(second)
+
+    speaker.setVoice('uri:Fred')
+    expect(speaker.activeId).toBe('lesson')
+    expect(synth.last?.voice?.voiceURI).toBe('Fred')
+    expect(synth.last?.rate).toBe(speechRate('slower').rate)
+
+    speaker.stop()
+    const spoken = synth.spoken.length
+    const calls = synth.calls.length
+    speaker.setRate('normal')
+    speaker.setVoice('uri:Aria')
+    expect(synth.spoken).toHaveLength(spoken)
+    expect(synth.calls).toHaveLength(calls)
+    expect(speaker.activeId).toBeNull()
+    expect(prefs.get(RATE_PREF_KEY)).toBe('normal')
+    expect(prefs.get(VOICE_PREF_KEY)).toBe('uri:Aria')
   })
 
   it('refreshes the English voice list when voiceschanged fires', () => {

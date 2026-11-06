@@ -9,7 +9,8 @@ function subscribe(fn: () => void) {
 }
 
 /**
- * Shared Listen voice and speed. Choosing a voice does not start playback.
+ * Shared Listen voice and speed. Choosing a voice or speed does not start playback.
+ * While something is already speaking, the current chunk plays again with the new choice.
  * The list is whatever English voices this browser actually has.
  */
 export function ListenSettings() {

@@ -12,6 +12,12 @@
  *   fresh Listen must not cancel first.
  * - A dropped utterance often fires no `end`, or fires `canceled`, and the button used to sit on
  *   "Speaking". Failures clear that state and surface `SPEECH_FAILED`.
+ * - `cancel()` alone does not cut off the utterance that is already playing on Chrome or Android
+ *   once `resume()` has run, and the cancellation `end` event will speak the next chunk unless
+ *   the queue is closed first. Stop pauses, then cancels, and does not resume.
+ * - `rate` is fixed on the utterance already in the engine. A speed change while speaking
+ *   cancels that chunk and speaks it again at the new rate. Changing speed while idle only
+ *   stores the setting.
  */
 
 export interface SpeechVoice {
@@ -36,6 +42,7 @@ export interface SpeechSynth {
   cancel: () => void
   speak: (utterance: SpeechUtterance) => void
   getVoices?: () => SpeechVoice[]
+  pause?: () => void
   resume?: () => void
   speaking?: boolean
   pending?: boolean
@@ -351,9 +358,9 @@ export interface Speaker {
   speak: (id: string, text: string) => void
   stop: () => void
   toggle: (id: string, text: string) => void
-  /** Remember a voice. Pass '' to return to the best available voice. Does not start speech. */
+  /** Remember a voice. Pass '' to return to the best available voice. Does not start speech. While speaking, replays the current chunk in that voice. */
   setVoice: (id: string) => void
-  /** Remember a speed. Does not start speech. */
+  /** Remember a speed. Does not start speech. While speaking, replays the current chunk at that speed. */
   setRate: (id: SpeechRateId | string) => void
   subscribe: (listener: () => void) => () => void
 }
@@ -372,6 +379,11 @@ export function createSpeaker(synth: SpeechSynth | null, makeUtterance?: (text: 
   let voiceId = store?.get(VOICE_PREF_KEY) ?? ''
   let rateId: SpeechRateId = speechRate(store?.get(RATE_PREF_KEY)).id
   let inflight: SpeechUtterance[] = []
+  let parts: string[] = []
+  let partIndex = 0
+  /** False after Stop, so a late end event cannot speak the next chunk. */
+  let queueOpen = false
+  let playbackStarted = false
   const speechTimers = new Set<ReturnType<typeof setTimeout>>()
   const voiceTimers = new Set<ReturnType<typeof setTimeout>>()
   let chunkTimer: ReturnType<typeof setTimeout> | undefined
@@ -469,18 +481,63 @@ export function createSpeaker(synth: SpeechSynth | null, makeUtterance?: (text: 
     after(voiceTimers, 5000, () => pullVoices())
   }
 
-  function fail(mine: number, id: string) {
-    if (!synth || token !== mine) return
-    token += 1
-    clearSpeechTimers()
+  function detachInflight() {
+    for (const u of inflight) {
+      u.onend = null
+      u.onerror = null
+      u.onstart = null
+    }
     inflight = []
+  }
+
+  function closeQueue() {
+    queueOpen = false
+    parts = []
+    partIndex = 0
+  }
+
+  /**
+   * Pause first so Chrome and Android actually stop the audio, then cancel the queue.
+   * `cancel()` on its own leaves the current utterance talking after `resume()`.
+   * Does not resume — resume() would start whatever chunk cancel() failed to drop.
+   */
+  function halt() {
+    if (!synth) return
+    const busy = Boolean(activeId || synth.speaking || synth.pending)
+    if (busy) {
+      try {
+        synth.pause?.()
+      } catch {
+        // pause() is missing or throws on some engines. cancel() still runs.
+      }
+    }
+    try {
+      synth.cancel()
+    } catch {
+      // Stopping is local state first; a throwing engine should still reset the button.
+    }
+  }
+
+  function fail(mine: number, id: string) {
+    if (!synth || token !== mine || !queueOpen) return
+    token += 1
+    queueOpen = false
+    clearSpeechTimers()
+    detachInflight()
+    parts = []
+    partIndex = 0
     error = { id, message: SPEECH_FAILED }
     activeId = null
     emit()
     try {
+      synth.pause?.()
+    } catch {
+      // The engine already failed. cancel() still has to run.
+    }
+    try {
       synth.cancel()
     } catch {
-      // The engine already failed; the button still has to leave "Speaking".
+      // The button still has to leave "Speaking".
     }
   }
 
@@ -514,6 +571,108 @@ export function createSpeaker(synth: SpeechSynth | null, makeUtterance?: (text: 
     else u.lang = 'en-US'
   }
 
+  function run(i: number, mine: number, id: string) {
+    if (!synth || !queueOpen || token !== mine) return
+    partIndex = i
+    if (i >= parts.length) {
+      clearSpeechTimers()
+      detachInflight()
+      closeQueue()
+      setActive(null)
+      return
+    }
+    const text = parts[i]
+    const u = make(text)
+    // iOS ignores text passed only through the constructor.
+    u.text = text
+    applyVoice(u)
+    // Set rate after the voice. Assigning a voice clears a rate set earlier on Chrome.
+    u.rate = speechRate(rateId).rate
+    u.onstart = () => {
+      if (token !== mine) return
+      playbackStarted = true
+    }
+    u.onend = () => {
+      if (!queueOpen || token !== mine) return
+      clearChunkTimer()
+      run(i + 1, mine, id)
+    }
+    u.onerror = () => {
+      if (!queueOpen || token !== mine) return
+      fail(mine, id)
+    }
+    // Keep the utterance alive until it ends. iOS will drop speech whose utterance was collected.
+    inflight.push(u)
+    try {
+      synth.speak(u)
+    } catch {
+      fail(mine, id)
+      return
+    }
+    // Android Chrome queues speak() into a paused synth and plays nothing until resume().
+    resume()
+    clearChunkTimer()
+    const budget = 5000 + text.length * 120
+    const budgetId = setTimeout(() => {
+      speechTimers.delete(budgetId)
+      if (chunkTimer === budgetId) chunkTimer = undefined
+      if (!queueOpen || token !== mine) return
+      fail(mine, id)
+    }, budget)
+    chunkTimer = budgetId
+    speechTimers.add(budgetId)
+  }
+
+  function armSilence(mine: number, id: string) {
+    if (!synth) return
+    after(speechTimers, SILENCE_GRACE_MS, () => {
+      if (!synth || !queueOpen || token !== mine || playbackStarted) return
+      resume()
+      if (!queueOpen || token !== mine || playbackStarted) return
+      const live = Boolean(synth.speaking || synth.pending)
+      if (!live || synth.paused) fail(mine, id)
+    })
+  }
+
+  function startAt(id: string, index: number, replace: boolean) {
+    if (!synth) return
+    token += 1
+    const mine = token
+    clearSpeechTimers()
+    error = null
+    detachInflight()
+    playbackStarted = false
+    // Close the old queue before cancel() so its end event cannot speak the next chunk.
+    queueOpen = false
+    if (replace) {
+      // The engine is already in use. pause+cancel drops the current chunk.
+      // resume() so Firefox (paused after cancel) and Android (silent while paused) speak.
+      halt()
+      resume()
+    } else if (synth.paused) {
+      // Stop may have left the engine paused. Do not cancel: cancel() on an idle
+      // engine pauses Android and drops the new utterance on iOS.
+      resume()
+    }
+    queueOpen = true
+    setActive(id)
+    try {
+      run(index, mine, id)
+    } catch {
+      fail(mine, id)
+      return
+    }
+    if (token !== mine) return
+    armSilence(mine, id)
+  }
+
+  /** Replay the current chunk after a voice or speed change. No-op while idle. */
+  function retune() {
+    if (!synth || !queueOpen || !activeId || parts.length === 0) return
+    const at = Math.min(partIndex, parts.length - 1)
+    startAt(activeId, at, true)
+  }
+
   const speaker: Speaker = {
     get activeId() {
       return activeId
@@ -545,6 +704,7 @@ export function createSpeaker(synth: SpeechSynth | null, makeUtterance?: (text: 
       voiceId = id
       store?.set(VOICE_PREF_KEY, id)
       emit()
+      retune()
     },
     setRate(id) {
       const next = SPEECH_RATES.find((item) => item.id === id)
@@ -552,6 +712,7 @@ export function createSpeaker(synth: SpeechSynth | null, makeUtterance?: (text: 
       rateId = next.id
       store?.set(RATE_PREF_KEY, rateId)
       emit()
+      retune()
     },
     subscribe(listener) {
       listeners.add(listener)
@@ -560,118 +721,51 @@ export function createSpeaker(synth: SpeechSynth | null, makeUtterance?: (text: 
     speak(id, text) {
       if (!synth) return
       const spoken = toSpokenText(text)
-      const parts = chunkSpeech(spoken)
-      token += 1
-      const mine = token
-      clearSpeechTimers()
-      error = null
-      inflight = []
-
-      if (parts.length === 0) {
-        try {
-          synth.cancel()
-        } catch {
-          // Nothing to read; cancelling is only to drop a previous target.
-        }
+      const nextParts = chunkSpeech(spoken)
+      if (nextParts.length === 0) {
+        token += 1
+        clearSpeechTimers()
+        error = null
+        detachInflight()
+        closeQueue()
+        halt()
         setActive(null)
         return
       }
 
       pullVoices()
       if (voicesUnavailable) {
+        token += 1
+        clearSpeechTimers()
+        detachInflight()
+        closeQueue()
         setActive(null)
         return
       }
 
-      // Cancel only when the engine is already busy. cancel() then speak() in the
-      // same turn is silent on iOS, and on Android it leaves the synth paused.
-      const busy = Boolean(synth.speaking || synth.pending)
-      if (busy) {
-        try {
-          synth.cancel()
-        } catch {
-          // Keep going; the new utterance is the one the tap asked for.
-        }
-        resume()
-      }
-
-      setActive(id)
-      let started = false
-
-      const run = (i: number) => {
-        if (token !== mine) return
-        if (i >= parts.length) {
-          clearSpeechTimers()
-          inflight = []
-          setActive(null)
-          return
-        }
-        const u = make(parts[i])
-        // iOS ignores text passed only through the constructor.
-        u.text = parts[i]
-        applyVoice(u)
-        u.rate = speechRate(rateId).rate
-        u.onstart = () => {
-          if (token !== mine) return
-          started = true
-        }
-        u.onend = () => {
-          if (token !== mine) return
-          clearChunkTimer()
-          run(i + 1)
-        }
-        u.onerror = () => {
-          if (token !== mine) return
-          fail(mine, id)
-        }
-        // Keep the utterance alive until it ends. iOS will drop speech whose utterance was collected.
-        inflight.push(u)
-        try {
-          synth.speak(u)
-        } catch {
-          fail(mine, id)
-          return
-        }
-        // Android Chrome queues speak() into a paused synth and plays nothing until resume().
-        resume()
-        clearChunkTimer()
-        const budget = 5000 + parts[i].length * 120
-        const budgetId = setTimeout(() => {
-          speechTimers.delete(budgetId)
-          if (chunkTimer === budgetId) chunkTimer = undefined
-          if (token !== mine) return
-          fail(mine, id)
-        }, budget)
-        chunkTimer = budgetId
-        speechTimers.add(budgetId)
-      }
-
-      try {
-        run(0)
-      } catch {
-        fail(mine, id)
-        return
-      }
-      if (token !== mine) return
-      after(speechTimers, SILENCE_GRACE_MS, () => {
-        if (token !== mine || started) return
-        resume()
-        if (token !== mine || started) return
-        const live = Boolean(synth.speaking || synth.pending)
-        if (!live || synth.paused) fail(mine, id)
-      })
+      parts = nextParts
+      // Cancel only when something is already playing. cancel() before a fresh
+      // speak() is silent on iOS, and on Android it leaves the synth paused.
+      const busy = Boolean(activeId || synth.speaking || synth.pending)
+      startAt(id, 0, busy)
     },
     stop() {
       token += 1
+      queueOpen = false
       clearSpeechTimers()
-      inflight = []
+      // Drop handlers before cancel(). Chrome and Firefox fire end/error inside
+      // cancel(), which would otherwise speak the next queued chunk.
+      for (const u of inflight) {
+        u.onend = null
+        u.onerror = null
+        u.onstart = null
+      }
       const hadError = error !== null
       error = null
-      try {
-        synth?.cancel()
-      } catch {
-        // Stopping is local state first; a throwing engine should still reset the button.
-      }
+      halt()
+      inflight = []
+      parts = []
+      partIndex = 0
       if (activeId !== null) setActive(null)
       else if (hadError) emit()
     },
