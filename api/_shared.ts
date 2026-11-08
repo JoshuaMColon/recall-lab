@@ -1,15 +1,15 @@
 import { createClient } from '@supabase/supabase-js'
 
 /**
- * Cost safety for every AI route:
- *  1. AI_DISABLED=1 turns all AI off instantly (the app keeps working on the question bank).
- *  2. The caller must be a signed-in Supabase user (accounts or /demo guests); the JWT is
- *     verified with Supabase, never trusted blindly.
- *  3. study_ai_consume() enforces per-user and global daily caps plus a burst gap in Postgres,
- *     atomically, before any model call is made.
- *  4. Token limits are small and inputs are truncated.
- * The models are called through Vercel AI Gateway with OIDC (no API key in the code). On the
- * free tier the Gateway returns 429 when the monthly credit is used up; it cannot bill.
+ * Every model route calls authorize() before I spend a token.
+ * AI_DISABLED=1 is the kill switch: the question bank keeps working.
+ * I verify the caller with getUser() so Supabase checks the JWT,
+ * instead of decoding it myself. study_ai_consume() then takes the
+ * quota in Postgres, row locks and all, before any model call. Two
+ * overlapping requests cannot both pass the cap. Inputs are clipped
+ * and the token limits stay small.
+ * The gateway is called with OIDC. There is no API key in this repo.
+ * On the free tier a spent credit comes back as 429 and cannot bill.
  */
 
 export const PRIMARY_MODEL = process.env.AI_MODEL || 'google/gemini-2.5-flash-lite'
@@ -30,7 +30,7 @@ export interface Authorized {
   remaining: number
 }
 
-/** Returns the caller if allowed, otherwise a ready-to-send error Response. */
+/** The caller when this request may spend a call, otherwise a response I can return as-is. */
 export async function authorize(req: Request, kind: Kind): Promise<Authorized | Response> {
   if (process.env.AI_DISABLED === '1') return json(503, { error: 'ai_unavailable', reason: 'disabled' })
   if (req.method !== 'POST') return json(405, { error: 'method' }, { allow: 'POST' })
@@ -40,13 +40,21 @@ export async function authorize(req: Request, kind: Kind): Promise<Authorized | 
   const token = (req.headers.get('authorization') ?? '').replace(/^Bearer\s+/i, '')
   if (!token) return json(401, { error: 'auth' })
 
+  // Anon key plus the caller's bearer token. persistSession is off: this
+  // client lives for one request and must not write a cookie. The header
+  // is what makes the quota RPC run as this user. Without it, auth.uid()
+  // inside the function is null and the call is refused.
   const db = createClient(url, anon, {
     auth: { persistSession: false, autoRefreshToken: false },
     global: { headers: { Authorization: `Bearer ${token}` } },
   })
+  // getUser(token) asks Supabase Auth to check the JWT. A forged or
+  // expired token fails here. I do not decode the payload myself.
   const { data: user, error: userError } = await db.auth.getUser(token)
   if (userError || !user.user) return json(401, { error: 'auth' })
 
+  // Spend the credit before the model call. A rejected quota check
+  // returns 429 and I never reach the gateway.
   const { data, error } = await db.rpc('study_ai_consume', { kind })
   if (error) return json(503, { error: 'ai_unavailable', reason: 'quota_check_failed' })
   const q = data as { allowed: boolean; reason?: string; remaining?: number }
@@ -55,6 +63,7 @@ export async function authorize(req: Request, kind: Kind): Promise<Authorized | 
 }
 
 export async function readBody<T>(req: Request): Promise<T | Response> {
+  // Length before JSON.parse, so a huge body is rejected still as text.
   const text = await req.text()
   if (text.length > MAX_BODY) return json(413, { error: 'too_large' })
   try {
@@ -64,11 +73,14 @@ export async function readBody<T>(req: Request): Promise<T | Response> {
   }
 }
 
-/** Map a model / gateway failure to a calm response the UI can explain. */
+/** Map a gateway failure to a response the page can explain without asking anyone to pay. */
 export function aiFailure(err: unknown): Response {
   const status = (err as { statusCode?: number })?.statusCode
   const name = (err as { name?: string })?.name ?? ''
+  // Name, status, and a short message. The prompt is not in this log.
   console.error('AI call failed', name, status, (err as Error)?.message?.slice(0, 300))
+  // 429 and 402 both mean the free credit is gone. I report them as
+  // quota so the UI stays on the question bank.
   if (status === 429 || /RateLimit/i.test(name)) return json(429, { error: 'quota', scope: 'provider' })
   if (status === 402 || /Credit|Payment/i.test(name)) return json(429, { error: 'quota', scope: 'provider' })
   return json(503, { error: 'ai_unavailable', reason: 'provider' })

@@ -6,6 +6,9 @@ import { COURSE_TITLE, OBJECTIVES } from './_objectives.js'
 const TYPES = ['mcq', 'output', 'bug', 'code'] as const
 type QType = (typeof TYPES)[number]
 
+// The model has to match this shape or generateText throws and I return
+// a failure. The schema cannot prove the program does what it claims;
+// the browser runs it before anything is saved.
 const base = { prompt: z.string().min(10).max(600), explanation: z.string().min(20).max(1200) }
 const code = z.string().max(1500)
 
@@ -47,6 +50,11 @@ interface Body {
   avoid?: string[]
 }
 
+/**
+ * One new question as structured JSON. I authorize first, keep the
+ * prompt small, and do not trust the answer key. Verification happens
+ * in the browser, by running the program, before the question is saved.
+ */
 export async function POST(req: Request): Promise<Response> {
   const body = await readBody<Body>(req.clone())
   if (body instanceof Response) return body
@@ -57,6 +65,8 @@ export async function POST(req: Request): Promise<Response> {
   const who = await authorize(req, 'generate')
   if (who instanceof Response) return who
 
+  // Recent prompts for this objective, capped, so the model is asked
+  // not to repeat them without the request turning into a dump of the bank.
   const avoid = (Array.isArray(body.avoid) ? body.avoid : []).slice(0, 8).map((p) => `- ${clip(p, 140)}`)
   try {
     const { output } = await generateText({
@@ -64,6 +74,8 @@ export async function POST(req: Request): Promise<Response> {
       providerOptions: { gateway: { models: [FALLBACK_MODEL] } },
       output: Output.object({ schema: SCHEMAS[type] as z.ZodType<Record<string, unknown>> }),
       maxOutputTokens: 900,
+      // Higher than a hint. I want a new question, not a paraphrase, and
+      // the schema still constrains the shape.
       temperature: 0.8,
       maxRetries: 1,
       abortSignal: AbortSignal.any([req.signal, AbortSignal.timeout(25_000)]),
