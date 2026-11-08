@@ -22,6 +22,9 @@ export function Quiz() {
   const app = useApp()
   const mode: Mode = path === '/review' ? 'review' : 'practice'
 
+  // Built once. App mounts this page with key={path + search}, so a new
+  // link is a new set. Review ignores the filters and takes due cards,
+  // misses first, twenty at a time. Practice hands the filters to buildPractice.
   const [set, setSet] = useState<Question[]>(() => {
     const p = new URLSearchParams(search)
     const objectives = (p.get('o') ?? '').split(',').filter((o) => objectiveById.has(o))
@@ -33,6 +36,7 @@ export function Quiz() {
     }
     return buildPractice(app.questions, app.reviews, app.mastery, { objectives, types, count })
   })
+  // Ties the attempts from this sitting together. It is not a timed-set id.
   const sessionId = useMemo(() => crypto.randomUUID(), [])
   const [i, setI] = useState(0)
   const q = set[i]
@@ -57,6 +61,8 @@ export function Quiz() {
       const g = await check(q, response)
       setGrade(g)
       setDone((d) => [...d, { q, grade: g }])
+      // The grade is on screen before the write finishes. record() updates
+      // the snapshot itself; a failed save shows up as syncError.
       void app.record(q, g, mode, performance.now() - started.current, sessionId)
     } catch (e) {
       setGrade({ correct: false, score: 0, note: (e as Error).message })
@@ -78,7 +84,9 @@ export function Quiz() {
     setAiBusy(true)
     setAiMsg(null)
     try {
-      // Cache first: reuse a saved AI question on this objective you have not answered yet.
+      // A saved question on this objective that they have not answered, and
+      // that is not already in the set, costs no model call. Otherwise I
+      // ask for a new one and verify it by running the code.
       const answered = new Set(app.data.attempts.map((a) => a.questionId))
       const cached = app.data.aiQuestions.find((x) => x.objective === q.objective && x.type === q.type && !answered.has(x.id) && !set.includes(x))
       let fresh = cached

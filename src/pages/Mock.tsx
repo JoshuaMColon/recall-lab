@@ -53,6 +53,7 @@ export function Mock() {
   const submitted = useRef(false)
 
   function start() {
+    // Generated questions stay out. The timed set is drawn from the checked bank.
     const set = buildMock(app.questions.filter((q) => q.source !== 'ai'), OBJECTIVES)
     setQs(set)
     setAnswers(set.map(blankResponse))
@@ -63,16 +64,19 @@ export function Mock() {
     setNow(t0)
     setDeadline(t0 + MOCK_DEFAULT.minutes * 60_000)
     setPhase('running')
+    // The last questions run code. Boot now so the first of those does not pay for the download.
     void python.warm()
   }
 
   const finish = useCallback(async () => {
+    // The timer and the button can both call this. The second one must not grade or save twice.
     if (submitted.current) return
     submitted.current = true
     setPhase('grading')
     const out: Grade[] = []
     for (let k = 0; k < qs.length; k++) {
       try {
+        // An untouched starter is a blank. Running it would grade the skeleton, which is supposed to fail.
         out.push(isAnswered(answers[k]) && !(qs[k].type === 'code' && answers[k].type === 'code' && (answers[k] as { source: string }).source === (qs[k] as { starter: string }).starter) ? await check(qs[k], answers[k]) : { correct: false, score: 0, note: 'Not answered.' })
       } catch (e) {
         out.push({ correct: false, score: 0, note: (e as Error).message })
@@ -80,6 +84,8 @@ export function Mock() {
       setProgress((k + 1) / qs.length)
     }
     setGrades(out)
+    // No per-question clock on this page. I split the sitting evenly, so a
+    // correct answer is a 5 only when the whole set really was that fast.
     const per = Math.round((Date.now() - new Date(startedAt.current).getTime()) / Math.max(1, qs.length))
     const byObjective: MockResult['byObjective'] = {}
     qs.forEach((q, k) => {

@@ -2,7 +2,11 @@ import { gradeCode, gradeStatic } from './grade'
 import { python } from './python'
 import type { Grade, Question, Response } from './types'
 
-/** Grade any response. Code is run in the in-browser Python against every test (hidden ones too). */
+/**
+ * Code is the only type I run. The other types are graded from the answer
+ * key. Hidden tests are included: the visible ones were already on screen
+ * while they wrote.
+ */
 export async function check(q: Question, r: Response): Promise<Grade> {
   if (q.type !== 'code') return gradeStatic(q, r)
   if (r.type !== 'code' || !r.source.trim()) return { correct: false, score: 0, note: 'No code submitted.' }

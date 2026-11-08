@@ -22,9 +22,9 @@ export const LEVEL_LABEL: Record<Level, string> = {
   mastered: 'Mastered',
 }
 
-/** Evidence needed before mastery can reach full strength. */
+/** Full confidence. Fewer attempts pull the score down so a short streak cannot read as mastered. */
 const CONFIDENCE_AT = 6
-/** Most recent attempts considered; older ones fade out. */
+/** Recent attempts that count toward accuracy. Older than this fade out of the window. */
 const WINDOW = 12
 
 export function levelFor(m: number, attempts: number): Level {
@@ -35,13 +35,18 @@ export function levelFor(m: number, attempts: number): Level {
   return 'learning'
 }
 
+/**
+ * Recent accuracy times confidence. I score the last 12 attempts, each
+ * weighted 0.85 of the newer one, so a bad week fades. Confidence uses
+ * the full count and reaches 1 at six attempts.
+ */
 export function objectiveMastery(objective: string, attempts: Attempt[], questions: Question[], reviews: ReviewState[], now = new Date()): ObjectiveMastery {
   const mine = attempts.filter((a) => a.objective === objective).sort((a, b) => b.createdAt.localeCompare(a.createdAt))
   const recent = mine.slice(0, WINDOW)
   let wsum = 0
   let acc = 0
   recent.forEach((a, i) => {
-    const w = Math.pow(0.85, i) // newest counts most
+    const w = Math.pow(0.85, i)
     wsum += w
     acc += w * a.score
   })
@@ -64,13 +69,13 @@ export function allMastery(objectives: Objective[], attempts: Attempt[], questio
   return objectives.map((o) => objectiveMastery(o.id, attempts, questions, reviews, now))
 }
 
-/** OA-weighted readiness, 0..1. */
+/** 0..1, weighted by the same objective weights the timed set uses to split slots. */
 export function readiness(objectives: Objective[], m: ObjectiveMastery[]): number {
   const total = objectives.reduce((s, o) => s + o.weight, 0)
   return objectives.reduce((s, o) => s + o.weight * (m.find((x) => x.objective === o.id)?.mastery ?? 0), 0) / total
 }
 
-/** Weakest practised objectives first (needs a little evidence so one unlucky miss doesn't dominate). */
+/** Weakest first, and only after three attempts. One miss on a new objective is not a weak area. */
 export function weakAreas(m: ObjectiveMastery[], limit = 3): ObjectiveMastery[] {
   return m
     .filter((x) => x.attempts >= 3 && x.mastery < 0.7)
