@@ -13,10 +13,14 @@ export function Login() {
   const [busy, setBusy] = useState(false)
   const [msg, setMsg] = useState<{ tone: 'good' | 'bad'; text: string } | null>(null)
 
+  // A real account leaves this page. A guest stays, so they can create
+  // one. Signing in starts a fresh star chart; I do not copy guest rows over.
   useEffect(() => {
     if (session && !isGuest) navigate('/dashboard', true)
   }, [session, isGuest])
 
+  // No backend in this build. The form would have nothing to call,
+  // and progress is already stored in this browser.
   if (local || !supabase) {
     return (
       <Card className="mx-auto max-w-md">
@@ -36,10 +40,17 @@ export function Login() {
     setMsg(null)
     try {
       if (mode === 'up') {
+        // The confirmation link comes back to this origin, then /dashboard.
+        // A hardcoded host would miss a preview deploy, and the URL has to
+        // be on the project's allow list. If confirmation is still required,
+        // signUp returns no session and I send them to the inbox instead of
+        // treating that as signed in.
         const { data, error } = await db.auth.signUp({ email, password, options: { emailRedirectTo: `${location.origin}/dashboard` } })
         if (error) throw error
         if (!data.session) setMsg({ tone: 'good', text: 'Check your inbox for a confirmation link, then sign in.' })
       } else {
+        // Password sign-in. The auth listener in AppProvider picks up the
+        // session, and the effect above leaves this page. I do not navigate here.
         const { error } = await db.auth.signInWithPassword({ email, password })
         if (error) throw error
       }
@@ -101,15 +112,19 @@ export function Login() {
   )
 }
 
-// One guest sign-in at a time, even if React runs the effect twice. Cleared
-// once it settles, so "Try the demo" after signing out starts a fresh guest
-// instead of replaying the old (already signed-out) sign-in.
+// One guest sign-in at a time, even when React runs the effect twice.
+// Two overlapping signInAnonymously calls would mint two users, so I
+// keep the in-flight promise here and let the second run reuse it.
+// I clear it once it settles. After a sign-out, "Try the demo" has to
+// start a new guest, not replay a promise that already signed out.
 let demoStart: ReturnType<NonNullable<typeof supabase>['auth']['signInAnonymously']> | null = null
 
 export function Demo() {
   const { session } = useApp()
   const [err, setErr] = useState<string | null>(null)
   useEffect(() => {
+    // Already signed in, or this build has no auth client. Nothing to
+    // sign in anonymously; the dashboard is the right next page.
     if (!supabase || session) {
       navigate('/dashboard', true)
       return
@@ -117,7 +132,9 @@ export function Demo() {
     let live = true
     const start = (demoStart ??= supabase.auth.signInAnonymously())
     void start.then(({ error }) => {
+      // Clear the slot only if this promise is still the current one.
       if (demoStart === start) demoStart = null
+      // They may have left /demo before this resolved.
       if (!live) return
       if (error) setErr(error.message)
       else navigate('/dashboard', true)
