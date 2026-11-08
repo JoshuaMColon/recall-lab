@@ -34,7 +34,11 @@ function useAiNote() {
     setErr(null)
     setText('')
     try {
+      // The hash is the answer they submitted. Hints pass an empty source,
+      // so one saved hint covers the question. A mistake note is per wrong
+      // answer, and a later different mistake does not replay the old one.
       const hash = hashText(hashSource)
+      // A failed read is a miss, not a dead button. I fall through and ask the model.
       const hit = await store.getNote(questionId, kind, hash).catch(() => null)
       if (hit) {
         setCached(true)
@@ -43,6 +47,7 @@ function useAiNote() {
       }
       setCached(false)
       const full = await streamNote(body, setText)
+      // Best-effort. The note is already on screen if this write fails.
       await store.saveNote(questionId, kind, hash, full).catch(() => undefined)
     } catch (e) {
       setText('')

@@ -46,6 +46,9 @@ function initialTheme(): Theme {
   return document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light'
 }
 
+// One provider owns the session, the snapshot, and the writes. I update
+// React state first so the next screen feels instant, then persist. A
+// failed write sets syncError. I do not roll the grade back: they already saw it.
 export function AppProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null)
   const [authReady, setAuthReady] = useState(!CLOUD)
@@ -60,6 +63,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (!supabase) return
+    // getSession restores the persisted session. The listener covers
+    // sign-in, sign-out, and a token refresh after that.
     supabase.auth.getSession().then(({ data }) => {
       setSession(data.session)
       setAuthReady(true)
@@ -69,9 +74,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const userId = session?.user.id ?? null
+  // No user yet, or no backend: the local document. Cloud progress is per user id.
   const store: Store = useMemo(() => (supabase && userId ? new CloudStore(supabase, userId) : new LocalStore('local')), [userId])
 
   const storeKey = CLOUD ? userId : 'local'
+  // Reload when the signed-in user changes. `live` drops a response that
+  // arrives after they have already switched again.
   useEffect(() => {
     if (!authReady || !storeKey) return
     let live = true
@@ -130,9 +138,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
         elapsedMs,
         createdAt: now.toISOString(),
       }
+      // dataRef, not `data` in the deps: record() would otherwise be a new
+      // function after every attempt, and the schedule needs the latest review.
       const prev = dataRef.current.reviews.find((r) => r.questionId === q.id)
       const review = schedule(prev, { questionId: q.id, objective: q.objective }, quality(grade.score, elapsedMs), now)
       setData((d) => ({ ...d, attempts: [...d.attempts, attempt], reviews: [...d.reviews.filter((r) => r.questionId !== q.id), review] }))
+      // Attempt first. If that insert fails I do not write a schedule for a grade that never landed.
       await persist(store.addAttempt(attempt).then(() => store.saveReview(review)))
     },
     [store, persist],
@@ -162,10 +173,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const signOut = useCallback(async () => {
     await supabase?.auth.signOut()
+    // Drop the snapshot now. The next person must not see these attempts while their own load is in flight.
     setData(empty())
   }, [])
 
   const value: AppState = {
+    // Auth has settled, and the snapshot for this user (or local mode) has loaded.
     ready: authReady && (!storeKey || loadedKey === storeKey),
     session,
     isGuest: !!session?.user.is_anonymous,
