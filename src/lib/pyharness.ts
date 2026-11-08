@@ -1,8 +1,14 @@
 /**
- * Python-side runner shared by the browser worker and the Node bank test. Runs one program
- * with the given stdin in a fresh temp directory (with optional files), captures stdout and
- * reports the first error with its line number in the learner's code.
- * input() never echoes its prompt, so `input("Enter: ")` and `input()` grade the same.
+ * The same runner in the browser worker and in the Node bank test, so
+ * "what printed" means the same thing in both places. Each run gets a
+ * fresh temp directory. I replace input() so a prompt is not echoed
+ * into stdout: `input("Enter: ")` and `input()` have to grade the same.
+ * Asking for more lines than the test provides raises EOFError instead
+ * of returning empty strings, which would spin a read-until-blank loop
+ * until the worker is killed. The program is compiled as main.py so a
+ * traceback line maps to the editor, not into this harness. SystemExit
+ * is a clean stop. stdout is capped so a runaway print cannot balloon
+ * the message back to the page.
  */
 export const HARNESS = String.raw`
 import sys, io, os, json, tempfile, builtins, traceback
