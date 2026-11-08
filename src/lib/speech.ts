@@ -1,23 +1,26 @@
 /**
- * Optional read-aloud via the browser's built-in speechSynthesis.
- * Nothing here speaks until `speak` or `toggle` is called from a user action.
- * No paid TTS, no network, no API key.
+ * Read-aloud through the browser's speechSynthesis. I do not speak until
+ * speak() or toggle() runs from a tap, and nothing leaves the device.
  *
- * Phones are fussy about this API:
- * - The first `speak()` has to happen in the tap, with no timer or voiceschanged wait in front of it.
- * - iOS drops audio when `lang` is forced (for example `en-US`) before a real voice exists, and it
- *   often ignores text passed only to the SpeechSynthesisUtterance constructor.
- * - Chrome on Android accepts `speak()` while the engine is paused and then stays silent unless
- *   `resume()` runs in that same tap. `cancel()` on an idle engine is enough to pause it, so a
- *   fresh Listen must not cancel first.
- * - A dropped utterance often fires no `end`, or fires `canceled`, and the button used to sit on
- *   "Speaking". Failures clear that state and surface `SPEECH_FAILED`.
- * - `cancel()` alone does not cut off the utterance that is already playing on Chrome or Android
- *   once `resume()` has run, and the cancellation `end` event will speak the next chunk unless
- *   the queue is closed first. Stop pauses, then cancels, and does not resume.
- * - `rate` is fixed on the utterance already in the engine. A speed change while speaking
- *   cancels that chunk and speaks it again at the new rate. Changing speed while idle only
- *   stores the setting.
+ * Phones are fussy, and these workarounds are load-bearing:
+ * - The first speak() has to happen inside the tap. A timer or a
+ *   voiceschanged wait in front of it gets dropped.
+ * - iOS goes silent if I force lang (for example en-US) before a real
+ *   voice exists, and it ignores text that was only passed to the
+ *   SpeechSynthesisUtterance constructor.
+ * - Chrome on Android accepts speak() while the engine is paused and
+ *   then stays silent unless resume() runs in that same tap. cancel()
+ *   on an idle engine is enough to pause it, so a fresh Listen must
+ *   not cancel first.
+ * - A dropped utterance often fires no end, or fires canceled, and the
+ *   button used to sit on "Speaking". I clear that and surface SPEECH_FAILED.
+ * - cancel() alone does not cut off audio that is already playing on
+ *   Chrome or Android once resume() has run, and the cancellation end
+ *   event will speak the next chunk unless I close the queue first.
+ *   Stop pauses, then cancels, and does not resume.
+ * - rate is fixed on the utterance already in the engine. A speed
+ *   change while speaking cancels that chunk and speaks it again.
+ *   Changing speed while idle only stores the setting.
  */
 
 export interface SpeechVoice {
@@ -144,9 +147,10 @@ export function toSpokenText(raw: string): string {
 }
 
 /**
- * Keep each utterance short. Chrome (including Android) silently stops an utterance
- * after about 15 seconds and sometimes never fires `end`, which used to freeze Listen.
- * 120 characters is roughly eight seconds at the rate we use.
+ * I keep each utterance short. Chrome, including Android, silently stops
+ * one after about 15 seconds and sometimes never fires end, which used
+ * to freeze Listen. 120 characters is about eight seconds at the rate I
+ * use. Sentences stay together until that cap, then I split on words.
  */
 export function chunkSpeech(text: string, max = 120): string[] {
   const clean = text.trim()
@@ -197,8 +201,11 @@ export function isEnglishVoice(voice: SpeechVoice, preferred = 'en-US'): boolean
 }
 
 /**
- * Higher is a more natural voice. Name and URI are the only signals the browser gives us.
- * A local compact voice scores 0. Natural, neural, premium, and a few well-known names score higher.
+ * Higher is a more natural voice. Name and URI are the only signals the
+ * browser gives me, so I score those. A compact local voice stays at 0.
+ * Natural, neural, premium, and a few voices I know sound decent score
+ * higher. Anything that is not English is out: the text is English, and
+ * another locale reads the code with the wrong pronunciation.
  */
 function voiceQuality(voice: SpeechVoice): number {
   if (!isEnglishVoice(voice)) return -1
@@ -228,7 +235,7 @@ function localeRank(voice: SpeechVoice, preferred: string): number {
   return 4
 }
 
-/** Positive when `a` should be spoken instead of `b`. */
+/** Positive when I would rather speak with `a` than `b`. Quality, then locale, then a local service, then the browser default. */
 export function compareVoices(a: SpeechVoice, b: SpeechVoice, preferred = 'en-US'): number {
   const quality = voiceQuality(a) - voiceQuality(b)
   if (quality !== 0) return quality
@@ -240,9 +247,10 @@ export function compareVoices(a: SpeechVoice, b: SpeechVoice, preferred = 'en-US
 }
 
 /**
- * Best English voice on this device.
- * Natural / neural / premium voices win over a compact local voice with the same language.
- * Falls back to any English voice, then to any voice at all.
+ * Best voice on this device. Quality wins, so a natural English voice
+ * beats a compact one. If every voice scores as not English I still
+ * return one: Listen needs a voice object, and forcing a lang tag is
+ * what goes silent on iOS.
  */
 export function pickVoice(voices: readonly SpeechVoice[], preferred = 'en-US'): SpeechVoice | null {
   if (!voices.length) return null
@@ -365,6 +373,12 @@ export interface Speaker {
   subscribe: (listener: () => void) => () => void
 }
 
+/**
+ * One speaker for the whole app, so starting Listen on one block stops
+ * another. activeId is the button that owns the queue. token throws away
+ * in-flight callbacks when Stop, a new speak, or a failure bumps it.
+ * queueOpen is how a late end event is kept from starting the next chunk.
+ */
 export function createSpeaker(synth: SpeechSynth | null, makeUtterance?: (text: string) => SpeechUtterance, prefs?: PrefStore | null): Speaker {
   const make = makeUtterance ?? browserUtterance
   const store = prefs === undefined ? browserPrefs() : prefs
@@ -497,9 +511,9 @@ export function createSpeaker(synth: SpeechSynth | null, makeUtterance?: (text: 
   }
 
   /**
-   * Pause first so Chrome and Android actually stop the audio, then cancel the queue.
-   * `cancel()` on its own leaves the current utterance talking after `resume()`.
-   * Does not resume — resume() would start whatever chunk cancel() failed to drop.
+   * Pause first so Chrome and Android actually stop the audio, then cancel.
+   * cancel() on its own leaves the current utterance talking after resume().
+   * I do not resume here. resume() would start whatever chunk cancel() failed to drop.
    */
   function halt() {
     if (!synth) return
@@ -666,7 +680,11 @@ export function createSpeaker(synth: SpeechSynth | null, makeUtterance?: (text: 
     armSilence(mine, id)
   }
 
-  /** Replay the current chunk after a voice or speed change. No-op while idle. */
+  /**
+   * Voice and rate stick to the utterance already in the engine, so a
+   * change mid-sentence drops that chunk and speaks it again. Idle
+   * changes only store the setting; this returns without speaking.
+   */
   function retune() {
     if (!synth || !queueOpen || !activeId || parts.length === 0) return
     const at = Math.min(partIndex, parts.length - 1)
@@ -745,7 +763,7 @@ export function createSpeaker(synth: SpeechSynth | null, makeUtterance?: (text: 
 
       parts = nextParts
       // Cancel only when something is already playing. cancel() before a fresh
-      // speak() is silent on iOS, and on Android it leaves the synth paused.
+      // speak() is silent on iOS, and on Android it leaves the engine paused.
       const busy = Boolean(activeId || synth.speaking || synth.pending)
       startAt(id, 0, busy)
     },
@@ -753,8 +771,8 @@ export function createSpeaker(synth: SpeechSynth | null, makeUtterance?: (text: 
       token += 1
       queueOpen = false
       clearSpeechTimers()
-      // Drop handlers before cancel(). Chrome and Firefox fire end/error inside
-      // cancel(), which would otherwise speak the next queued chunk.
+      // Drop handlers before cancel(). Chrome and Firefox fire end or error
+      // inside cancel(), which would otherwise speak the next chunk.
       for (const u of inflight) {
         u.onend = null
         u.onerror = null
