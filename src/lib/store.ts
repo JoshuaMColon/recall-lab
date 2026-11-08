@@ -26,6 +26,10 @@ export const empty = (): Snapshot => ({ attempts: [], reviews: [], mocks: [], ai
 
 /* ---------- local (this browser only) ---------- */
 
+// Two stores, one interface. Local mode is a single localStorage document.
+// Cloud mode writes the public.study_* views. The row policies on the
+// study tables are what keep a row owner-only; the view does not add a privilege.
+
 interface LocalFile extends Snapshot {
   version: 1
   notes: Record<string, string>
@@ -50,7 +54,8 @@ export class LocalStore implements Store {
     return { version: 1, ...empty(), notes: {} }
   }
   private write(f: LocalFile) {
-    // Keep the file bounded: the newest 3000 attempts are plenty for mastery.
+    // The mastery window is the last twelve attempts. Three thousand is
+    // a long history and still a small document; older rows only slow the parse.
     if (f.attempts.length > 3000) f.attempts = f.attempts.slice(-3000)
     localStorage.setItem(this.key, JSON.stringify(f))
   }
@@ -67,6 +72,7 @@ export class LocalStore implements Store {
     this.edit((f) => f.attempts.push(a))
   }
   async saveReview(r: ReviewState) {
+    // One schedule per question. I drop the previous row, then append.
     this.edit((f) => {
       f.reviews = f.reviews.filter((x) => x.questionId !== r.questionId)
       f.reviews.push(r)
@@ -143,6 +149,9 @@ export class CloudStore implements Store {
   ) {}
 
   async load(): Promise<Snapshot> {
+    // Same 3000-attempt cap as local mode. Newest first so the limit
+    // keeps recent history, then I reverse to chronological order so a
+    // new attempt still appends at the end.
     const [a, r, m, q] = await Promise.all([
       this.db.from('study_attempts').select('*').order('created_at', { ascending: false }).limit(3000),
       this.db.from('study_review_state').select('*').limit(5000),
@@ -194,6 +203,8 @@ export class CloudStore implements Store {
   }
 
   async addAttempt(a: Attempt) {
+    // user_id is sent, not left to the column default. The policy checks
+    // it against auth.uid(), so a mismatched id is rejected rather than stored.
     check(
       await this.db.from('study_attempts').insert({
         id: a.id,
@@ -205,12 +216,14 @@ export class CloudStore implements Store {
         score: a.score,
         mode: a.mode,
         session_id: a.sessionId ?? null,
+        // The column check is 0 .. one day. A wild clock must not fail the insert and drop the attempt.
         elapsed_ms: Math.min(86_400_000, Math.max(0, Math.round(a.elapsedMs))),
         created_at: a.createdAt,
       }),
     )
   }
   async saveReview(r: ReviewState) {
+    // One row per question. The conflict target is the primary key.
     check(
       await this.db.from('study_review_state').upsert(
         {
@@ -244,6 +257,8 @@ export class CloudStore implements Store {
     )
   }
   async saveAiQuestion(q: Question, model: string) {
+    // The row id and the question id share one uuid. The prefix keeps it
+    // from colliding with a bank id when the two lists are merged.
     const id = crypto.randomUUID()
     const payload = { ...q, id: `ai-${id}`, source: 'ai' as const }
     check(await this.db.from('study_ai_questions').insert({ id, user_id: this.userId, objective_id: q.objective, qtype: q.type, payload, model }))
@@ -256,6 +271,7 @@ export class CloudStore implements Store {
     return rows[0]?.content ?? null
   }
   async saveNote(id: string, kind: NoteKind, hash: string, content: string) {
+    // 6000 matches the column check. A longer note would fail the write.
     check(
       await this.db
         .from('study_ai_notes')
@@ -269,7 +285,7 @@ export class CloudStore implements Store {
   }
 }
 
-/** Short stable hash for cache keys (FNV-1a, hex). */
+/** Cache key for a saved note. FNV-1a is plenty; I am not hiding the answer with it. */
 export function hashText(s: string): string {
   let h = 0x811c9dc5
   for (let i = 0; i < s.length; i++) {

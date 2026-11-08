@@ -48,6 +48,10 @@ function Loading() {
   )
 }
 
+// Path to page. Private paths wait until I know whether there is a
+// session, then replace the URL with login so Back does not land on the
+// gated path and bounce a second time. `next` records where they were
+// headed. Sign-in itself still opens the dashboard.
 export function App() {
   const { path, search } = useLocation()
   const { ready, signedIn } = useApp()
@@ -59,7 +63,7 @@ export function App() {
     if (lessonMatch === 'index') document.title = 'Lessons · Recall Lab'
     else if (lessonMatch != null && lessonMatch !== 'missing') document.title = `${objectiveLabel(lessonMatch.objectiveId)} · Lessons · Recall Lab`
     else document.title = TITLES[path] ?? 'Not found · Recall Lab'
-    // Back/forward does not go through navigate(); stop any in-progress reading.
+    // Back and forward do not go through navigate(), so I stop speech here too.
     stopSpeech()
   }, [path, lessonMatch])
 
@@ -74,6 +78,7 @@ export function App() {
   else if (path === '/login') page = <Login />
   else if (path === '/dashboard') page = <Dashboard />
   else if (path === '/practice') page = <Practice />
+  // One component for practice and review. The key remounts it when the path or the query changes, which rebuilds the set.
   else if (path === '/quiz' || path === '/review') page = <Quiz key={path + search} />
   else if (path === '/mock') page = <Mock />
   else if (path === '/guide') page = <Guide />

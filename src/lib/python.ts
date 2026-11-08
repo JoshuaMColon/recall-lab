@@ -7,7 +7,13 @@ type Listener = (s: Status) => void
 const BOOT_TIMEOUT = 60_000
 const PER_CASE_MS = 4_000
 
-/** Lazily-started Pyodide worker. All grading of code questions happens here, in the browser. */
+/**
+ * One worker grades every code question, in the browser. I boot the
+ * runtime lazily, the first time a code question needs it, because it
+ * is large and most sittings never run code. A run that blows its
+ * budget kills the worker. That is how an infinite loop dies. The next
+ * call spawns a fresh one.
+ */
 class PythonRunner {
   private worker: Worker | null = null
   private booted = false
@@ -47,11 +53,14 @@ class PythonRunner {
     return new Promise<T>((resolve, reject) => {
       const timer = setTimeout(() => {
         w.removeEventListener('message', onMsg)
+        // terminate() is the timeout. Learner code is inside exec() and
+        // will not return on its own. The next call spawns again.
         this.kill()
         this.set('idle')
         reject(new Error('timeout'))
       }, timeoutMs)
       const onMsg = (e: MessageEvent) => {
+        // Two calls can be in flight. The id keeps a reply from resolving the wrong one.
         if (e.data?.id !== id) return
         clearTimeout(timer)
         w.removeEventListener('message', onMsg)
@@ -66,7 +75,7 @@ class PythonRunner {
     })
   }
 
-  /** Start downloading Python in the background (call when a code question appears). */
+  /** Download the runtime in the background. I call this when a code question shows up, not at startup. */
   async warm(): Promise<boolean> {
     if (this.booted) return true
     this.set('loading')
@@ -81,7 +90,11 @@ class PythonRunner {
     }
   }
 
-  /** Run code once per case. A run that exceeds its time budget is reported as timedOut. */
+  /**
+   * One program, once per case. The budget covers the whole batch. If it
+   * fires, the worker is already dead, so every case in this call is a
+   * timeout, and I boot again in the background for the next question.
+   */
   async run(code: string, cases: RunCase[], files?: Record<string, string>): Promise<RunOutcome[]> {
     if (!(await this.warm())) throw new Error('Python could not be loaded in this browser.')
     try {
@@ -89,7 +102,7 @@ class PythonRunner {
       return r.results
     } catch (e) {
       if ((e as Error).message === 'timeout') {
-        void this.warm() // restart in the background
+        void this.warm()
         return cases.map(() => ({ stdout: '', error: null, timedOut: true }))
       }
       throw e

@@ -11,8 +11,15 @@ interface Body {
   details?: string
 }
 
-/** Streams a short hint (before answering) or an explanation of the learner's mistake. */
+/**
+ * A short hint, or an explanation of a wrong answer. I authorize before
+ * any token is streamed, and I wait for the first chunk so a quota or
+ * provider failure is still a status code. Once bytes are on the wire
+ * the only move left is to close the stream.
+ */
 export async function POST(req: Request): Promise<Response> {
+  // readBody drains the body. I parse a clone and authorize the original
+  // request, which still carries the bearer token and the abort signal.
   const body = await readBody<Body>(req.clone())
   if (body instanceof Response) return body
   const kind = body.kind === 'hint' ? 'hint' : body.kind === 'explain' ? 'explain' : null
@@ -21,6 +28,7 @@ export async function POST(req: Request): Promise<Response> {
   const who = await authorize(req, kind)
   if (who instanceof Response) return who
 
+  // Every field is clipped. A pasted essay does not reach the model.
   const context =
     `Question: ${clip(body.prompt, 800)}\n` +
     (body.code ? `Code:\n${clip(body.code, 1600)}\n` : '') +
@@ -34,16 +42,20 @@ export async function POST(req: Request): Promise<Response> {
 
   const result = streamText({
     model: PRIMARY_MODEL,
+    // The gateway tries the fallback. I do not write a second call myself.
     providerOptions: { gateway: { models: [FALLBACK_MODEL] } },
     maxOutputTokens: kind === 'hint' ? 150 : 400,
+    // Low temperature: a hint should be steady, not inventive.
     temperature: 0.3,
     maxRetries: 1,
+    // The browser abort and a hard 25s cap share one signal.
     abortSignal: AbortSignal.any([req.signal, AbortSignal.timeout(25_000)]),
     system: `You are a patient Python tutor for the course ${COURSE_TITLE}. Answer in plain text with light Markdown.`,
     prompt: `${context}\n${task}`,
   })
 
-  // Wait for the first chunk so quota or provider errors become a proper status code.
+  // Pull the first chunk before building the Response. A throw here
+  // can still be a 429 or 503. After I return, the status is already 200.
   const it = result.textStream[Symbol.asyncIterator]()
   let first: IteratorResult<string>
   try {
@@ -71,6 +83,7 @@ export async function POST(req: Request): Promise<Response> {
     },
   })
   return new Response(stream, {
+    // Remaining quota rides a header because the body is plain text.
     headers: { 'content-type': 'text/plain; charset=utf-8', 'cache-control': 'no-store', 'x-ai-remaining': String(who.remaining) },
   })
 }

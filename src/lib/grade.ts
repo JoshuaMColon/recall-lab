@@ -1,6 +1,6 @@
 import type { Grade, Question, Response, TestResult } from './types'
 
-/** Normalise program output for comparison: unify newlines, drop trailing spaces and trailing blank lines. */
+/** Compare output, not keystrokes. CRLF becomes LF, trailing spaces go, and blank lines at the ends do not count. */
 export function normalizeOutput(s: string): string {
   return s
     .replace(/\r\n?/g, '\n')
@@ -10,7 +10,12 @@ export function normalizeOutput(s: string): string {
     .replace(/^\n+|\n+$/g, '')
 }
 
-/** Deterministic grading for every type except code (which needs a Python run, see gradeCode). */
+/**
+ * Every type except code, which has to be run. Output is exact after
+ * normalizeOutput. A gap that is only spacing or line breaks scores half
+ * and I say so: the values were right, and the format was not. I do not
+ * call that correct.
+ */
 export function gradeStatic(q: Question, r: Response): Grade {
   switch (q.type) {
     case 'mcq': {
@@ -22,7 +27,7 @@ export function gradeStatic(q: Question, r: Response): Grade {
       const got = normalizeOutput(r.text)
       const want = normalizeOutput(q.answer)
       if (got === want) return { correct: true, score: 1 }
-      // Forgive quote style and spacing slips only when they are the sole difference; say so.
+      // Collapse runs of whitespace. That is the only slip I score as half.
       const loose = (s: string) => s.replace(/\s+/g, ' ').trim()
       if (loose(got) === loose(want))
         return { correct: false, score: 0.5, note: 'Right values, but the spacing or line breaks differ. Exact output matters on the OA.' }
@@ -56,6 +61,8 @@ export function gradeCode(tests: { stdin: string; expected: string; hidden: bool
           : undefined
     return { stdin: t.stdin, expected: normalizeOutput(t.expected), got, passed: !error && got === normalizeOutput(t.expected), hidden: t.hidden, error }
   })
+  // Each test is pass or fail. The score is the fraction that passed.
+  // A timeout or an exception fails that test even if some stdout came out first.
   const passed = results.filter((r) => r.passed).length
   return { correct: passed === results.length && results.length > 0, score: results.length ? passed / results.length : 0, tests: results }
 }

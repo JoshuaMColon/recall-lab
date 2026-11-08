@@ -3,7 +3,7 @@ import { python } from './python'
 import { supabase } from './supabase'
 import type { Question, QType } from './types'
 
-/** AI is an optional extra. Everything else works without it. */
+/** Model extras are optional. The bank, grading, and review schedule work without them. */
 export const AI_ENABLED = supabase !== null && import.meta.env.VITE_AI_OFF !== '1'
 
 export class AiError extends Error {
@@ -23,6 +23,8 @@ const QUOTA_MSG: Record<string, string> = {
 }
 
 async function token(): Promise<string> {
+  // The function checks this with getUser(). The service role key never
+  // ships in the client; the anon key plus this access token is the whole credential.
   const { data } = (await supabase?.auth.getSession()) ?? { data: { session: null } }
   if (!data.session) throw new AiError('auth', 'Sign in (or start the demo) to use AI extras.')
   return data.session.access_token
@@ -65,17 +67,20 @@ interface RawCode { prompt: string; explanation: string; starter: string; soluti
 
 const invalid = () => new AiError('invalid', 'The AI wrote a question that failed its own check, so it was thrown away. Try again.')
 
-/**
- * Never trust a model's answer key: outputs are computed by running the code in Pyodide,
- * bug fixes must change the behaviour, and code tasks get their expected outputs from the
- * reference solution. Only multiple-choice keys can't be machine-checked; they are labelled.
- */
-/** Models sometimes paste the program into the prompt as a fenced block as well; the code is shown separately. */
+/** The program is shown on its own. If the model also pasted it into the prompt as a fence, I drop that copy. */
 export function cleanPrompt(prompt: string, hasCode: boolean): string {
   const p = hasCode ? prompt.replace(/```[a-z]*\n[\s\S]*?```/gi, ' ') : prompt
   return p.replace(/\s+/g, ' ').trim() || 'What does this program do?'
 }
 
+/**
+ * The model proposes a question. I throw it away unless the run agrees.
+ * Output questions store what the program actually printed. A bug fix
+ * has to change the result, or it is not a bug. A code task takes its
+ * expected output from the reference solution, and the starter must
+ * fail those same tests. Multiple choice cannot be executed, so that
+ * key is the one I leave as written, after checking the choices are unique.
+ */
 export async function verify(type: QType, objective: string, raw: unknown): Promise<Question> {
   const base = { id: 'ai-pending', objective, difficulty: 2 as const, source: 'ai' as const }
   switch (type) {
@@ -101,6 +106,8 @@ export async function verify(type: QType, objective: string, raw: unknown): Prom
       const fixed = await python.run(fixedLines.join('\n'), [{ stdin: '' }])
       const fo = normalizeOutput(fixed[0].stdout)
       const bo = normalizeOutput(buggy[0].stdout)
+      // The fixed program has to run and print something. If the buggy
+      // version prints the same thing, the "bug" changed nothing.
       if (fixed[0].error || fixed[0].timedOut || !fo || (!buggy[0].error && bo === fo)) throw invalid()
       return {
         ...base,
@@ -119,8 +126,10 @@ export async function verify(type: QType, objective: string, raw: unknown): Prom
       const cases = r.testInputs.map((s) => ({ stdin: s.endsWith('\n') || !s ? s : `${s}\n` }))
       const runs = await python.run(r.solution, cases)
       if (runs.some((x) => x.error || x.timedOut || !normalizeOutput(x.stdout))) throw invalid()
+      // The first two tests stay visible. The rest are hidden, same as the bank.
       const tests = cases.map((c, i) => ({ stdin: c.stdin, expected: normalizeOutput(runs[i].stdout), hidden: i >= 2 }))
       const starterRuns = await python.run(r.starter, cases)
+      // A starter that already passes is a solved problem. Discard it.
       if (gradeCode(tests, starterRuns).correct) throw invalid()
       return { ...base, type, prompt: r.prompt, explanation: r.explanation, starter: r.starter, solution: r.solution, tests }
     }
