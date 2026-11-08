@@ -1,5 +1,7 @@
--- Recall Lab: study data in its own `study` schema. Every learner table is owner-only (RLS),
--- rows cascade away with the auth user (so the hourly guest cleanup removes /demo data too).
+-- Study data lives in its own schema so it is not sitting in public.
+-- I revoke public and anon, then grant usage to authenticated and
+-- service_role. Every learner row stores user_id and cascades with the
+-- auth user, so the hourly guest cleanup takes their attempts with them.
 create schema if not exists study;
 revoke all on schema study from public, anon;
 grant usage on schema study to authenticated, service_role;
@@ -23,6 +25,9 @@ create table study.objectives (
   unique (course_code, code)
 );
 
+-- user_id defaults to auth.uid() and the policy requires the same value.
+-- A client cannot insert a row for someone else. on delete cascade is
+-- what removes the row when the auth user goes away.
 create table study.attempts (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null default auth.uid() references auth.users (id) on delete cascade,
@@ -94,7 +99,10 @@ create table study.ai_notes (
   primary key (user_id, question_id, kind, answer_hash)
 );
 
--- Usage counters for the AI quota. No policies: only the SECURITY DEFINER functions touch them.
+-- Quota counters. RLS stays on and there is no policy, and authenticated
+-- gets no grant. The Data API cannot read or write a tally. Only the
+-- security definer functions below touch these tables, so a learner
+-- cannot reset their own count.
 create table study.ai_usage (
   user_id uuid not null references auth.users (id) on delete cascade,
   day date not null,
@@ -119,6 +127,10 @@ alter table study.ai_usage_global enable row level security;
 
 create policy "courses are readable" on study.courses for select to authenticated using (true);
 create policy "objectives are readable" on study.objectives for select to authenticated using (true);
+-- (select auth.uid()) rather than a bare call. Postgres can cache that
+-- subquery once per statement; calling auth.uid() on every row shows up
+-- once these tables hold a real history. with check blocks an insert or
+-- update that would hand the row to someone else.
 create policy "own attempts" on study.attempts for all to authenticated
   using (user_id = (select auth.uid())) with check (user_id = (select auth.uid()));
 create policy "own review state" on study.review_state for all to authenticated
@@ -134,9 +146,10 @@ grant select on study.courses, study.objectives to authenticated;
 grant select, insert, update, delete on study.attempts, study.review_state, study.mock_sessions, study.ai_questions, study.ai_notes to authenticated;
 grant all on all tables in schema study to service_role;
 
--- The `study` schema is not in the Data API's exposed schemas (a dashboard setting), so, like
--- XPlan and the weather app, it is reached through thin security_invoker views in public:
--- the caller's RLS on study.* applies and the views add no privileges.
+-- The Data API does not expose the study schema. That is a project setting,
+-- so the client comes in through these views. security_invoker means the
+-- caller's policies on study.* still apply. A definer view would run as
+-- the owner and skip them. The views add no privilege of their own.
 create view public.study_courses with (security_invoker = true) as select code, title, summary from study.courses;
 create view public.study_objectives with (security_invoker = true) as
   select id, course_code, code, competency, title, summary, weight, position from study.objectives;
@@ -159,8 +172,11 @@ grant select, insert, update, delete on public.study_attempts, public.study_revi
 grant all on public.study_courses, public.study_objectives, public.study_attempts, public.study_review_state,
   public.study_mock_sessions, public.study_ai_questions, public.study_ai_notes to service_role;
 
--- AI quota. Daily caps (UTC days): guests 3 calls, accounts 20, everyone together 150, and at
--- most one call every 4 seconds per learner. Keeps usage far inside the AI Gateway free credit.
+-- Daily caps, UTC. A guest (the is_anonymous claim, not a separate table)
+-- gets 3 calls, an account gets 20, and everyone together gets 150, with
+-- at most one call every 4 seconds. That keeps a day inside the free
+-- gateway credit. search_path is empty on every definer function so a
+-- same-named object in another schema cannot shadow study.*.
 create or replace function study.ai_limits(guest boolean)
 returns table (user_cap integer, global_cap integer)
 language sql immutable set search_path = '' as $$
@@ -187,6 +203,14 @@ begin
     'remaining', greatest(0, least(lim.user_cap - used, lim.global_cap - g)));
 end $$;
 
+-- security definer because the counter tables have no policies and no
+-- grant for authenticated. The function runs as its owner and can write
+-- them. It is granted to authenticated on purpose: the model route calls
+-- it with the user's JWT, so auth.uid() is that user. The service role
+-- would see a null uid and refuse. Calling it directly only burns this
+-- user's remaining calls, and the shared pool. It cannot touch another
+-- user's rows. I lock the global row and the user row before deciding,
+-- so two overlapping requests cannot both pass the cap.
 create or replace function public.study_ai_consume(kind text)
 returns jsonb
 language plpgsql security definer set search_path = '' as $$
@@ -205,6 +229,8 @@ begin
   end if;
   select * into lim from study.ai_limits(guest);
 
+  -- Insert-then-lock creates today's row on the first call, then FOR UPDATE
+  -- serializes the rest of the check.
   insert into study.ai_usage_global (day) values (today) on conflict (day) do nothing;
   select calls into g from study.ai_usage_global where day = today for update;
   insert into study.ai_usage (user_id, day) values (uid, today) on conflict (user_id, day) do nothing;
@@ -220,6 +246,7 @@ begin
     return jsonb_build_object('allowed', false, 'reason', 'burst', 'remaining', lim.user_cap - used);
   end if;
 
+  -- Increment only after the cap and the burst gap both pass. A rejected call does not burn a credit.
   update study.ai_usage set calls = calls + 1, last_call_at = now() where user_id = uid and day = today;
   update study.ai_usage_global set calls = calls + 1 where day = today;
   return jsonb_build_object('allowed', true, 'remaining', least(lim.user_cap - used - 1, lim.global_cap - g - 1));
@@ -232,7 +259,8 @@ grant execute on function study.ai_limits(boolean) to authenticated, service_rol
 grant execute on function public.study_ai_quota() to authenticated, service_role;
 grant execute on function public.study_ai_consume(text) to authenticated, service_role;
 
--- Old usage counters are not needed after a week.
+-- Per-user rows older than a week are noise. I keep the global counter
+-- for a month so a bad day is still visible. authenticated cannot run this.
 create or replace function study.prune_ai_usage()
 returns void language sql security definer set search_path = '' as $$
   delete from study.ai_usage where day < (now() at time zone 'utc')::date - 7;
