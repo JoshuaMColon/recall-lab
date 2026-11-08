@@ -148,8 +148,8 @@ grant all on all tables in schema study to service_role;
 
 -- The Data API does not expose the study schema. That is a project setting,
 -- so the client comes in through these views. security_invoker means the
--- caller's policies on study.* still apply. A definer view would run as
--- the owner and skip them. The views add no privilege of their own.
+-- caller's policies on study.* still apply. Without it the view runs as
+-- its owner and those policies are skipped. The views add no privilege of their own.
 create view public.study_courses with (security_invoker = true) as select code, title, summary from study.courses;
 create view public.study_objectives with (security_invoker = true) as
   select id, course_code, code, competency, title, summary, weight, position from study.objectives;
